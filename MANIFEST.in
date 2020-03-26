@@ -1,0 +1,4 @@
+include README.rst
+include LICENSE
+include versioneer.py
+include src/structurizr/_version.py

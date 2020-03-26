@@ -1,0 +1,66 @@
+---
+language: python
+os:
+- linux
+python:
+- "3.6"
+- "3.7"
+- "3.8"
+
+git:
+  depth: 2
+
+cache: pip
+
+branches:
+  only:
+  - master
+  - devel
+  - "/^\\d+\\.\\d+\\.\\d+[a]?\\d*$/"
+
+env:
+  global:
+  - GITHUB_REPO=Midnighter/structurizr-python
+
+stages:
+- test
+- name: deploy
+  if: tag IS present
+
+install:
+- pip install --upgrade pip setuptools wheel tox tox-travis
+script:
+- tox -- --cov-report=xml
+after_success:
+- bash <(curl -f https://codecov.io/bash)
+
+jobs:
+  fast_finish: true
+  include:
+  - stage: deploy
+    python: "3.7"
+    install:
+    - pip install --upgrade setuptools wheel
+    script: skip
+    after_success: echo "Deploying..."
+    deploy:
+    - provider: pypi
+      cleanup: false
+      distributions: sdist bdist_wheel
+      username: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+      on:
+        tags: true
+        repo: $GITHUB_REPO
+    - provider: releases
+      cleanup: false
+      token: $GITHUB_TOKEN
+      release_notes: "Please see https://github.com/${GITHUB_REPO}/blob/${TRAVIS_TAG}/CHANGELOG.rst for the full release notes."
+      on:
+        tags: true
+        repo: $GITHUB_REPO
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
