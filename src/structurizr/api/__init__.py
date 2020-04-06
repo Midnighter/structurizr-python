@@ -13,21 +13,10 @@
 # limitations under the License.
 
 
-"""Create top level imports."""
+"""Provide API classes and functions."""
 
 
-__author__ = "Moritz E. Beber"
-__email__ = "midnighter@posteo.net"
-from ._version import get_versions
-
-__version__ = get_versions()["version"]
-del get_versions
-
-
-from .helpers import show_versions
-from .workspace import Workspace
-from .api import (
-    StructurizrClient,
-    StructurizrClientException,
-    StructurizrClientSettings,
-)
+from .api_response import APIResponse
+from .structurizr_client_exception import StructurizrClientException
+from .structurizr_client_settings import StructurizrClientSettings
+from .structurizr_client import StructurizrClient

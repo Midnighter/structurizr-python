@@ -22,7 +22,14 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "public_module, symbol", [("structurizr", "show_versions")]
+    "public_module, symbol",
+    [
+        ("structurizr", "show_versions"),
+        ("structurizr", "Workspace"),
+        ("structurizr", "StructurizrClient"),
+        ("structurizr", "StructurizrClientException"),
+        ("structurizr", "StructurizrClientSettings"),
+    ],
 )
 def test_public_api(public_module, symbol):
     """Expect the given public package interface."""
