@@ -13,10 +13,30 @@
 # limitations under the License.
 
 
-"""Provide models for defining a Structurizr software architecture."""
+"""Provide a person model."""
 
 
-from .enterprise import Enterprise
-from .perspective import Perspective
+from pydantic import Field
+
 from .location import Location
-from .person import Person
+from .static_structure_element import StaticStructureElement
+
+
+__all__ = ("Person",)
+
+
+class Person(StaticStructureElement):
+    """
+    Represent a person in the C4 model.
+
+    Attributes:
+        location (Location): The location of this person.
+
+    """
+
+    location: Location = Field(
+        Location.Unspecified, description="The location of this person."
+    )
+
+    def interacts_with(self):
+        pass
