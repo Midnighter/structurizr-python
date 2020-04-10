@@ -17,9 +17,10 @@
 
 
 from getpass import getuser
+from pathlib import Path
 from socket import getfqdn
 
-from pydantic import UUID4, BaseSettings, Field, HttpUrl
+from pydantic import UUID4, BaseSettings, DirectoryPath, Field, HttpUrl
 
 from .. import __version__
 
@@ -46,6 +47,8 @@ class StructurizrClientSettings(BaseSettings):
         api_secret (str): The Structurizr workspace API secret.
         user (str): A string identifying the user (e.g. an e-mail address or username).
         agent (str): A string identifying the agent (e.g. 'structurizr-java/1.2.0').
+        workspace_archive_location (pathlib.Path): A directory for archiving downloaded
+            workspaces.
 
     """
 
@@ -72,12 +75,18 @@ class StructurizrClientSettings(BaseSettings):
     user: str = Field(
         USER,
         env="STRUCTURIZR_USER",
-        description="A string identifying the user (e.g. an e-mail address or username).",
+        description="A string identifying the user (e.g. an e-mail address or "
+        "username).",
     )
     agent: str = Field(
         AGENT,
         env="STRUCTURIZR_AGENT",
         description="A string identifying the agent (e.g. 'structurizr-java/1.2.0').",
+    )
+    workspace_archive_location: DirectoryPath = Field(
+        Path.cwd(),
+        env="STRUCTURIZR_WORKSPACE_ARCHIVE_LOCATION",
+        description="A directory for archiving downloaded workspaces.",
     )
 
     class Config:

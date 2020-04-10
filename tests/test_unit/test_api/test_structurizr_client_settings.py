@@ -22,8 +22,14 @@ from pydantic import ValidationError
 from structurizr.api.structurizr_client_settings import StructurizrClientSettings
 
 
+@pytest.fixture(scope="module")
+def archive_location(tmp_path_factory):
+    location = tmp_path_factory.mktemp("structurizr")
+    return str(location)
+
+
 @pytest.fixture(scope="function")
-def mock_structurizr_env(monkeypatch):
+def mock_structurizr_env(monkeypatch, archive_location):
     """Reversibly modify the environment."""
     monkeypatch.setenv("STRUCTURIZR_URL", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     monkeypatch.setenv("STRUCTURIZR_WORKSPACE_ID", "19")
@@ -31,10 +37,11 @@ def mock_structurizr_env(monkeypatch):
     monkeypatch.setenv("STRUCTURIZR_API_SECRET", "ae140655-da7c-4a8d-9467-5a7d9792fca0")
     monkeypatch.setenv("STRUCTURIZR_USER", "astley@localhost")
     monkeypatch.setenv("STRUCTURIZR_AGENT", "structurizr-python/1.0.0")
+    monkeypatch.setenv("STRUCTURIZR_WORKSPACE_ARCHIVE_LOCATION", archive_location)
 
 
 @pytest.fixture(scope="function")
-def dotenv(tmpdir, monkeypatch):
+def dotenv(tmpdir, monkeypatch, archive_location):
     """Create a `.env` file for client settings."""
     path = tmpdir.mkdir("dotenv")
     env_file = path.join(".env")
@@ -45,6 +52,7 @@ def dotenv(tmpdir, monkeypatch):
         "STRUCTURIZR_API_SECRET=ae140655-da7c-4a8d-9467-5a7d9792fca0\n"
         "STRUCTURIZR_USER=astley@localhost\n"
         "STRUCTURIZR_AGENT=structurizr-python/1.0.0\n"
+        f"STRUCTURIZR_WORKSPACE_ARCHIVE_LOCATION={archive_location}\n"
     )
     monkeypatch.chdir(path)
 
@@ -121,6 +129,12 @@ def dotenv(tmpdir, monkeypatch):
             "api_secret": "ae140655-da7c-4a8d-9467-5a7d9792fca0",
             "agent": "structurizr-python/1.0.0",
         },
+        {
+            "workspace_id": 19,
+            "api_key": "7f4e4edc-f61c-4ff2-97c9-ea4bc2a7c98c",
+            "api_secret": "ae140655-da7c-4a8d-9467-5a7d9792fca0",
+            "workspace_archive_location": ".",
+        },
     ],
 )
 def test_init_from_arguments(attributes: dict):
@@ -128,12 +142,12 @@ def test_init_from_arguments(attributes: dict):
     settings = StructurizrClientSettings(**attributes)
     for attr, expected in attributes.items():
         value = getattr(settings, attr)
-        if attr in ("api_key", "api_secret"):
+        if attr in ("api_key", "api_secret", "workspace_archive_location"):
             value = str(value)
         assert value == expected
 
 
-def test_init_from_environment(mock_structurizr_env):
+def test_init_from_environment(mock_structurizr_env, archive_location):
     """Expect proper initialization from environment variables."""
     settings = StructurizrClientSettings()
     assert settings.url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -142,9 +156,10 @@ def test_init_from_environment(mock_structurizr_env):
     assert str(settings.api_secret) == "ae140655-da7c-4a8d-9467-5a7d9792fca0"
     assert settings.user == "astley@localhost"
     assert settings.agent == "structurizr-python/1.0.0"
+    assert str(settings.workspace_archive_location) == archive_location
 
 
-def test_init_from_dotenv(dotenv):
+def test_init_from_dotenv(dotenv, archive_location):
     """Expect proper initialization from a `.env` file."""
     settings = StructurizrClientSettings()
     assert settings.url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -153,3 +168,4 @@ def test_init_from_dotenv(dotenv):
     assert str(settings.api_secret) == "ae140655-da7c-4a8d-9467-5a7d9792fca0"
     assert settings.user == "astley@localhost"
     assert settings.agent == "structurizr-python/1.0.0"
+    assert str(settings.workspace_archive_location) == archive_location
