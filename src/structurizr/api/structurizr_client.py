@@ -23,6 +23,7 @@ import logging
 from base64 import b64encode
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Dict
 from urllib.parse import unquote_plus
 
 import httpx
@@ -89,7 +90,7 @@ class StructurizrClient:
             base_url=self.url, headers={"User-Agent": self.agent,},
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the client."""
         return (
             f"{type(self).__name__}(url={self.url}, workspace_id={self.workspace_id})"
@@ -113,7 +114,7 @@ class StructurizrClient:
                 f"Failed to unlock the Structurizr workspace {self.workspace_id}."
             )
 
-    def close(self):
+    def close(self) -> None:
         """Close the connection pool."""
         self._client.close()
 
@@ -170,7 +171,7 @@ class StructurizrClient:
                 f"HTTP Status {response.status_code} - {response.reason_phrase}"
             )
 
-    def lock_workspace(self):
+    def lock_workspace(self) -> bool:
         """
         Lock the Structurizr workspace.
 
@@ -189,7 +190,7 @@ class StructurizrClient:
             )
         return response.success
 
-    def unlock_workspace(self):
+    def unlock_workspace(self) -> bool:
         """
         Unlock the Structurizr workspace.
 
@@ -218,7 +219,7 @@ class StructurizrClient:
         method: str = "GET",
         content: str = "",
         content_type: str = "",
-    ):
+    ) -> Dict[str, str]:
         """
         Prepare the Structurizr specific headers.
 
