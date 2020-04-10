@@ -37,6 +37,7 @@ class Workspace(BaseModel):
         name (str): The name of the workspace.
         description (str): A short description of the workspace.
         version (str): A version number for the workspace.
+        revision (int): The internal revision number.
         thumbnail (str): The thumbnail associated with the workspace; a Base64
             encoded PNG file as a Data URI (data:image/png;base64).
         last_modified_date (datetime.datetime): The last modified date, in ISO 8601
@@ -61,6 +62,7 @@ class Workspace(BaseModel):
     version: Optional[str] = Field(
         None, description="A version number for the workspace."
     )
+    revision: Optional[int] = Field(None, description="The internal revision number.")
     thumbnail: Optional[str] = Field(
         None,
         description="The thumbnail associated with the workspace; a Base64 encoded PNG"
