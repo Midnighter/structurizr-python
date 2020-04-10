@@ -13,9 +13,22 @@
 # limitations under the License.
 
 
-"""Provide models for defining a Structurizr software architecture."""
+"""Ensure the expected behaviour of the location enumeration."""
 
 
-from .enterprise import Enterprise
-from .perspective import Perspective
-from .location import Location
+import pytest
+
+from structurizr.model.location import Location
+
+
+@pytest.mark.parametrize(
+    "location, expected",
+    [
+        ("Unspecified", Location.Unspecified),
+        ("Internal", Location.Internal),
+        ("External", Location.External),
+    ],
+)
+def test_location(location: str, expected: Location):
+    """Expect proper initialization from location string."""
+    assert Location(location) == expected

@@ -13,9 +13,24 @@
 # limitations under the License.
 
 
-"""Provide models for defining a Structurizr software architecture."""
+"""Provide a representation of an element's location."""
 
 
-from .enterprise import Enterprise
-from .perspective import Perspective
-from .location import Location
+from enum import Enum, unique
+
+
+__all__ = ("Location",)
+
+
+@unique
+class Location(Enum):
+    """
+    Represents the location of an element with regard to a specific viewpoint.
+
+    For example, "our customers are external to our enterprise".
+
+    """
+
+    External = "External"
+    Internal = "Internal"
+    Unspecified = "Unspecified"
