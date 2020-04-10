@@ -16,9 +16,26 @@
 """Ensure the expected behaviour of the workspace model."""
 
 
+import pytest
+from pydantic import ValidationError
+
 from structurizr.workspace import Workspace
 
 
-def test_workspace_init():
-    """Expect """
-    raise AssertionError()
+@pytest.mark.parametrize(
+    "attributes",
+    [
+        pytest.param(
+            {},
+            marks=pytest.mark.raises(
+                exception=ValidationError, message="id\n  field required"
+            ),
+        ),
+        {"id": 42},
+    ],
+)
+def test_workspace_init(attributes):
+    """Expect proper initialization from arguments."""
+    workspace = Workspace(**attributes)
+    for attr, expected in attributes.items():
+        assert getattr(workspace, attr) == expected
