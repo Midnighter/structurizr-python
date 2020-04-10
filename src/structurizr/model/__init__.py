@@ -20,3 +20,4 @@ from .enterprise import Enterprise
 from .perspective import Perspective
 from .location import Location
 from .person import Person
+from .software_system import SoftwareSystem
