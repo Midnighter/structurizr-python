@@ -17,6 +17,9 @@
 
 
 from collections import namedtuple
+from datetime import datetime
+from gzip import GzipFile
+from pathlib import Path
 
 import pytest
 
@@ -24,7 +27,8 @@ from structurizr.api.structurizr_client import StructurizrClient
 
 
 MockSettings = namedtuple(
-    "MockSettings", "url workspace_id api_key api_secret user agent"
+    "MockSettings",
+    "url workspace_id api_key api_secret user agent workspace_archive_location",
 )
 
 
@@ -38,6 +42,7 @@ def mock_settings():
         api_secret="ae140655-da7c-4a8d-9467-5a7d9792fca0",
         user="astley@localhost",
         agent="structurizr-python/1.0.0",
+        workspace_archive_location=Path("."),
     )
 
 
@@ -56,6 +61,7 @@ def test_init(mock_settings):
     assert client.api_secret == "ae140655-da7c-4a8d-9467-5a7d9792fca0"
     assert client.user == "astley@localhost"
     assert client.agent == "structurizr-python/1.0.0"
+    assert str(client.workspace_archive_location) == "."
 
 
 def test_repr(client):
@@ -77,3 +83,30 @@ def test_md5(client, content, expected):
         These hashes are verified by external tools.
     """
     assert client._md5(content) == expected
+
+
+def test_create_archive_filename(client):
+    """Expect a specific format for the archive file name."""
+    path = client._create_archive_filename()
+    timestamp = datetime.utcnow()
+    time_component = (
+        f"{timestamp.year:04d}{timestamp.month:02d}{timestamp.day:02d}"
+        f"{timestamp.hour:02d}"
+    )
+    assert path.match(f"structurizr-19-{time_component}*.json.gz")
+
+
+def test_archive_workspace(client, mocker):
+    """Expect that a filename is generated and JSON content is written to a file."""
+    mocked_filename = mocker.patch.object(
+        client,
+        "_create_archive_filename",
+        return_value=Path("structurizr-19-time.json.gz"),
+    )
+    mocked_open = mocker.mock_open(mock=mocker.Mock(spec_set=GzipFile))
+    mocker.patch("gzip.open", mocked_open)
+    client._archive_workspace('{"mock_key":"mock_value"}')
+    mocked_filename.assert_called_once()
+    mocked_open.assert_called_once_with(Path("structurizr-19-time.json.gz"), mode="wt")
+    mocked_handle = mocked_open()
+    mocked_handle.write.assert_called_once_with('{"mock_key":"mock_value"}')

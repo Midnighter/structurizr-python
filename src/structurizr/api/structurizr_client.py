@@ -16,11 +16,13 @@
 """Provide the Structurizr client."""
 
 
+import gzip
 import hashlib
 import hmac
 import logging
 from base64 import b64encode
 from datetime import datetime, timedelta
+from pathlib import Path
 from urllib.parse import unquote_plus
 
 import httpx
@@ -51,6 +53,8 @@ class StructurizrClient:
         api_secret (str): The Structurizr workspace API secret.
         user (str): A string identifying the user (e.g. an e-mail address or username).
         agent (str): A string identifying the agent (e.g. 'structurizr-java/1.2.0').
+        workspace_archive_location (pathlib.Path): A directory for archiving downloaded
+            workspaces.
 
     """
 
@@ -73,6 +77,7 @@ class StructurizrClient:
         self.api_secret = str(settings.api_secret)
         self.user = settings.user
         self.agent = settings.agent
+        self.workspace_archive_location = settings.workspace_archive_location
         self._workspace_url = f"/workspace/{self.workspace_id}"
         self._lock_url = f"{self._workspace_url}/lock"
         self._params = {
@@ -131,6 +136,7 @@ class StructurizrClient:
                 f"Failed to retrieve the Structurizr workspace {self.workspace_id}.\n"
                 f"Response {response.status_code} - {response.reason_phrase}"
             )
+        self._archive_workspace(response.text)
         return Workspace.parse_raw(response.text)
 
     def put_workspace(self, workspace: Workspace) -> None:
@@ -242,6 +248,23 @@ class StructurizrClient:
             headers["Content-MD5"] = self._base64_str(definition_md5)
             headers["Content-Type"] = content_type
         return headers
+
+    def _archive_workspace(self, json: str) -> None:
+        """Store the workspace."""
+        location = self._create_archive_filename()
+        logger.debug(
+            f"Archiving workspace {self.workspace_id} to"
+            f" '{self.workspace_archive_location}'."
+        )
+        with gzip.open(location, mode="wt") as handle:
+            handle.write(json)
+
+    def _create_archive_filename(self) -> Path:
+        """Generate a filename for a workspace archive."""
+        timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        return self.workspace_archive_location.joinpath(
+            f"structurizr-{self.workspace_id}-{timestamp}.json.gz"
+        )
 
     @staticmethod
     def _number_once() -> str:
