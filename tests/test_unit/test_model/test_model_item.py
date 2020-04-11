@@ -21,11 +21,15 @@ import pytest
 from structurizr.model.model_item import ModelItem
 
 
+class ConcreteModelItem(ModelItem):
+    pass
+
+
 @pytest.mark.parametrize(
     "attributes", [{},],
 )
 def test_model_item_init(attributes):
     """Expect proper initialization from arguments."""
-    model_item = ModelItem(**attributes)
+    model_item = ConcreteModelItem(**attributes)
     for attr, expected in attributes.items():
         assert getattr(model_item, attr) == expected

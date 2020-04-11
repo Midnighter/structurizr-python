@@ -16,13 +16,15 @@
 """Provide a superclass for all static structure model elements."""
 
 
+from abc import ABC
+
 from .element import Element
 
 
 __all__ = ("StaticStructureElement",)
 
 
-class StaticStructureElement(Element):
+class StaticStructureElement(Element, ABC):
     """
     Define a superclass for all static structure model elements.
 

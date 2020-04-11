@@ -16,6 +16,7 @@
 """Provide a superclass for all model elements."""
 
 
+from abc import ABC
 from typing import Any, ClassVar, Set
 
 from pydantic import Field, HttpUrl
@@ -26,7 +27,7 @@ from .model_item import ModelItem
 __all__ = ("Element",)
 
 
-class Element(ModelItem):
+class Element(ModelItem, ABC):
     """
     Define a superclass for all model elements.
 

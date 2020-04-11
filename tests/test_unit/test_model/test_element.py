@@ -22,6 +22,10 @@ from pydantic import ValidationError
 from structurizr.model.element import Element
 
 
+class ConcreteElement(Element):
+    pass
+
+
 @pytest.mark.parametrize(
     "attributes",
     [
@@ -36,6 +40,6 @@ from structurizr.model.element import Element
 )
 def test_element_init(attributes):
     """Expect proper initialization from arguments."""
-    element = Element(**attributes)
+    element = ConcreteElement(**attributes)
     for attr, expected in attributes.items():
         assert getattr(element, attr) == expected

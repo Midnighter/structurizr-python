@@ -16,6 +16,7 @@
 """Provide the base class for elements and relationships."""
 
 
+from abc import ABC
 from typing import Dict, Set
 
 from pydantic import BaseModel, Field
@@ -26,7 +27,7 @@ from .perspective import Perspective
 __all__ = ("ModelItem",)
 
 
-class ModelItem(BaseModel):
+class ModelItem(BaseModel, ABC):
     """
     Define a base class for elements and relationships.
 
