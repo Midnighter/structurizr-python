@@ -23,6 +23,8 @@ from structurizr.model.element import Element
 
 
 class ConcreteElement(Element):
+    """Implement a concrete `Element` class for testing purposes."""
+
     pass
 
 

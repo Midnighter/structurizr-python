@@ -22,11 +22,13 @@ from structurizr.model.model_item import ModelItem
 
 
 class ConcreteModelItem(ModelItem):
+    """Implement a concrete `ModelItem` class for testing purposes."""
+
     pass
 
 
 @pytest.mark.parametrize(
-    "attributes", [{},],
+    "attributes", [{}],
 )
 def test_model_item_init(attributes):
     """Expect proper initialization from arguments."""
