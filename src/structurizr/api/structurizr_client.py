@@ -67,7 +67,7 @@ class StructurizrClient:
             Any unprovided arguments are attempted to be loaded from environment
             variables or a `.env` file.
 
-        Args:
+        Keyword Args:
             settings (StructurizrClientSettings): The client configuration.
 
         """
