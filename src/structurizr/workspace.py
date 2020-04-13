@@ -22,6 +22,7 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from .model import Model
+from .view import ViewSet
 
 
 __all__ = ("Workspace",)
@@ -89,7 +90,7 @@ class Workspace(BaseModel):
         " workspace (e.g. 'structurizr-java/1.2.0').",
     )
     model: Optional[Model] = Field(None, description="A software architecture model.")
-    views: Optional[Any] = Field(
+    views: Optional[ViewSet] = Field(
         None, description="The set of views onto a software architecture model."
     )
     documentation: Optional[Any] = Field(
@@ -104,3 +105,4 @@ class Workspace(BaseModel):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.model = Model()
+        self.views = ViewSet(model=self.model)

@@ -18,6 +18,7 @@
 
 from abc import ABC
 from typing import Any, Optional, Set
+from weakref import ref
 
 from pydantic import BaseModel, Field
 
@@ -39,6 +40,11 @@ class View(BaseModel, ABC):
 
     """
 
+    # Using slots for 'private' attributes prevents them from being included in model
+    # serialization. See https://github.com/samuelcolvin/pydantic/issues/655
+    # for a longer discussion.
+    __slots__ = ("_viewset",)
+
     software_system: SoftwareSystem = Field(..., alias="softwareSystem")
     software_system_id: str = Field("", alias="softwareSystemId")
     description: str = ""
@@ -52,4 +58,16 @@ class View(BaseModel, ABC):
 
     layout_merge_strategy: Any = Field(..., alias="layoutMergeStrategy")
 
-    view_set: Any = Field(..., alias="viewSet")
+    def __init__(self, **kwargs):
+        """Initialize a view with a 'private' view set."""
+        super().__init__(**kwargs)
+        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
+        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
+        # for a longer discussion.
+        object.__setattr__(self, "_viewset", lambda: None)
+
+    def set_viewset(self, view_set) -> None:
+        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
+        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
+        # for a longer discussion.
+        object.__setattr__(self, "_viewset", ref(view_set))

@@ -21,3 +21,4 @@ from .rank_direction import RankDirection
 from .automatic_layout import AutomaticLayout
 from .animation import Animation
 from .system_context_view import SystemContextView
+from .view_set import ViewSet
