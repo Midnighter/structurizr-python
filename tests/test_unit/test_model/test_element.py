@@ -28,6 +28,12 @@ class ConcreteElement(Element):
     pass
 
 
+class MockModel:
+    """Implement a mock model for reference testing."""
+
+    pass
+
+
 @pytest.mark.parametrize(
     "attributes",
     [
@@ -45,3 +51,11 @@ def test_element_init(attributes):
     element = ConcreteElement(**attributes)
     for attr, expected in attributes.items():
         assert getattr(element, attr) == expected
+
+
+def test_model_reference():
+    """Expect that setting the model creates a reference."""
+    model = MockModel()
+    element = ConcreteElement(name="Element")
+    element.set_model(model)
+    assert element.get_model() is model
