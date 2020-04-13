@@ -13,11 +13,27 @@
 # limitations under the License.
 
 
-"""Provide different views onto a Structurizr software architecture."""
+"""Provide a system context view."""
 
-from .orientation import Orientation
-from .paper_size import PaperSize
-from .rank_direction import RankDirection
-from .automatic_layout import AutomaticLayout
-from .animation import Animation
-from .system_context_view import SystemContextView
+
+from pydantic import Field
+
+from .static_view import StaticView
+
+
+__all__ = ("SystemContextView",)
+
+
+class SystemContextView(StaticView):
+    """
+    Represent the system context view from the C4 model.
+
+    Show how a software system fits into its environment, in terms of the users (people)
+    and other software system dependencies.
+
+    Attributes:
+        enterprise_boundary_visible (bool):
+
+    """
+
+    enterprise_boundary_visible: bool = Field(True, alias="enterpriseBoundaryVisible")
