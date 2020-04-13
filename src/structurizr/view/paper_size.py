@@ -16,7 +16,7 @@
 """Provide a representation of paper size."""
 
 
-from enum import Enum, unique
+from enum import Enum
 
 from .orientation import Orientation
 
@@ -24,7 +24,6 @@ from .orientation import Orientation
 __all__ = ("PaperSize",)
 
 
-@unique
 class PaperSize(Enum):
     """Represent paper sizes in pixels at 300dpi."""
 
@@ -64,7 +63,7 @@ class PaperSize(Enum):
     ) -> None:
         """Initialize a specific paper size."""
         super().__init__(**kwargs)
-        self.name = name
+        self.size_name = name
         self.orientation = orientation
         self.width = width
         self.height = height
