@@ -16,7 +16,7 @@
 """Provide an abstract base class for the software architecture model."""
 
 
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
 
@@ -58,3 +58,7 @@ class AbstractModel(BaseModel, ABC):
         object.__setattr__(self, "_elements_by_id", {})
         object.__setattr__(self, "_relationships_by_id", {})
         object.__setattr__(self, "_id_generator", SequentialIntegerIDGenerator())
+
+    @abstractmethod
+    def add_relationship(self, relationship=None, **kwargs):
+        pass

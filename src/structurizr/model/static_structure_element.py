@@ -17,8 +17,10 @@
 
 
 from abc import ABC
+from typing import Optional
 
 from .element import Element
+from .relationship import Relationship
 
 
 __all__ = ("StaticStructureElement",)
@@ -33,8 +35,16 @@ class StaticStructureElement(Element, ABC):
 
     """
 
-    def uses(self):
-        pass
+    def uses(
+        self, destination: Element, description: str, **kwargs
+    ) -> Optional[Relationship]:
+        return self.get_model().add_relationship(
+            source=self, destination=destination, description=description, **kwargs
+        )
 
-    def delivers(self):
-        pass
+    def delivers(
+        self, destination: Element, description: str, **kwargs
+    ) -> Optional[Relationship]:
+        return self.get_model().add_relationship(
+            source=self, destination=destination, description=description, **kwargs
+        )
