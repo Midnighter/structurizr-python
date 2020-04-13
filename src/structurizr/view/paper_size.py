@@ -18,16 +18,10 @@
 
 from enum import Enum, unique
 
+from .orientation import Orientation
 
-__all__ = ("PaperSize", "Orientation")
 
-
-@unique
-class Orientation(Enum):
-    """Represent paper orientation."""
-
-    Portrait = "Portrait"
-    Landscape = "Landscape"
+__all__ = ("PaperSize",)
 
 
 @unique

@@ -13,7 +13,18 @@
 # limitations under the License.
 
 
-"""Provide different views onto a Structurizr software architecture."""
+"""Provide paper orientation choices."""
 
-from .orientation import Orientation
-from .paper_size import PaperSize
+
+from enum import Enum, unique
+
+
+__all__ = ("Orientation",)
+
+
+@unique
+class Orientation(Enum):
+    """Represent paper orientation."""
+
+    Portrait = "Portrait"
+    Landscape = "Landscape"
