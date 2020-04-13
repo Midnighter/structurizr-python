@@ -21,6 +21,8 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+from .model import Model
+
 
 __all__ = ("Workspace",)
 
@@ -86,7 +88,7 @@ class Workspace(BaseModel):
         description="A string identifying the agent that was last used to modify the"
         " workspace (e.g. 'structurizr-java/1.2.0').",
     )
-    model: Optional[Any] = Field(None, description="A software architecture model.")
+    model: Optional[Model] = Field(None, description="A software architecture model.")
     views: Optional[Any] = Field(
         None, description="The set of views onto a software architecture model."
     )
@@ -98,3 +100,7 @@ class Workspace(BaseModel):
     configuration: Optional[Any] = Field(
         None, description="The workspace configuration."
     )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.model = Model()

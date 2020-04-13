@@ -22,3 +22,4 @@ from .location import Location
 from .person import Person
 from .software_system import SoftwareSystem
 from .relationship import Relationship
+from .model import Model
