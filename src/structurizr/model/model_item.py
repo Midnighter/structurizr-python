@@ -45,3 +45,7 @@ class ModelItem(BaseModel, ABC):
     tags: Set[str] = Field(set())
     properties: Dict[str, str] = Field({})
     perspectives: Set[Perspective] = Field(set())
+
+    def __hash__(self) -> int:
+        """Return an integer that represents a unique hash value for this instance."""
+        return id(self)
