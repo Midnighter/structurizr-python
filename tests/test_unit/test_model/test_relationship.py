@@ -13,12 +13,22 @@
 # limitations under the License.
 
 
-"""Provide models for defining a Structurizr software architecture."""
+"""Ensure the expected behaviour of relationships."""
 
 
-from .enterprise import Enterprise
-from .perspective import Perspective
-from .location import Location
-from .person import Person
-from .software_system import SoftwareSystem
-from .relationship import Relationship
+import pytest
+
+from structurizr.model.relationship import Relationship
+
+
+@pytest.mark.parametrize(
+    "attributes",
+    [
+        {}
+    ],
+)
+def test_relationship_init(attributes):
+    """Expect proper initialization from arguments."""
+    relationship = Relationship(**attributes)
+    for attr, expected in attributes.items():
+        assert getattr(relationship, attr) == expected
