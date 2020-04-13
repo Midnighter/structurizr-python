@@ -13,8 +13,20 @@
 # limitations under the License.
 
 
-"""Provide different views onto a Structurizr software architecture."""
+"""Provide a choices for node rank direction."""
 
-from .orientation import Orientation
-from .paper_size import PaperSize
-from .rank_direction import RankDirection
+
+from enum import Enum, unique
+
+
+__all__ = ("RankDirection",)
+
+
+@unique
+class RankDirection(Enum):
+    """Represent node rank direction."""
+
+    TopBottom = "TopBottom"
+    BottomTop = "BottomTop"
+    LeftRight = "LeftRight"
+    RightLeft = "RightLeft"
