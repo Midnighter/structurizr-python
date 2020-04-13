@@ -13,10 +13,30 @@
 # limitations under the License.
 
 
-"""Provide different views onto a Structurizr software architecture."""
+"""Provide a wrapper for a collection of animation steps."""
 
-from .orientation import Orientation
-from .paper_size import PaperSize
-from .rank_direction import RankDirection
-from .automatic_layout import AutomaticLayout
-from .animation import Animation
+
+from typing import Set
+
+from pydantic import BaseModel
+
+from ..model import Element, Relationship
+
+
+__all__ = ("Animation",)
+
+
+class Animation(BaseModel):
+    """
+    Define a wrapper for a collection of animation steps.
+
+    Attributes:
+        order:
+        elements:
+        relationships:
+
+    """
+
+    order: int
+    elements: Set[Element] = ()
+    relationships: Set[Relationship] = ()

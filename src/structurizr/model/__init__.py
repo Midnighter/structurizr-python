@@ -19,6 +19,7 @@
 from .enterprise import Enterprise
 from .perspective import Perspective
 from .location import Location
+from .element import Element
 from .person import Person
 from .software_system import SoftwareSystem
 from .relationship import Relationship
