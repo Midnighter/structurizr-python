@@ -13,9 +13,27 @@
 # limitations under the License.
 
 
-"""Provide different views onto a Structurizr software architecture."""
+"""Provide an automatic layout configuration."""
 
-from .orientation import Orientation
-from .paper_size import PaperSize
+
+from pydantic import BaseModel, Field
+
 from .rank_direction import RankDirection
-from .automatic_layout import AutomaticLayout
+
+
+__all__ = ("AutomaticLayout",)
+
+
+class AutomaticLayout(BaseModel):
+    """
+    Define a wrapper for automatic layout configuration.
+
+    Attributes:
+
+    """
+
+    rank_direction: RankDirection = Field(..., alias="rankDirection")
+    rank_separation: int = Field(..., alias="rankSeparation")
+    node_separation: int = Field(..., alias="nodeSeparation")
+    edge_separation: int = Field(..., alias="edgeSeparation")
+    vertices: bool
