@@ -6,8 +6,8 @@
 
 ## Apply code quality assurance tools.
 qa:
-	isort --recursive src/structurizr tests/ setup.py
-	black src/structurizr tests/ setup.py
+	isort --recursive src/structurizr tests/ examples/ setup.py
+	black src/structurizr tests/ examples/ setup.py
 
 ## Prepare a release by generating the automatic code documentation.
 release:
