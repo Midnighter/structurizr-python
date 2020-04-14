@@ -18,15 +18,14 @@
 
 from abc import ABC, abstractmethod
 
-from pydantic import BaseModel
-
+from ..base import Base
 from .sequential_integer_id_generator import SequentialIntegerIDGenerator
 
 
 __all__ = ("AbstractModel",)
 
 
-class AbstractModel(BaseModel, ABC):
+class AbstractModel(Base, ABC):
     """
     Define an abstract base class for the software architecture model.
 

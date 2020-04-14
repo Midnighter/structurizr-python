@@ -16,15 +16,16 @@
 """Provide an automatic layout configuration."""
 
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from ..base import Base
 from .rank_direction import RankDirection
 
 
 __all__ = ("AutomaticLayout",)
 
 
-class AutomaticLayout(BaseModel):
+class AutomaticLayout(Base):
     """
     Define a wrapper for automatic layout configuration.
 

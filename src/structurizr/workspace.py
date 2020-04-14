@@ -19,8 +19,9 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from .base import Base
 from .model import Model
 from .view import ViewSet
 
@@ -28,7 +29,7 @@ from .view import ViewSet
 __all__ = ("Workspace",)
 
 
-class Workspace(BaseModel):
+class Workspace(Base):
     """
     Represent a Structurizr workspace.
 

@@ -16,13 +16,15 @@
 """Provide an enterprise model."""
 
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from ..base import Base
 
 
 __all__ = ("Enterprise",)
 
 
-class Enterprise(BaseModel):
+class Enterprise(Base):
     """
     Represent an enterprise.
 

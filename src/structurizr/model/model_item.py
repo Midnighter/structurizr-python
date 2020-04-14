@@ -19,15 +19,16 @@
 from abc import ABC
 from typing import Dict, Set
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from ..base import Base
 from .perspective import Perspective
 
 
 __all__ = ("ModelItem",)
 
 
-class ModelItem(BaseModel, ABC):
+class ModelItem(Base, ABC):
     """
     Define a base class for elements and relationships.
 

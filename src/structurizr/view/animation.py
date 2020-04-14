@@ -18,15 +18,14 @@
 
 from typing import Set
 
-from pydantic import BaseModel
-
+from ..base import Base
 from ..model import Element, Relationship
 
 
 __all__ = ("Animation",)
 
 
-class Animation(BaseModel):
+class Animation(Base):
     """
     Define a wrapper for a collection of animation steps.
 

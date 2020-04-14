@@ -19,8 +19,9 @@
 from typing import Set
 from weakref import ref
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from ..base import Base
 from ..model import AbstractModel, SoftwareSystem
 from .system_context_view import SystemContextView
 
@@ -28,7 +29,7 @@ from .system_context_view import SystemContextView
 __all__ = ("ViewSet",)
 
 
-class ViewSet(BaseModel):
+class ViewSet(Base):
     """
     Define a set of views onto a software architecture model.
 

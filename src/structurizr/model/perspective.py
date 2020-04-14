@@ -16,13 +16,15 @@
 """Provide an architectural perspective model."""
 
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from ..base import Base
 
 
 __all__ = ("Perspective",)
 
 
-class Perspective(BaseModel):
+class Perspective(Base):
     """
     Represent an architectural perspective.
 

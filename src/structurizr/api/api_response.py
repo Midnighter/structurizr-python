@@ -18,13 +18,15 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from ..base import Base
 
 
 __all__ = ("APIResponse",)
 
 
-class APIResponse(BaseModel):
+class APIResponse(Base):
     """
     Define a Structurizr API response.
 

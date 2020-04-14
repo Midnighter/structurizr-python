@@ -20,8 +20,9 @@ from abc import ABC
 from typing import Any, Optional, Set
 from weakref import ref
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from ..base import Base
 from ..model import SoftwareSystem
 from .automatic_layout import AutomaticLayout
 from .paper_size import PaperSize
@@ -30,7 +31,7 @@ from .paper_size import PaperSize
 __all__ = ("View",)
 
 
-class View(BaseModel, ABC):
+class View(Base, ABC):
     """
     Define an abstract base class for all views.
 
