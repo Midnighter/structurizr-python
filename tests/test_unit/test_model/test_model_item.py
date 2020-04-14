@@ -35,13 +35,3 @@ def test_model_item_init(attributes):
     model_item = ConcreteModelItem(**attributes)
     for attr, expected in attributes.items():
         assert getattr(model_item, attr) == expected
-
-
-def test_hash_int():
-    """Expect that a model item's hash returns an integer."""
-    assert isinstance(hash(ConcreteModelItem()), int)
-
-
-def test_set_collection():
-    """Expect that model items can be collected in a set."""
-    {ConcreteModelItem(), ConcreteModelItem(), ConcreteModelItem()}
