@@ -38,4 +38,4 @@ class StaticView(View, ABC):
 
     """
 
-    animations: List[Animation] = ()
+    animations: List[Animation] = []

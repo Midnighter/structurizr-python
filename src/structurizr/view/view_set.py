@@ -45,14 +45,14 @@ class ViewSet(Base):
     __slots__ = ("_model",)
 
     # system_landscape_views: Set[SystemLandscapeView] = Field(
-    #     (), alias="systemLandscapeViews"
+    #     set(), alias="systemLandscapeViews"
     # )
-    system_context_views: Set[SystemContextView] = Field((), alias="systemContextView")
-    # container_views: Set[ContainerView] = Field((), alias="containerViews")
-    # component_views: Set[ComponentView] = Field((), alias="componentViews")
-    # dynamic_views: Set[DynamicView] = Field((), alias="dynamicViews")
-    # deployment_views: Set[DeploymentView] = Field((), alias="deploymentViews")
-    # filtered_views: Set[FilteredView] = Field((), alias="filteredViews")
+    system_context_views: Set[SystemContextView] = Field(set(), alias="systemContextView")
+    # container_views: Set[ContainerView] = Field(set(), alias="containerViews")
+    # component_views: Set[ComponentView] = Field(set(), alias="componentViews")
+    # dynamic_views: Set[DynamicView] = Field(set(), alias="dynamicViews")
+    # deployment_views: Set[DeploymentView] = Field(set(), alias="deploymentViews")
+    # filtered_views: Set[FilteredView] = Field(set(), alias="filteredViews")
     # configuration: Configuration = Field(None)
 
     def __init__(self, *, model: AbstractModel, **kwargs):
