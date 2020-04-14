@@ -39,4 +39,5 @@ class Person(StaticStructureElement):
     )
 
     def interacts_with(self):
+        # TODO
         pass

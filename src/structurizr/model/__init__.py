@@ -24,5 +24,4 @@ from .element import Element
 from .person import Person
 from .software_system import SoftwareSystem
 from .relationship import Relationship
-from .abstract_model import AbstractModel
 from .model import Model

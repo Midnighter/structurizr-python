@@ -40,6 +40,7 @@ class SoftwareSystem(StaticStructureElement):
     location: Location = Field(
         Location.Unspecified, description="The location of this software system."
     )
+    # TODO
     containers: Set[Any] = Field(
         set(), description="The containers within this software system."
     )

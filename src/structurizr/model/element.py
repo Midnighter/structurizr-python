@@ -17,12 +17,17 @@
 
 
 from abc import ABC
+from typing import TYPE_CHECKING, Iterator
 from weakref import ref
 
 from pydantic import Field, HttpUrl
 
-from .abstract_model import AbstractModel
 from .model_item import ModelItem
+
+
+if TYPE_CHECKING:
+    from .model import Model
+    from .relationship import Relationship
 
 
 __all__ = ("Element",)
@@ -48,7 +53,7 @@ class Element(ModelItem, ABC):
     description: str = ""
     url: HttpUrl = ""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Initialize an element with an empty 'private' model reference."""
         super().__init__(**kwargs)
         # Using `object.__setattr__` is a workaround for setting a 'private' attribute
@@ -56,7 +61,7 @@ class Element(ModelItem, ABC):
         # for a longer discussion.
         object.__setattr__(self, "_model", lambda: None)
 
-    def get_model(self) -> AbstractModel:
+    def get_model(self) -> "Model":
         """
         Retrieve the model instance that contains this element.
 
@@ -75,7 +80,7 @@ class Element(ModelItem, ABC):
             )
         return model
 
-    def set_model(self, model: AbstractModel) -> None:
+    def set_model(self, model: "Model") -> None:
         """
         Create a weak reference to the C4 model instance that contains this element.
 
@@ -90,3 +95,18 @@ class Element(ModelItem, ABC):
         # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
         # for a longer discussion.
         object.__setattr__(self, "_model", ref(model))
+
+    def get_relationships(self) -> Iterator["Relationship"]:
+        """Return a Iterator over all relationships involving this element."""
+        # TODO
+        pass
+
+    def get_efferent_relationships(self) -> Iterator["Relationship"]:
+        """Return a Iterator over all outgoing relationships involving this element."""
+        # TODO
+        pass
+
+    def get_afferent_relationships(self) -> Iterator["Relationship"]:
+        """Return a Iterator over all incoming relationships involving this element."""
+        # TODO
+        pass

@@ -21,11 +21,12 @@ from typing import Any, Optional, Set
 
 from pydantic import Field
 
-from .abstract_model import AbstractModel
+from ..base import Base
 from .element import Element
 from .enterprise import Enterprise
 from .person import Person
 from .relationship import Relationship
+from .sequential_integer_id_generator import SequentialIntegerIDGenerator
 from .software_system import SoftwareSystem
 
 
@@ -35,7 +36,7 @@ __all__ = ("Model",)
 logger = logging.getLogger(__name__)
 
 
-class Model(AbstractModel):
+class Model(Base):
     """
     Represent a software architecture model.
 
@@ -49,13 +50,18 @@ class Model(AbstractModel):
 
     """
 
+    # Using slots for 'private' attributes prevents them from being included in model
+    # serialization. See https://github.com/samuelcolvin/pydantic/issues/655
+    # for a longer discussion.
+    __slots__ = ("_elements_by_id", "_relationships_by_id", "_id_generator")
+
     enterprise: Optional[Enterprise] = Field(
         None, description="The enterprise associated with this model."
     )
     people: Optional[Set[Person]] = Field(
         set(), description="The set of people belonging to this model."
     )
-    software_systems: Optional[Set[Any]] = Field(
+    software_systems: Optional[Set[SoftwareSystem]] = Field(
         set(),
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
@@ -66,7 +72,23 @@ class Model(AbstractModel):
         description="The set of deployment nodes belonging to this model.",
     )
 
-    def dict(self, *args, **kwargs):
+    def __init__(self, **kwargs) -> None:
+        """
+        Initialize the model with its 'private' attributes.
+
+        Args:
+            **kwargs: Passed on to the parent constructor.
+
+        """
+        super().__init__(**kwargs)
+        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
+        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
+        # for a longer discussion.
+        object.__setattr__(self, "_elements_by_id", {})
+        object.__setattr__(self, "_relationships_by_id", {})
+        object.__setattr__(self, "_id_generator", SequentialIntegerIDGenerator())
+
+    def dict(self, *args, **kwargs) -> dict:
         """Convert set attributes to lists before serialization."""
         if self.people:
             self.people = list(self.people)
