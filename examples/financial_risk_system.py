@@ -31,8 +31,8 @@ def main():
     workspace = Workspace(
         name="Financial Risk System",
         description="This is a simple (incomplete) example C4 model based upon the "
-                    "financial risk system architecture kata which can be found at "
-                    "https://structurizr.com/help/examples.",
+        "financial risk system architecture kata which can be found at "
+        "https://structurizr.com/help/examples.",
     )
 
     model = workspace.model
