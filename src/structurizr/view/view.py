@@ -46,27 +46,63 @@ class View(BaseModel, ABC):
     __slots__ = ("_viewset",)
 
     software_system: SoftwareSystem = Field(..., alias="softwareSystem")
-    software_system_id: str = Field("", alias="softwareSystemId")
-    description: str = ""
     key: str
+    description: str
+    software_system_id: str = Field("", alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(None, alias="paperSize")
     automatic_layout: Optional[AutomaticLayout] = Field(None, alias="automaticLayout")
-    title: str
+    title: str = ""
 
-    element_views: Set[Any] = Field(..., alias="elementViews")
-    relationship_views: Set[Any] = Field(..., alias="relationshipViews")
+    # TODO
+    element_views: Set[Any] = Field((), alias="elementViews")
+    # TODO
+    relationship_views: Set[Any] = Field((), alias="relationshipViews")
 
-    layout_merge_strategy: Any = Field(..., alias="layoutMergeStrategy")
+    # TODO
+    layout_merge_strategy: Optional[Any] = Field(None, alias="layoutMergeStrategy")
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self, *, software_system: SoftwareSystem, key: str, description: str, **kwargs
+    ):
         """Initialize a view with a 'private' view set."""
-        super().__init__(**kwargs)
+        super().__init__(
+            software_system=software_system, key=key, description=description, **kwargs
+        )
         # Using `object.__setattr__` is a workaround for setting a 'private' attribute
         # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
         # for a longer discussion.
         object.__setattr__(self, "_viewset", lambda: None)
 
+    def get_viewset(self):
+        """
+        Retrieve the view set instance that contains this view.
+
+        Returns:
+            ViewSet: The view set that contains this view if any.
+
+        Raises:
+            RuntimeError: In case there exists no referenced view set.
+
+        """
+        viewset = self._viewset()
+        if viewset is None:
+            raise RuntimeError(
+                f"You must add this {type(self).__name__} view to a ViewSet instance "
+                f"first."
+            )
+        return viewset
+
     def set_viewset(self, view_set) -> None:
+        """
+        Create a weak reference to a view set instance that contains this view.
+
+        Warnings:
+            This is an internal method and should not be directly called by users.
+
+        Args:
+            view_set (ViewSet):
+
+        """
         # Using `object.__setattr__` is a workaround for setting a 'private' attribute
         # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
         # for a longer discussion.
