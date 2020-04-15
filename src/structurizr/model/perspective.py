@@ -18,13 +18,14 @@
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 
 
-__all__ = ("Perspective",)
+__all__ = ("Perspective", "PerspectiveIO")
 
 
-class Perspective(BaseModel):
+class PerspectiveIO(BaseModel):
     """
     Represent an architectural perspective.
 
@@ -44,3 +45,26 @@ class Perspective(BaseModel):
     description: str = Field(
         ..., description="A longer description of the architectural perspective."
     )
+
+
+class Perspective(AbstractBase):
+    """
+    Represent an architectural perspective.
+
+    Architectural perspectives can be applied to elements and relationships.
+
+    Notes:
+        See https://www.viewpoints-and-perspectives.info/home/perspectives/ for more
+        details of this concept.
+
+    Attributes:
+        name (str): The name of the perspective, e.g., 'Security'.
+        description (str): A longer description of the architectural perspective.
+
+    """
+
+    def __init__(self, *, name: str, description: str, **kwargs) -> None:
+        """Initialize an architectural perspective."""
+        super().__init__(**kwargs)
+        self.name = name
+        self.description = description
