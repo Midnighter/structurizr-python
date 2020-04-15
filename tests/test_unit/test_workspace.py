@@ -19,7 +19,7 @@
 import pytest
 from pydantic import ValidationError
 
-from structurizr.workspace import Workspace
+from structurizr.workspace import Workspace, WorkspaceIO
 
 
 @pytest.mark.parametrize(
@@ -31,10 +31,36 @@ from structurizr.workspace import Workspace
                 exception=ValidationError, message="id\n  field required"
             ),
         ),
-        {"id": 42},
+        pytest.param(
+            {},
+            marks=pytest.mark.raises(
+                exception=ValidationError, message="name\n  field required"
+            ),
+        ),
+        pytest.param(
+            {},
+            marks=pytest.mark.raises(
+                exception=ValidationError, message="description\n  field required"
+            ),
+        ),
+        {"id": 42, "name": "Marvin", "description": "depressed robot"},
     ],
 )
-def test_workspace_init(attributes):
+def test_workspace_io_init(attributes: dict):
+    """Expect proper initialization from arguments."""
+    workspace = WorkspaceIO(**attributes)
+    for attr, expected in attributes.items():
+        assert getattr(workspace, attr) == expected
+
+
+@pytest.mark.parametrize(
+    "attributes",
+    [
+        pytest.param({}, marks=pytest.mark.raises(exception=TypeError),),
+        {"id": 42, "name": "Marvin", "description": "depressed robot"},
+    ],
+)
+def test_workspace_init(attributes: dict):
     """Expect proper initialization from arguments."""
     workspace = Workspace(**attributes)
     for attr, expected in attributes.items():
