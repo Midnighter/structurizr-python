@@ -17,10 +17,11 @@
 
 
 import logging
-from typing import Any, Iterator, Optional, Set
+from typing import Any, Iterator, List, Optional, Set
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from .element import Element
 from .enterprise import Enterprise
@@ -30,13 +31,13 @@ from .sequential_integer_id_generator import SequentialIntegerIDGenerator
 from .software_system import SoftwareSystem
 
 
-__all__ = ("Model",)
+__all__ = ("ModelIO", "Model")
 
 
 logger = logging.getLogger(__name__)
 
 
-class Model(BaseModel):
+class ModelIO(BaseModel):
     """
     Represent a software architecture model.
 
@@ -50,29 +51,47 @@ class Model(BaseModel):
 
     """
 
-    # Using slots for 'private' attributes prevents them from being included in model
-    # serialization. See https://github.com/samuelcolvin/pydantic/issues/655
-    # for a longer discussion.
-    __slots__ = ("_elements_by_id", "_relationships_by_id", "_id_generator")
-
     enterprise: Optional[Enterprise] = Field(
         None, description="The enterprise associated with this model."
     )
-    people: Optional[Set[Person]] = Field(
-        set(), description="The set of people belonging to this model."
+    people: Optional[List[Person]] = Field(
+        [], description="The set of people belonging to this model."
     )
-    software_systems: Optional[Set[SoftwareSystem]] = Field(
-        set(),
+    software_systems: Optional[List[SoftwareSystem]] = Field(
+        [],
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
     )
-    deployment_nodes: Optional[Set[Any]] = Field(
-        set(),
+    deployment_nodes: Optional[List[Any]] = Field(
+        [],
         alias="deploymentNodes",
         description="The set of deployment nodes belonging to this model.",
     )
 
-    def __init__(self, **kwargs) -> None:
+
+class Model(AbstractBase):
+    """
+    Represent a software architecture model.
+
+    Attributes:
+        enterprise (Enterprise): The enterprise associated with this model.
+        people (set of Person): The set of people belonging to this model.
+        software_systems (set of SoftwareSystem): The set of software systems belonging
+            to this model.
+        deployment_nodes (set of DeploymentNode): The set of deployment nodes belonging
+            to this model.
+
+    """
+
+    def __init__(
+        self,
+        enterprise: Optional[Enterprise] = None,
+        people: Optional[Set[Person]] = None,
+        software_systems: Optional[Set[SoftwareSystem]] = None,
+        # TODO
+        deployment_nodes: Optional[Set[Any]] = None,
+        **kwargs,
+    ) -> None:
         """
         Initialize the model with its 'private' attributes.
 
@@ -81,12 +100,13 @@ class Model(BaseModel):
 
         """
         super().__init__(**kwargs)
-        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
-        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
-        # for a longer discussion.
-        object.__setattr__(self, "_elements_by_id", {})
-        object.__setattr__(self, "_relationships_by_id", {})
-        object.__setattr__(self, "_id_generator", SequentialIntegerIDGenerator())
+        self.enterprise = enterprise
+        self.people = set() if people is None else people
+        self.software_systems = set() if software_systems is None else software_systems
+        self.deployment_nodes = set() if deployment_nodes is None else deployment_nodes
+        self._elements_by_id = {}
+        self._relationships_by_id = {}
+        self._id_generator = SequentialIntegerIDGenerator()
 
     def __contains__(self, element: Element):
         return (
@@ -94,16 +114,6 @@ class Model(BaseModel):
             or element in self.software_systems
             or element in self.deployment_nodes
         )
-
-    def dict(self, *args, **kwargs) -> dict:
-        """Convert set attributes to lists before serialization."""
-        if self.people:
-            self.people = list(self.people)
-        if self.software_systems:
-            self.software_systems = list(self.software_systems)
-        if self.deployment_nodes:
-            self.deployment_nodes = list(self.deployment_nodes)
-        return super().dict(*args, **kwargs)
 
     def add_person(self, person=None, **kwargs) -> Person:
         """
