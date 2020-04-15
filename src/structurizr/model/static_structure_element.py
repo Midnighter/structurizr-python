@@ -19,14 +19,26 @@
 from abc import ABC
 from typing import TYPE_CHECKING, Optional
 
-from .element import Element
+from .element import ElementIO, Element
 
 
 if TYPE_CHECKING:
     from .relationship import Relationship
 
 
-__all__ = ("StaticStructureElement",)
+__all__ = ("StaticStructureElementIO", "StaticStructureElement")
+
+
+class StaticStructureElementIO(ElementIO, ABC):
+    """
+    Define a superclass for all static structure model elements.
+
+    This is the superclass for model elements that describe the static structure
+    of a software system, namely Person, SoftwareSystem, Container and Component.
+
+    """
+
+    pass
 
 
 class StaticStructureElement(Element, ABC):
