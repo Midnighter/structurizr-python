@@ -19,10 +19,24 @@
 from pydantic import Field
 
 from .location import Location
-from .static_structure_element import StaticStructureElement
+from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 
 
-__all__ = ("Person",)
+__all__ = ("PersonIO", "Person")
+
+
+class PersonIO(StaticStructureElementIO):
+    """
+    Represent a person in the C4 model.
+
+    Attributes:
+        location (Location): The location of this person.
+
+    """
+
+    location: Location = Field(
+        Location.Unspecified, description="The location of this person."
+    )
 
 
 class Person(StaticStructureElement):
@@ -37,6 +51,11 @@ class Person(StaticStructureElement):
     location: Location = Field(
         Location.Unspecified, description="The location of this person."
     )
+
+    def __init__(self, *, location: Location = Location.Unspecified, **kwargs) -> None:
+        """"""
+        super().__init__(**kwargs)
+        self.location = location
 
     def interacts_with(self):
         # TODO

@@ -19,7 +19,7 @@
 from abc import ABC
 from typing import TYPE_CHECKING, Optional
 
-from .element import ElementIO, Element
+from .element import Element, ElementIO
 
 
 if TYPE_CHECKING:
