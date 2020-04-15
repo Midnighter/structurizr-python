@@ -22,4 +22,3 @@ from structurizr.base_model import BaseModel
 def test_base_init():
     """Expect proper initialization from arguments."""
     BaseModel()
-

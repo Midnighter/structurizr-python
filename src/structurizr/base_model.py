@@ -31,3 +31,51 @@ class BaseModel(BaseModel_):
         anystr_strip_whitespace = True
         allow_population_by_field_name = True
         orm_mode = True
+
+    def dict(
+        self, *, by_alias: bool = True, exclude_defaults: bool = True, **kwargs
+    ) -> dict:
+        """
+        Serialize the model using custom settings.
+
+        Args:
+            by_alias (bool, optional): Whether to create serialized field names by
+                their alias (default `True`).
+            exclude_defaults (bool, optional): Whether to exclude fields that are equal
+                to their default value from being serialized (default `True`).
+            **kwargs:
+
+        Returns:
+            dict: The serialized model as a (nested) dictionary.
+
+        See Also:
+            pydantic.BaseModel.dict
+
+        """
+        return super().dict(
+            by_alias=by_alias, exclude_defaults=exclude_defaults, **kwargs
+        )
+
+    def json(
+        self, *, by_alias: bool = True, exclude_defaults: bool = True, **kwargs
+    ) -> str:
+        """
+        Serialize the model using custom settings.
+
+        Args:
+            by_alias (bool, optional): Whether to create serialized field names by
+                their alias (default `True`).
+            exclude_defaults (bool, optional): Whether to exclude fields that are equal
+                to their default value from being serialized (default `True`).
+            **kwargs:
+
+        Returns:
+            str: The serialized model as a JSON string.
+
+        See Also:
+            pydantic.BaseModel.json
+
+        """
+        return super().json(
+            by_alias=by_alias, exclude_defaults=exclude_defaults, **kwargs
+        )
