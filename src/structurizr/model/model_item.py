@@ -17,18 +17,37 @@
 
 
 from abc import ABC
-from typing import Dict, Set
+from typing import Dict, List, Optional, Set
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from .perspective import Perspective
 
 
-__all__ = ("ModelItem",)
+__all__ = ("ModelItemIO", "ModelItem")
 
 
-class ModelItem(BaseModel, ABC):
+class ModelItemIO(BaseModel, ABC):
+    """
+    Define a base class for elements and relationships.
+
+    Attributes:
+        id (str):
+        tags (set of str):
+        properties (dict):
+        perspectives (set of Perspective):
+
+    """
+
+    id: str = Field("")
+    tags: List[str] = Field([])
+    properties: Dict[str, str] = Field({})
+    perspectives: List[Perspective] = Field([])
+
+
+class ModelItem(AbstractBase, ABC):
     """
     Define a base class for elements and relationships.
 
@@ -41,8 +60,18 @@ class ModelItem(BaseModel, ABC):
 
     """
 
-    id: str = Field("")
-    origin_id: str = Field("", alias="originId")
-    tags: Set[str] = Field(set())
-    properties: Dict[str, str] = Field({})
-    perspectives: Set[Perspective] = Field(set())
+    def __init__(
+        self,
+        *,
+        id: str = "",
+        origin_id: str = "",
+        tags: Optional[Set[str]] = None,
+        properties: Optional[Dict[str, str]] = None,
+        perspectives: Optional[Set[Perspective]] = None,
+        **kwargs
+    ):
+        self.id = id
+        self.origin_id = origin_id
+        self.tags = set() if tags is None else tags
+        self.properties = {} if properties is None else properties
+        self.perspectives = set() if perspectives is None else perspectives
