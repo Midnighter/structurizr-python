@@ -167,7 +167,7 @@ class StructurizrClient:
         response = self._client.send(request)
         if response.status_code != 200:
             raise StructurizrClientException(
-                f"Failed to retrieve the Structurizr workspace {self.workspace_id}.\n"
+                f"Failed to update the Structurizr workspace {self.workspace_id}.\n"
                 f"HTTP Status {response.status_code} - {response.reason_phrase}"
             )
 
