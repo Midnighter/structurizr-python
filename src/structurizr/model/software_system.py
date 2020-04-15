@@ -16,18 +16,18 @@
 """Provide a software system element model."""
 
 
-from typing import Any, Set
+from typing import Any, List, Optional, Set
 
 from pydantic import Field
 
 from .location import Location
-from .static_structure_element import StaticStructureElement
+from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 
 
-__all__ = ("SoftwareSystem",)
+__all__ = ("SoftwareSystem", "SoftwareSystemIO")
 
 
-class SoftwareSystem(StaticStructureElement):
+class SoftwareSystemIO(StaticStructureElementIO):
     """
     Represent a software system in the C4 model.
 
@@ -41,6 +41,29 @@ class SoftwareSystem(StaticStructureElement):
         Location.Unspecified, description="The location of this software system."
     )
     # TODO
-    containers: Set[Any] = Field(
-        set(), description="The containers within this software system."
+    containers: List[Any] = Field(
+        [], description="The containers within this software system."
     )
+
+
+class SoftwareSystem(StaticStructureElement):
+    """
+    Represent a software system in the C4 model.
+
+    Attributes:
+        location (Location): The location of this software system.
+        containers (set of Container): The containers within this software system.
+
+    """
+
+    def __init__(
+        self,
+        *,
+        location: Location = Location.Unspecified,
+        containers: Optional[Set[Any]] = None,
+        **kwargs
+    ) -> None:
+        """"""
+        super().__init__(**kwargs)
+        self.location = location
+        self.containers = set() if containers is None else containers
