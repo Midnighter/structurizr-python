@@ -24,11 +24,11 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from .element import Element
-from .enterprise import Enterprise
-from .person import Person
+from .enterprise import Enterprise, EnterpriseIO
+from .person import Person, PersonIO
 from .relationship import Relationship
 from .sequential_integer_id_generator import SequentialIntegerIDGenerator
-from .software_system import SoftwareSystem
+from .software_system import SoftwareSystem, SoftwareSystemIO
 
 
 __all__ = ("ModelIO", "Model")
@@ -51,13 +51,13 @@ class ModelIO(BaseModel):
 
     """
 
-    enterprise: Optional[Enterprise] = Field(
+    enterprise: Optional[EnterpriseIO] = Field(
         None, description="The enterprise associated with this model."
     )
-    people: Optional[List[Person]] = Field(
+    people: Optional[List[PersonIO]] = Field(
         [], description="The set of people belonging to this model."
     )
-    software_systems: Optional[List[SoftwareSystem]] = Field(
+    software_systems: Optional[List[SoftwareSystemIO]] = Field(
         [],
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
