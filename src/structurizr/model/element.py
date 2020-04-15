@@ -18,22 +18,21 @@
 
 from abc import ABC
 from typing import TYPE_CHECKING, Iterator
-from weakref import ref
 
 from pydantic import Field, HttpUrl
 
-from .model_item import ModelItem
+from ..mixin import ModelRefMixin
+from .model_item import ModelItem, ModelItemIO
 
 
 if TYPE_CHECKING:
-    from .model import Model
     from .relationship import Relationship
 
 
-__all__ = ("Element",)
+__all__ = ("ElementIO", "Element")
 
 
-class Element(ModelItem, ABC):
+class ElementIO(ModelItemIO, ABC):
     """
     Define a superclass for all model elements.
 
@@ -44,57 +43,30 @@ class Element(ModelItem, ABC):
 
     """
 
-    # Using slots for 'private' attributes prevents them from being included in model
-    # serialization. See https://github.com/samuelcolvin/pydantic/issues/655
-    # for a longer discussion.
-    __slots__ = ("_model",)
-
     name: str = Field(...)
-    description: str = ""
-    url: HttpUrl = ""
+    description: str = Field("")
+    url: HttpUrl = Field("")
 
-    def __init__(self, **kwargs) -> None:
+
+class Element(ModelRefMixin, ModelItem, ABC):
+    """
+    Define a superclass for all model elements.
+
+    Attributes:
+        name (str):
+        description (str):
+        url (pydantic.HttpUrl):
+
+    """
+
+    def __init__(
+        self, *, name: str, description: str = "", url: str = "", **kwargs
+    ) -> None:
         """Initialize an element with an empty 'private' model reference."""
         super().__init__(**kwargs)
-        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
-        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
-        # for a longer discussion.
-        object.__setattr__(self, "_model", lambda: None)
-
-    def get_model(self) -> "Model":
-        """
-        Retrieve the model instance that contains this element.
-
-        Returns:
-            AbstractModel: The model that contains this element if any.
-
-        Raises:
-            RuntimeError: In case there exists no referenced model.
-
-        """
-        model = self._model()
-        if model is None:
-            raise RuntimeError(
-                f"You must add this {type(self).__name__} element to a model instance "
-                f"first."
-            )
-        return model
-
-    def set_model(self, model: "Model") -> None:
-        """
-        Create a weak reference to the C4 model instance that contains this element.
-
-        Warnings:
-            This is an internal method and should not be directly called by users.
-
-        Args:
-            model (Model):
-
-        """
-        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
-        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
-        # for a longer discussion.
-        object.__setattr__(self, "_model", ref(model))
+        self.name = name
+        self.description = description
+        self.url = url
 
     def get_relationships(self) -> Iterator["Relationship"]:
         """Return a Iterator over all relationships involving this element."""
