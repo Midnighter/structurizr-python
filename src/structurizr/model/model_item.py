@@ -70,6 +70,8 @@ class ModelItem(AbstractBase, ABC):
         perspectives: Optional[Set[Perspective]] = None,
         **kwargs
     ):
+        """"""
+        super().__init__(**kwargs)
         self.id = id
         self.origin_id = origin_id
         self.tags = set() if tags is None else tags
