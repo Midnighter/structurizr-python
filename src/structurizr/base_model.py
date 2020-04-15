@@ -13,28 +13,21 @@
 # limitations under the License.
 
 
-"""Ensure the expected behaviour of the base model."""
+"""Provide a customized base model."""
 
 
-from structurizr.base import Base
+from pydantic import BaseModel as BaseModel_
 
 
-class MockModel(Base):
-    """Implement a concrete `ModelItem` class for testing purposes."""
-
-    pass
+__all__ = ("BaseModel",)
 
 
-def test_base_init():
-    """Expect proper initialization from arguments."""
-    Base()
+class BaseModel(BaseModel_):
+    """Define a customized base model."""
 
+    class Config:
+        """Define default configuration options for all models."""
 
-def test_hash_int():
-    """Expect that a base model's hash is an integer."""
-    assert isinstance(hash(Base()), int)
-
-
-def test_set_collection():
-    """Expect that base models can be collected in a set."""
-    {Base(), Base(), Base()}
+        anystr_strip_whitespace = True
+        allow_population_by_field_name = True
+        orm_mode = True

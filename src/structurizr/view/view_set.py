@@ -21,7 +21,7 @@ from weakref import ref
 
 from pydantic import Field
 
-from ..base import Base
+from ..base_model import BaseModel
 from .system_context_view import SystemContextView
 
 
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 __all__ = ("ViewSet",)
 
 
-class ViewSet(Base):
+class ViewSet(BaseModel):
     """
     Define a set of views onto a software architecture model.
 

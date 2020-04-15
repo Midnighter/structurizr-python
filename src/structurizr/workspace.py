@@ -21,7 +21,7 @@ from typing import Any, Optional
 
 from pydantic import Field
 
-from .base import Base
+from .base_model import BaseModel
 from .model import Model
 from .view import ViewSet
 
@@ -29,7 +29,7 @@ from .view import ViewSet
 __all__ = ("Workspace",)
 
 
-class Workspace(Base):
+class Workspace(BaseModel):
     """
     Represent a Structurizr workspace.
 

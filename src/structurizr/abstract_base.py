@@ -13,24 +13,18 @@
 # limitations under the License.
 
 
-"""Provide an enterprise model."""
+"""Provide a common abstract base class."""
 
 
-from pydantic import Field
-
-from ..base_model import BaseModel
+from abc import ABC
 
 
-__all__ = ("Enterprise",)
+__all__ = ("AbstractBase",)
 
 
-class Enterprise(BaseModel):
-    """
-    Represent an enterprise.
+class AbstractBase(ABC):
+    """Define common business logic through an abstract base class."""
 
-    Attributes:
-        name (str): The name of the enterprise.
-
-    """
-
-    name: str = Field(..., description="The name of the enterprise.")
+    def __hash__(self) -> int:
+        """Return an integer that represents a unique hash value for this instance."""
+        return id(self)

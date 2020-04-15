@@ -22,7 +22,7 @@ from weakref import ref
 
 from pydantic import Field
 
-from ..base import Base
+from ..base_model import BaseModel
 from ..model import Element, SoftwareSystem
 from .automatic_layout import AutomaticLayout
 from .element_view import ElementView
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 __all__ = ("View",)
 
 
-class View(Base, ABC):
+class View(BaseModel, ABC):
     """
     Define an abstract base class for all views.
 

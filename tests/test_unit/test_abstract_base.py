@@ -13,21 +13,28 @@
 # limitations under the License.
 
 
-"""Provide a customized base model."""
+"""Ensure the expected behaviour of the abstract base class."""
 
 
-from pydantic import BaseModel
+from structurizr.abstract_base import AbstractBase
 
 
-class Base(BaseModel):
-    """Define a customized base model."""
+class ConcreteBase(AbstractBase):
+    """Implement a concrete class for testing purposes."""
 
-    class Config:
-        """Define default configuration options for all models."""
+    pass
 
-        anystr_strip_whitespace = True
-        allow_population_by_field_name = True
 
-    def __hash__(self) -> int:
-        """Return an integer that represents a unique hash value for this instance."""
-        return id(self)
+def test_base_init():
+    """Expect proper initialization from arguments."""
+    ConcreteBase()
+
+
+def test_hash_int():
+    """Expect that a concrete class's hash is an integer."""
+    assert isinstance(hash(ConcreteBase()), int)
+
+
+def test_set_collection():
+    """Expect that a concrete class can be collected in a set."""
+    {ConcreteBase(), ConcreteBase(), ConcreteBase()}

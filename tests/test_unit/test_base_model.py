@@ -13,24 +13,13 @@
 # limitations under the License.
 
 
-"""Provide an enterprise model."""
+"""Ensure the expected behaviour of the base model."""
 
 
-from pydantic import Field
-
-from ..base_model import BaseModel
+from structurizr.base_model import BaseModel
 
 
-__all__ = ("Enterprise",)
+def test_base_init():
+    """Expect proper initialization from arguments."""
+    BaseModel()
 
-
-class Enterprise(BaseModel):
-    """
-    Represent an enterprise.
-
-    Attributes:
-        name (str): The name of the enterprise.
-
-    """
-
-    name: str = Field(..., description="The name of the enterprise.")

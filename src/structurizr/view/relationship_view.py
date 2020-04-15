@@ -18,7 +18,7 @@
 
 from typing import Any, Optional, Set
 
-from ..base import Base
+from ..base_model import BaseModel
 from ..model import Relationship
 
 
@@ -29,7 +29,7 @@ START_OF_LINE = 0
 END_OF_LINE = 100
 
 
-class RelationshipView(Base):
+class RelationshipView(BaseModel):
     """
     Represent an instance of a relationship in a view.
 

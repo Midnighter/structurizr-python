@@ -18,14 +18,14 @@
 
 from typing import Set
 
-from ..base import Base
+from ..base_model import BaseModel
 from ..model import Element, Relationship
 
 
 __all__ = ("Animation",)
 
 
-class Animation(Base):
+class Animation(BaseModel):
     """
     Define a wrapper for a collection of animation steps.
 

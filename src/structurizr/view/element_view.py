@@ -18,14 +18,14 @@
 
 from typing import Optional
 
-from ..base import Base
+from ..base_model import BaseModel
 from ..model import Element
 
 
 __all__ = ("ElementView",)
 
 
-class ElementView(Base):
+class ElementView(BaseModel):
     """
     Represent an instance of an element in a view.
 

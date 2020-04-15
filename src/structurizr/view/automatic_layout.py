@@ -18,14 +18,14 @@
 
 from pydantic import Field
 
-from ..base import Base
+from ..base_model import BaseModel
 from .rank_direction import RankDirection
 
 
 __all__ = ("AutomaticLayout",)
 
 
-class AutomaticLayout(Base):
+class AutomaticLayout(BaseModel):
     """
     Define a wrapper for automatic layout configuration.
 

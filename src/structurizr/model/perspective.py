@@ -18,13 +18,13 @@
 
 from pydantic import Field
 
-from ..base import Base
+from ..base_model import BaseModel
 
 
 __all__ = ("Perspective",)
 
 
-class Perspective(Base):
+class Perspective(BaseModel):
     """
     Represent an architectural perspective.
 

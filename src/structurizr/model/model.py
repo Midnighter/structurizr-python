@@ -21,7 +21,7 @@ from typing import Any, Iterator, Optional, Set
 
 from pydantic import Field
 
-from ..base import Base
+from ..base_model import BaseModel
 from .element import Element
 from .enterprise import Enterprise
 from .person import Person
@@ -36,7 +36,7 @@ __all__ = ("Model",)
 logger = logging.getLogger(__name__)
 
 
-class Model(Base):
+class Model(BaseModel):
     """
     Represent a software architecture model.
 
