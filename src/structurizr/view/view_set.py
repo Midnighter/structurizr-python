@@ -16,14 +16,17 @@
 """Provide a set of views onto a software architecture model."""
 
 
-from typing import Set
+from typing import TYPE_CHECKING, Set
 from weakref import ref
 
 from pydantic import Field
 
 from ..base import Base
-from ..model import AbstractModel, SoftwareSystem
 from .system_context_view import SystemContextView
+
+
+if TYPE_CHECKING:
+    from ..model import Model
 
 
 __all__ = ("ViewSet",)
@@ -44,10 +47,14 @@ class ViewSet(Base):
     # for a longer discussion.
     __slots__ = ("_model",)
 
+    # TODO
     # system_landscape_views: Set[SystemLandscapeView] = Field(
     #     set(), alias="systemLandscapeViews"
     # )
-    system_context_views: Set[SystemContextView] = Field(set(), alias="systemContextView")
+    system_context_views: Set[SystemContextView] = Field(
+        set(), alias="systemContextView"
+    )
+    # TODO
     # container_views: Set[ContainerView] = Field(set(), alias="containerViews")
     # component_views: Set[ComponentView] = Field(set(), alias="componentViews")
     # dynamic_views: Set[DynamicView] = Field(set(), alias="dynamicViews")
@@ -55,7 +62,7 @@ class ViewSet(Base):
     # filtered_views: Set[FilteredView] = Field(set(), alias="filteredViews")
     # configuration: Configuration = Field(None)
 
-    def __init__(self, *, model: AbstractModel, **kwargs):
+    def __init__(self, *, model: "Model", **kwargs):
         """Initialize a view set with a 'private' model."""
         super().__init__(**kwargs)
         # Using `object.__setattr__` is a workaround for setting a 'private' attribute
@@ -69,7 +76,6 @@ class ViewSet(Base):
     ) -> SystemContextView:
         # assertThatTheSoftwareSystemIsNotNull(softwareSystem);
         # assertThatTheViewKeyIsSpecifiedAndUnique(key);
-
         if system_context_view is None:
             system_context_view = SystemContextView(**kwargs)
         system_context_view.set_viewset(self)

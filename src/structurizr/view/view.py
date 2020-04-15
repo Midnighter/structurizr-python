@@ -17,15 +17,21 @@
 
 
 from abc import ABC
-from typing import Any, Optional, Set
+from typing import TYPE_CHECKING, Any, Optional, Set
 from weakref import ref
 
 from pydantic import Field
 
 from ..base import Base
-from ..model import SoftwareSystem
+from ..model import Element, SoftwareSystem
 from .automatic_layout import AutomaticLayout
+from .element_view import ElementView
 from .paper_size import PaperSize
+from .relationship_view import RelationshipView
+
+
+if TYPE_CHECKING:
+    from .view_set import ViewSet
 
 
 __all__ = ("View",)
@@ -46,18 +52,16 @@ class View(Base, ABC):
     # for a longer discussion.
     __slots__ = ("_viewset",)
 
-    software_system: SoftwareSystem = Field(..., alias="softwareSystem")
     key: str
     description: str
+    software_system: Optional[SoftwareSystem] = Field(None, alias="softwareSystem")
     software_system_id: str = Field("", alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(None, alias="paperSize")
     automatic_layout: Optional[AutomaticLayout] = Field(None, alias="automaticLayout")
     title: str = ""
 
-    # TODO
-    element_views: Set[Any] = Field((), alias="elementViews")
-    # TODO
-    relationship_views: Set[Any] = Field((), alias="relationshipViews")
+    element_views: Set[ElementView] = Field(set(), alias="elementViews")
+    relationship_views: Set[RelationshipView] = Field(set(), alias="relationshipViews")
 
     # TODO
     layout_merge_strategy: Optional[Any] = Field(None, alias="layoutMergeStrategy")
@@ -66,15 +70,18 @@ class View(Base, ABC):
         self, *, software_system: SoftwareSystem, key: str, description: str, **kwargs
     ):
         """Initialize a view with a 'private' view set."""
-        super().__init__(
-            software_system=software_system, key=key, description=description, **kwargs
-        )
+        super().__init__(key=key, description=description, **kwargs)
+        # This works around pydantic's feature of re-initializing children for
+        # validation.
+        # Assigning the system here maintains the original software system instance
+        # as long as validation on assignment is turned off (the default).
+        self.software_system = software_system
         # Using `object.__setattr__` is a workaround for setting a 'private' attribute
         # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
         # for a longer discussion.
         object.__setattr__(self, "_viewset", lambda: None)
 
-    def get_viewset(self):
+    def get_viewset(self) -> "ViewSet":
         """
         Retrieve the view set instance that contains this view.
 
@@ -93,7 +100,7 @@ class View(Base, ABC):
             )
         return viewset
 
-    def set_viewset(self, view_set) -> None:
+    def set_viewset(self, view_set: "ViewSet") -> None:
         """
         Create a weak reference to a view set instance that contains this view.
 
@@ -108,3 +115,38 @@ class View(Base, ABC):
         # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
         # for a longer discussion.
         object.__setattr__(self, "_viewset", ref(view_set))
+
+    def _add_element(self, element: Element, add_relationships: bool) -> None:
+        """
+        Add the given element to this view.
+
+        Args:
+            element (Element): The element to add to the view.
+            add_relationships (bool): Whether to include all of the element's
+                relationships with other elements.
+
+        """
+        if element not in self.software_system.get_model():
+            raise RuntimeError(
+                f"The element {element} does not exist in the model associated with "
+                f"this view."
+            )
+        self.element_views.add(ElementView(element=element))
+        if add_relationships:
+            self._add_relationships(element)
+
+    def _add_relationships(self, element: Element) -> None:
+        """
+        Add all relationships involving the given element to this view.
+
+        Args:
+            element (Element): The model element.
+
+        """
+        elements: Set[Element] = {v.element for v in self.element_views}
+        for relationship in element.get_efferent_relationships():
+            if relationship.destination in elements:
+                self.relationship_views.add(RelationshipView(relationship=relationship))
+        for relationship in element.get_afferent_relationships():
+            if relationship.source in elements:
+                self.relationship_views.add(RelationshipView(relationship=relationship))

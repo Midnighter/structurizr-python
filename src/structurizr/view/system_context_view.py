@@ -37,3 +37,8 @@ class SystemContextView(StaticView):
     """
 
     enterprise_boundary_visible: bool = Field(True, alias="enterpriseBoundaryVisible")
+
+    def add_all_elements(self) -> None:
+        """Add all software systems and all people to this view."""
+        self.add_all_software_systems()
+        self.add_all_people()

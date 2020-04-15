@@ -17,7 +17,7 @@
 
 
 import logging
-from typing import Any, Optional, Set
+from typing import Any, Iterator, Optional, Set
 
 from pydantic import Field
 
@@ -87,6 +87,13 @@ class Model(Base):
         object.__setattr__(self, "_elements_by_id", {})
         object.__setattr__(self, "_relationships_by_id", {})
         object.__setattr__(self, "_id_generator", SequentialIntegerIDGenerator())
+
+    def __contains__(self, element: Element):
+        return (
+            element in self.people
+            or element in self.software_systems
+            or element in self.deployment_nodes
+        )
 
     def dict(self, *args, **kwargs) -> dict:
         """Convert set attributes to lists before serialization."""
@@ -226,6 +233,10 @@ class Model(Base):
 
         """
         return self._relationships_by_id.get(id)
+
+    def get_relationships(self) -> Iterator[Relationship]:
+        """Return an iterator over all relationships contained in this model."""
+        return self._relationships_by_id.values()
 
     def _add_element(self, element: Element) -> None:
         """"""

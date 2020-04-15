@@ -16,9 +16,10 @@
 """Provide a superclass for all static views."""
 
 
-from abc import ABC
-from typing import List
+from abc import ABC, abstractmethod
+from typing import List, Union
 
+from ..model import Person, SoftwareSystem
 from .animation import Animation
 from .view import View
 
@@ -39,3 +40,35 @@ class StaticView(View, ABC):
     """
 
     animations: List[Animation] = []
+
+    @abstractmethod
+    def add_all_elements(self) -> None:
+        """Add all permitted elements from a model to this view."""
+        pass
+
+    def add(
+        self,
+        static_element: Union[Person, SoftwareSystem],
+        add_relationships: bool = True,
+    ) -> None:
+        """
+        Add the given person or software system to this view.
+
+        Args:
+            static_element (Person or SoftwareSystem): The static element to add to
+                this view.
+            add_relationships (bool, optional): Whether to include all of the static
+                element's relationships with other elements (default `True`).
+
+        """
+        self._add_element(static_element, add_relationships)
+
+    def add_all_people(self) -> None:
+        """Add all people in the model to this view."""
+        for person in self.software_system.get_model().people:
+            self.add(person)
+
+    def add_all_software_systems(self) -> None:
+        """Add all people in the model to this view."""
+        for system in self.software_system.get_model().software_systems:
+            self.add(system)

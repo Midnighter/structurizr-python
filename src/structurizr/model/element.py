@@ -98,15 +98,18 @@ class Element(ModelItem, ABC):
 
     def get_relationships(self) -> Iterator["Relationship"]:
         """Return a Iterator over all relationships involving this element."""
-        # TODO
-        pass
+        return (
+            r
+            for r in self.get_model().get_relationships()
+            if self is r.source or self is r.destination
+        )
 
     def get_efferent_relationships(self) -> Iterator["Relationship"]:
         """Return a Iterator over all outgoing relationships involving this element."""
-        # TODO
-        pass
+        return (r for r in self.get_model().get_relationships() if self is r.source)
 
     def get_afferent_relationships(self) -> Iterator["Relationship"]:
         """Return a Iterator over all incoming relationships involving this element."""
-        # TODO
-        pass
+        return (
+            r for r in self.get_model().get_relationships() if self is r.destination
+        )
