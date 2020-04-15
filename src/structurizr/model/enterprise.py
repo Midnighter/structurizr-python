@@ -18,13 +18,14 @@
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 
 
-__all__ = ("Enterprise",)
+__all__ = ("Enterprise", "EnterpriseIO")
 
 
-class Enterprise(BaseModel):
+class EnterpriseIO(BaseModel):
     """
     Represent an enterprise.
 
@@ -34,3 +35,18 @@ class Enterprise(BaseModel):
     """
 
     name: str = Field(..., description="The name of the enterprise.")
+
+
+class Enterprise(AbstractBase):
+    """
+    Represent an enterprise.
+
+    Attributes:
+        name (str): The name of the enterprise.
+
+    """
+
+    def __init__(self, *, name: str, **kwargs) -> None:
+        """Initialize an enterprise by name."""
+        super().__init__(**kwargs)
+        self.name = name
