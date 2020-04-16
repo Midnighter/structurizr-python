@@ -13,7 +13,8 @@
 # limitations under the License.
 
 
-"""Provide mixin classes that modify behaviour."""
+"""Provide mixins that modify class behaviour."""
 
 
 from .model_ref_mixin import ModelRefMixin
+from .viewset_ref_mixin import ViewSetRefMixin
