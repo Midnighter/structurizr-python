@@ -18,14 +18,29 @@
 
 from typing import Optional
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from ..model import Element
+from ..model import Element, ElementIO
 
 
-__all__ = ("ElementView",)
+__all__ = ("ElementView", "ElementViewIO")
 
 
-class ElementView(BaseModel):
+class ElementViewIO(BaseModel):
+    """
+    Represent an instance of an element in a view.
+
+    Attributes:
+
+    """
+
+    element: ElementIO
+    id: Optional[str]
+    x: Optional[int]
+    y: Optional[int]
+
+
+class ElementView(AbstractBase):
     """
     Represent an instance of an element in a view.
 
@@ -37,3 +52,19 @@ class ElementView(BaseModel):
     id: Optional[str]
     x: Optional[int]
     y: Optional[int]
+
+    def __init__(
+        self,
+        *,
+        element: Element,
+        x: Optional[int],
+        y: Optional[int],
+        id: str = "",
+        **kwargs
+    ) -> None:
+        """Initialize an element view."""
+        super().__init__(**kwargs)
+        self.element = element
+        self.id = id
+        self.x = x
+        self.y = y
