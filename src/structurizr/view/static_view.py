@@ -20,7 +20,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, List, Optional, Union
 
 from ..model import Person, SoftwareSystem
-from .animation import Animation
+from .animation import Animation, AnimationIO
 from .view import View, ViewIO
 
 
@@ -39,7 +39,7 @@ class StaticViewIO(ViewIO, ABC):
 
     """
 
-    animations: List[Animation] = []
+    animations: List[AnimationIO] = []
 
 
 class StaticView(View, ABC):

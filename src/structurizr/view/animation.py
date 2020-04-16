@@ -20,7 +20,7 @@ from typing import Iterable, List
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from ..model import Element, Relationship
+from ..model import Element, ElementIO, Relationship, RelationshipIO
 
 
 __all__ = ("Animation", "AnimationIO")
@@ -38,8 +38,8 @@ class AnimationIO(BaseModel):
     """
 
     order: int
-    elements: List[Element] = []
-    relationships: List[Relationship] = []
+    elements: List[ElementIO] = []
+    relationships: List[RelationshipIO] = []
 
 
 class Animation(AbstractBase):

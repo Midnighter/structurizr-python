@@ -23,7 +23,7 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ModelRefMixin
-from .system_context_view import SystemContextView
+from .system_context_view import SystemContextView, SystemContextViewIO
 
 
 if TYPE_CHECKING:
@@ -47,7 +47,9 @@ class ViewSetIO(BaseModel):
     # system_landscape_views: Set[SystemLandscapeView] = Field(
     #     set(), alias="systemLandscapeViews"
     # )
-    system_context_views: List[SystemContextView] = Field([], alias="systemContextView")
+    system_context_views: List[SystemContextViewIO] = Field(
+        [], alias="systemContextView"
+    )
     # TODO
     # container_views: Set[ContainerView] = Field(set(), alias="containerViews")
     # component_views: Set[ComponentView] = Field(set(), alias="componentViews")

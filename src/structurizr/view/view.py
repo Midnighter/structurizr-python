@@ -24,11 +24,11 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ViewSetRefMixin
-from ..model import Element, SoftwareSystem
-from .automatic_layout import AutomaticLayout
-from .element_view import ElementView
+from ..model import Element, SoftwareSystem, SoftwareSystemIO
+from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
+from .element_view import ElementView, ElementViewIO
 from .paper_size import PaperSize
-from .relationship_view import RelationshipView
+from .relationship_view import RelationshipView, RelationshipViewIO
 
 
 __all__ = ("View", "ViewIO")
@@ -46,14 +46,14 @@ class ViewIO(BaseModel, ABC):
 
     key: str
     description: str
-    software_system: Optional[SoftwareSystem] = Field(None, alias="softwareSystem")
+    software_system: Optional[SoftwareSystemIO] = Field(None, alias="softwareSystem")
     software_system_id: str = Field("", alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(None, alias="paperSize")
-    automatic_layout: Optional[AutomaticLayout] = Field(None, alias="automaticLayout")
+    automatic_layout: Optional[AutomaticLayoutIO] = Field(None, alias="automaticLayout")
     title: str = ""
 
-    element_views: List[ElementView] = Field([], alias="elementViews")
-    relationship_views: List[RelationshipView] = Field([], alias="relationshipViews")
+    element_views: List[ElementViewIO] = Field([], alias="elementViews")
+    relationship_views: List[RelationshipViewIO] = Field([], alias="relationshipViews")
 
     # TODO
     layout_merge_strategy: Optional[Any] = Field(None, alias="layoutMergeStrategy")

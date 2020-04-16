@@ -17,13 +17,13 @@
 
 
 from abc import ABC
-from typing import Dict, List, Optional, Set
+from typing import Dict, Iterable, List
 
 from pydantic import Field
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from .perspective import Perspective
+from .perspective import Perspective, PerspectiveIO
 
 
 __all__ = ("ModelItemIO", "ModelItem")
@@ -44,7 +44,7 @@ class ModelItemIO(BaseModel, ABC):
     id: str = Field("")
     tags: List[str] = Field([])
     properties: Dict[str, str] = Field({})
-    perspectives: List[Perspective] = Field([])
+    perspectives: List[PerspectiveIO] = Field([])
 
 
 class ModelItem(AbstractBase, ABC):
@@ -65,15 +65,15 @@ class ModelItem(AbstractBase, ABC):
         *,
         id: str = "",
         origin_id: str = "",
-        tags: Optional[Set[str]] = None,
-        properties: Optional[Dict[str, str]] = None,
-        perspectives: Optional[Set[Perspective]] = None,
+        tags: Iterable[str] = (),
+        properties: [Dict[str, str]] = (),
+        perspectives: Iterable[Perspective] = (),
         **kwargs
     ):
         """"""
         super().__init__(**kwargs)
         self.id = id
         self.origin_id = origin_id
-        self.tags = set() if tags is None else tags
-        self.properties = {} if properties is None else properties
-        self.perspectives = set() if perspectives is None else perspectives
+        self.tags = set(tags)
+        self.properties = dict(properties)
+        self.perspectives = set(perspectives)

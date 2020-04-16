@@ -23,8 +23,8 @@ from pydantic import Field
 
 from .abstract_base import AbstractBase
 from .base_model import BaseModel
-from .model import Model
-from .view import ViewSet
+from .model import Model, ModelIO
+from .view import ViewSet, ViewSetIO
 
 
 __all__ = ("WorkspaceIO", "Workspace")
@@ -87,8 +87,8 @@ class WorkspaceIO(BaseModel):
         description="A string identifying the agent that was last used to modify the"
         " workspace (e.g. 'structurizr-java/1.2.0').",
     )
-    model: Optional[Model] = Field(None, description="A software architecture model.")
-    views: Optional[ViewSet] = Field(
+    model: Optional[ModelIO] = Field(None, description="A software architecture model.")
+    views: Optional[ViewSetIO] = Field(
         None, description="The set of views onto a software architecture model."
     )
     documentation: Optional[Any] = Field(
