@@ -17,12 +17,13 @@
 
 
 from abc import ABC
-from typing import TYPE_CHECKING, Any, Optional, Set
-from weakref import ref
+from typing import Any, Iterable, List, Optional, Set
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
+from ..mixin import ViewSetRefMixin
 from ..model import Element, SoftwareSystem
 from .automatic_layout import AutomaticLayout
 from .element_view import ElementView
@@ -30,14 +31,10 @@ from .paper_size import PaperSize
 from .relationship_view import RelationshipView
 
 
-if TYPE_CHECKING:
-    from .view_set import ViewSet
+__all__ = ("View", "ViewIO")
 
 
-__all__ = ("View",)
-
-
-class View(BaseModel, ABC):
+class ViewIO(BaseModel, ABC):
     """
     Define an abstract base class for all views.
 
@@ -47,11 +44,6 @@ class View(BaseModel, ABC):
 
     """
 
-    # Using slots for 'private' attributes prevents them from being included in model
-    # serialization. See https://github.com/samuelcolvin/pydantic/issues/655
-    # for a longer discussion.
-    __slots__ = ("_viewset",)
-
     key: str
     description: str
     software_system: Optional[SoftwareSystem] = Field(None, alias="softwareSystem")
@@ -60,61 +52,51 @@ class View(BaseModel, ABC):
     automatic_layout: Optional[AutomaticLayout] = Field(None, alias="automaticLayout")
     title: str = ""
 
-    element_views: Set[ElementView] = Field(set(), alias="elementViews")
-    relationship_views: Set[RelationshipView] = Field(set(), alias="relationshipViews")
+    element_views: List[ElementView] = Field([], alias="elementViews")
+    relationship_views: List[RelationshipView] = Field([], alias="relationshipViews")
 
     # TODO
     layout_merge_strategy: Optional[Any] = Field(None, alias="layoutMergeStrategy")
 
+
+class View(ViewSetRefMixin, AbstractBase, ABC):
+    """
+    Define an abstract base class for all views.
+
+    Views include static views, dynamic views and deployment views.
+
+    Attributes:
+
+    """
+
     def __init__(
-        self, *, software_system: SoftwareSystem, key: str, description: str, **kwargs
+        self,
+        *,
+        software_system: SoftwareSystem,
+        key: str,
+        description: str,
+        paper_size: Optional[PaperSize] = None,
+        automatic_layout: Optional[AutomaticLayout] = None,
+        title: str = "",
+        element_views: Optional[Iterable[ElementView]] = None,
+        relationship_views: Optional[Iterable[RelationshipView]] = None,
+        layout_merge_strategy: Optional[Any] = None,
+        **kwargs,
     ):
         """Initialize a view with a 'private' view set."""
-        super().__init__(key=key, description=description, **kwargs)
-        # This works around pydantic's feature of re-initializing children for
-        # validation.
-        # Assigning the system here maintains the original software system instance
-        # as long as validation on assignment is turned off (the default).
+        super().__init__(**kwargs)
         self.software_system = software_system
-        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
-        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
-        # for a longer discussion.
-        object.__setattr__(self, "_viewset", lambda: None)
-
-    def get_viewset(self) -> "ViewSet":
-        """
-        Retrieve the view set instance that contains this view.
-
-        Returns:
-            ViewSet: The view set that contains this view if any.
-
-        Raises:
-            RuntimeError: In case there exists no referenced view set.
-
-        """
-        viewset = self._viewset()
-        if viewset is None:
-            raise RuntimeError(
-                f"You must add this {type(self).__name__} view to a ViewSet instance "
-                f"first."
-            )
-        return viewset
-
-    def set_viewset(self, view_set: "ViewSet") -> None:
-        """
-        Create a weak reference to a view set instance that contains this view.
-
-        Warnings:
-            This is an internal method and should not be directly called by users.
-
-        Args:
-            view_set (ViewSet):
-
-        """
-        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
-        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
-        # for a longer discussion.
-        object.__setattr__(self, "_viewset", ref(view_set))
+        self.key = key
+        self.description = description
+        self.paper_size = paper_size
+        self.automatic_layout = automatic_layout
+        self.title = title
+        self.element_views = set() if element_views is None else set(element_views)
+        self.relationship_views = (
+            set() if relationship_views is None else set(relationship_views)
+        )
+        # TODO
+        self.layout_merge_strategy = layout_merge_strategy
 
     def _add_element(self, element: Element, add_relationships: bool) -> None:
         """
