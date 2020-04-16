@@ -48,17 +48,12 @@ class ElementView(AbstractBase):
 
     """
 
-    element: Element
-    id: Optional[str]
-    x: Optional[int]
-    y: Optional[int]
-
     def __init__(
         self,
         *,
         element: Element,
-        x: Optional[int],
-        y: Optional[int],
+        x: Optional[int] = None,
+        y: Optional[int] = None,
         id: str = "",
         **kwargs
     ) -> None:
