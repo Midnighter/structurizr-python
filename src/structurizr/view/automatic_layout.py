@@ -18,14 +18,15 @@
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from .rank_direction import RankDirection
 
 
-__all__ = ("AutomaticLayout",)
+__all__ = ("AutomaticLayout", "AutomaticLayoutIO")
 
 
-class AutomaticLayout(BaseModel):
+class AutomaticLayoutIO(BaseModel):
     """
     Define a wrapper for automatic layout configuration.
 
@@ -38,3 +39,30 @@ class AutomaticLayout(BaseModel):
     node_separation: int = Field(..., alias="nodeSeparation")
     edge_separation: int = Field(..., alias="edgeSeparation")
     vertices: bool
+
+
+class AutomaticLayout(AbstractBase):
+    """
+    Define a wrapper for automatic layout configuration.
+
+    Attributes:
+
+    """
+
+    def __init__(
+        self,
+        *,
+        rank_direction: RankDirection,
+        rank_separation: int,
+        node_separation: int,
+        edge_separation: int,
+        vertices: bool,
+        **kwargs
+    ) -> None:
+        """Initialize an automatic layout."""
+        super().__init__(**kwargs)
+        self.rank_direction = rank_direction
+        self.rank_separation = rank_separation
+        self.node_separation = node_separation
+        self.edge_separation = edge_separation
+        self.vertices = vertices
