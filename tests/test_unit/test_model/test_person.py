@@ -25,12 +25,7 @@ from structurizr.model.person import Person
 @pytest.mark.parametrize(
     "attributes",
     [
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="name\n  field required"
-            ),
-        ),
+        pytest.param({}, marks=pytest.mark.raises(exception=TypeError)),
         {"name": "User"},
     ],
 )

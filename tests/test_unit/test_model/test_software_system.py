@@ -25,12 +25,7 @@ from structurizr.model.software_system import SoftwareSystem
 @pytest.mark.parametrize(
     "attributes",
     [
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="name\n  field required"
-            ),
-        ),
+        pytest.param({}, marks=pytest.mark.raises(exception=TypeError)),
         {"name": "Banking System"},
     ],
 )

@@ -25,18 +25,8 @@ from structurizr.model.perspective import Perspective
 @pytest.mark.parametrize(
     "attributes",
     [
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="name\n  field required"
-            ),
-        ),
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="description\n  field required"
-            ),
-        ),
+        pytest.param({}, marks=pytest.mark.raises(exception=TypeError)),
+        pytest.param({}, marks=pytest.mark.raises(exception=TypeError)),
         {
             "name": "Accessibility",
             "description": "The ability of the system to be used by people with "
