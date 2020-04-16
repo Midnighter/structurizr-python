@@ -16,20 +16,23 @@
 """Provide a container for a relationship instance in a view."""
 
 
-from typing import Any, Optional, Set
+from typing import Any, Iterable, List, Optional
 
+from pydantic import Field
+
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from ..model import Relationship
+from ..model import Relationship, RelationshipIO
 
 
-__all__ = ("RelationshipView",)
+__all__ = ("RelationshipView", "RelationshipViewIO")
 
 
 START_OF_LINE = 0
 END_OF_LINE = 100
 
 
-class RelationshipView(BaseModel):
+class RelationshipViewIO(BaseModel):
     """
     Represent an instance of a relationship in a view.
 
@@ -37,12 +40,43 @@ class RelationshipView(BaseModel):
 
     """
 
-    relationship: Relationship
+    relationship: RelationshipIO
     id: Optional[str]
     description: Optional[str]
     order: Optional[str]
     # TODO
-    vertices: Set[Any] = set()
+    vertices: List[Any] = Field([])
     # TODO
     routing: Optional[Any]
     position: Optional[int]
+
+
+class RelationshipView(AbstractBase):
+    """
+    Represent an instance of a relationship in a view.
+
+    Attributes:
+
+    """
+
+    def __init__(
+        self,
+        *,
+        relationship: Relationship,
+        id: str = "",
+        description: str = "",
+        order: str = "",
+        vertices: Iterable[Any] = (),
+        routing: Optional[Any] = None,
+        position: Optional[int] = None,
+        **kwargs
+    ) -> None:
+        """Initialize a relationship view."""
+        super().__init__(**kwargs)
+        self.relationship = relationship
+        self.id = id
+        self.description = description
+        self.order = order
+        self.vertices = set(vertices)
+        self.routing = routing
+        self.position = position
