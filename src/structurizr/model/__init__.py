@@ -16,12 +16,12 @@
 """Provide models for defining a Structurizr software architecture."""
 
 
-from .enterprise import Enterprise
-from .perspective import Perspective
+from .enterprise import Enterprise, EnterpriseIO
+from .perspective import Perspective, PerspectiveIO
 from .location import Location
 from .interaction_style import InteractionStyle
-from .element import Element
-from .person import Person
-from .software_system import SoftwareSystem
-from .relationship import Relationship
-from .model import Model
+from .element import Element, ElementIO
+from .person import Person, PersonIO
+from .software_system import SoftwareSystem, SoftwareSystemIO
+from .relationship import Relationship, RelationshipIO
+from .model import Model, ModelIO
