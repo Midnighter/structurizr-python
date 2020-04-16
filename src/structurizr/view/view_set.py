@@ -16,12 +16,13 @@
 """Provide a set of views onto a software architecture model."""
 
 
-from typing import TYPE_CHECKING, Set
-from weakref import ref
+from typing import TYPE_CHECKING, Iterable, List
 
 from pydantic import Field
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
+from ..mixin import ModelRefMixin
 from .system_context_view import SystemContextView
 
 
@@ -29,10 +30,10 @@ if TYPE_CHECKING:
     from ..model import Model
 
 
-__all__ = ("ViewSet",)
+__all__ = ("ViewSet", "ViewSetIO")
 
 
-class ViewSet(BaseModel):
+class ViewSetIO(BaseModel):
     """
     Define a set of views onto a software architecture model.
 
@@ -42,18 +43,11 @@ class ViewSet(BaseModel):
 
     """
 
-    # Using slots for 'private' attributes prevents them from being included in model
-    # serialization. See https://github.com/samuelcolvin/pydantic/issues/655
-    # for a longer discussion.
-    __slots__ = ("_model",)
-
     # TODO
     # system_landscape_views: Set[SystemLandscapeView] = Field(
     #     set(), alias="systemLandscapeViews"
     # )
-    system_context_views: Set[SystemContextView] = Field(
-        set(), alias="systemContextView"
-    )
+    system_context_views: List[SystemContextView] = Field([], alias="systemContextView")
     # TODO
     # container_views: Set[ContainerView] = Field(set(), alias="containerViews")
     # component_views: Set[ComponentView] = Field(set(), alias="componentViews")
@@ -62,14 +56,30 @@ class ViewSet(BaseModel):
     # filtered_views: Set[FilteredView] = Field(set(), alias="filteredViews")
     # configuration: Configuration = Field(None)
 
-    def __init__(self, *, model: "Model", **kwargs):
-        """Initialize a view set with a 'private' model."""
+
+class ViewSet(ModelRefMixin, AbstractBase):
+    """
+    Define a set of views onto a software architecture model.
+
+    Views include static views, dynamic views and deployment views.
+
+    Attributes:
+
+    """
+
+    def __init__(
+        self,
+        *,
+        model: "Model",
+        system_context_views: Iterable[SystemContextView] = (),
+        **kwargs
+    ) -> None:
+        """Initialize a view set."""
         super().__init__(**kwargs)
-        # Using `object.__setattr__` is a workaround for setting a 'private' attribute
-        # on a pydantic model. See https://github.com/samuelcolvin/pydantic/issues/655
-        # for a longer discussion.
-        object.__setattr__(self, "_model", ref(model))
+        self.system_context_views = set(system_context_views)
+        # TODO
         # self.configuration = Configuration()
+        self.set_model(model)
 
     def create_system_context_view(
         self, system_context_view: SystemContextView = None, **kwargs
