@@ -16,16 +16,17 @@
 """Provide a wrapper for a collection of animation steps."""
 
 
-from typing import Set
+from typing import Iterable, List
 
+from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..model import Element, Relationship
 
 
-__all__ = ("Animation",)
+__all__ = ("Animation", "AnimationIO")
 
 
-class Animation(BaseModel):
+class AnimationIO(BaseModel):
     """
     Define a wrapper for a collection of animation steps.
 
@@ -37,5 +38,31 @@ class Animation(BaseModel):
     """
 
     order: int
-    elements: Set[Element] = ()
-    relationships: Set[Relationship] = ()
+    elements: List[Element] = []
+    relationships: List[Relationship] = []
+
+
+class Animation(AbstractBase):
+    """
+    Define a wrapper for a collection of animation steps.
+
+    Attributes:
+        order:
+        elements:
+        relationships:
+
+    """
+
+    def __init__(
+        self,
+        *,
+        order: int,
+        elements: Iterable[Element] = (),
+        relationships: Iterable[Relationship] = (),
+        **kwargs
+    ):
+        """Initialize an animation."""
+        super().__init__(**kwargs)
+        self.order = order
+        self.elements = set(elements)
+        self.relationships = set(relationships)
