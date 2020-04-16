@@ -18,10 +18,25 @@
 
 from pydantic import Field
 
-from .static_view import StaticView
+from .static_view import StaticView, StaticViewIO
 
 
-__all__ = ("SystemContextView",)
+__all__ = ("SystemContextView", "SystemContextViewIO")
+
+
+class SystemContextViewIO(StaticViewIO):
+    """
+    Represent the system context view from the C4 model.
+
+    Show how a software system fits into its environment, in terms of the users (people)
+    and other software system dependencies.
+
+    Attributes:
+        enterprise_boundary_visible (bool):
+
+    """
+
+    enterprise_boundary_visible: bool = Field(True, alias="enterpriseBoundaryVisible")
 
 
 class SystemContextView(StaticView):
@@ -36,7 +51,10 @@ class SystemContextView(StaticView):
 
     """
 
-    enterprise_boundary_visible: bool = Field(True, alias="enterpriseBoundaryVisible")
+    def __init__(self, *, enterprise_boundary_visible: bool = True, **kwargs) -> None:
+        """Initialize a system context view."""
+        super().__init__(**kwargs)
+        self.enterprise_boundary_visible = enterprise_boundary_visible
 
     def add_all_elements(self) -> None:
         """Add all software systems and all people to this view."""
