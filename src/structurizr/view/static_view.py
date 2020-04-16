@@ -17,14 +17,29 @@
 
 
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import Iterable, List, Optional, Union
 
 from ..model import Person, SoftwareSystem
 from .animation import Animation
-from .view import View
+from .view import View, ViewIO
 
 
-__all__ = ("StaticView",)
+__all__ = ("StaticView", "StaticViewIO")
+
+
+class StaticViewIO(ViewIO, ABC):
+    """
+    Define an abstract base class for all static views.
+
+    Static views include system landscape, system context, container and component
+    views.
+
+    Attributes:
+        animations:
+
+    """
+
+    animations: List[Animation] = []
 
 
 class StaticView(View, ABC):
@@ -39,7 +54,12 @@ class StaticView(View, ABC):
 
     """
 
-    animations: List[Animation] = []
+    def __init__(
+        self, *, animations: Optional[Iterable[Animation]] = None, **kwargs
+    ) -> None:
+        """Initialize a static view."""
+        super().__init__(**kwargs)
+        self.animations = [] if animations is None else list(animations)
 
     @abstractmethod
     def add_all_elements(self) -> None:
