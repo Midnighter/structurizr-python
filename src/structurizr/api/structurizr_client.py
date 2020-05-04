@@ -21,14 +21,14 @@ import hashlib
 import hmac
 import logging
 from base64 import b64encode
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict
 from urllib.parse import unquote_plus
 
 import httpx
 
-from ..workspace import Workspace
+from ..workspace import Workspace, WorkspaceIO
 from .api_response import APIResponse
 from .structurizr_client_exception import StructurizrClientException
 from .structurizr_client_settings import StructurizrClientSettings
@@ -87,7 +87,7 @@ class StructurizrClient:
         }
         self._application_json = "application/json; charset=UTF-8"
         self._client = httpx.Client(
-            base_url=self.url, headers={"User-Agent": self.agent,},
+            base_url=self.url, headers={"User-Agent": self.agent},
         )
 
     def __repr__(self) -> str:
@@ -137,8 +137,9 @@ class StructurizrClient:
                 f"Failed to retrieve the Structurizr workspace {self.workspace_id}.\n"
                 f"Response {response.status_code} - {response.reason_phrase}"
             )
+        logger.debug(response.text)
         self._archive_workspace(response.text)
-        return Workspace.parse_raw(response.text)
+        return Workspace.hydrate(WorkspaceIO.parse_raw(response.text))
 
     def put_workspace(self, workspace: Workspace) -> None:
         """
@@ -152,7 +153,13 @@ class StructurizrClient:
 
         """
         assert workspace.id == self.workspace_id
-        workspace_json = workspace.json(by_alias=True, exclude_unset=True)
+        ws_io = WorkspaceIO.from_orm(workspace)
+        ws_io.thumbnail = None
+        ws_io.last_modified_date = datetime.now(timezone.utc)
+        ws_io.last_modified_agent = self.agent
+        ws_io.last_modified_user = self.user
+        workspace_json = ws_io.json(by_alias=True, exclude_none=True)
+        logger.debug(workspace_json)
         request = self._client.build_request(
             "PUT", self._workspace_url, data=workspace_json
         )
@@ -238,9 +245,9 @@ class StructurizrClient:
         message_digest = self._message_digest(
             method, unquote_plus(url_path), definition_md5, content_type, nonce,
         )
-        logger.debug("The message digest:\n%s", message_digest)
+        logger.debug("The message digest:\n{message_digest}")
         message_hash = self._base64_str(self._hmac_hex(self.api_secret, message_digest))
-        logger.debug("The hashed message digest: '%s'.", message_hash)
+        logger.debug("The hashed message digest: '{message_hash}'.")
         headers = {
             "X-Authorization": f"{self.api_key}:{message_hash}",
             "Nonce": nonce,

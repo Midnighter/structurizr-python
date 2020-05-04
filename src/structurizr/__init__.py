@@ -25,7 +25,7 @@ del get_versions
 
 
 from .helpers import show_versions
-from .workspace import Workspace
+from .workspace import Workspace, WorkspaceIO
 from .api import (
     StructurizrClient,
     StructurizrClientException,

@@ -17,16 +17,10 @@
 
 
 import gzip
-from collections import namedtuple
 
 import pytest
 
 from structurizr import StructurizrClient, StructurizrClientSettings, Workspace
-
-
-MockSettings = namedtuple(
-    "MockSettings", "url workspace_id api_key api_secret user agent"
-)
 
 
 @pytest.fixture(scope="module")
@@ -37,21 +31,29 @@ def archive_location(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def settings(archive_location):
-    """Provide the settings for the official Structurizr test workspace."""
-    return StructurizrClientSettings(
-        workspace_id=20081,
-        api_key="81ace434-94a1-486f-a786-37bbeaa44e08",
-        api_secret="a8673e21-7b6f-4f52-be65-adb7248be86b",
-        workspace_archive_location=archive_location,
+    """Provide the settings with values taken from the environment."""
+    return StructurizrClientSettings(workspace_archive_location=archive_location)
+
+
+def test_empty_workspace_without_encryption(settings):
+    workspace = Workspace(
+        id=settings.workspace_id,
+        name="e2e-tests - without encryption",
+        description="A test workspace for the structurizr-python client.",
     )
+    with StructurizrClient(settings=settings) as client:
+        client.put_workspace(workspace)
+        remote_ws = client.get_workspace()
+    assert remote_ws.name == workspace.name
+    assert remote_ws.description == workspace.description
 
 
 def test_interact_with_workspace_without_encryption(settings):
     # Set up a toy workspace.
     workspace = Workspace(
         id=settings.workspace_id,
-        name="structurizr-python e2e-tests - without encryption",
-        description="A test workspace for the Structurizr Python client.",
+        name="e2e-tests - without encryption",
+        description="A test workspace for the structurizr-python client.",
     )
     system = workspace.model.add_software_system(
         name="Software System", description="Description"
