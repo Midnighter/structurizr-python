@@ -62,7 +62,9 @@ class SystemContextView(StaticView):
         self.add_all_people()
 
     @classmethod
-    def hydrate(cls, system_context_view_io: SystemContextViewIO) -> "SystemContextView":
+    def hydrate(
+        cls, system_context_view_io: SystemContextViewIO
+    ) -> "SystemContextView":
         """"""
         return cls(
             enterprise_boundary_visible=system_context_view_io.enterprise_boundary_visible,
