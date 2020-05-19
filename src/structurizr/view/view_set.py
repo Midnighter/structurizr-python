@@ -16,13 +16,14 @@
 """Provide a set of views onto a software architecture model."""
 
 
-from typing import TYPE_CHECKING, Iterable, List
+from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from pydantic import Field
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ModelRefMixin
+from .configuration import Configuration, ConfigurationIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 
 
@@ -50,13 +51,13 @@ class ViewSetIO(BaseModel):
     system_context_views: List[SystemContextViewIO] = Field(
         [], alias="systemContextView"
     )
+    configuration: Optional[ConfigurationIO]
     # TODO
     # container_views: Set[ContainerView] = Field(set(), alias="containerViews")
     # component_views: Set[ComponentView] = Field(set(), alias="componentViews")
     # dynamic_views: Set[DynamicView] = Field(set(), alias="dynamicViews")
     # deployment_views: Set[DeploymentView] = Field(set(), alias="deploymentViews")
     # filtered_views: Set[FilteredView] = Field(set(), alias="filteredViews")
-    # configuration: Configuration = Field(None)
 
 
 class ViewSet(ModelRefMixin, AbstractBase):
@@ -74,13 +75,14 @@ class ViewSet(ModelRefMixin, AbstractBase):
         *,
         model: "Model",
         system_context_views: Iterable[SystemContextView] = (),
+        configuration: Optional[Configuration] = None,
         **kwargs
     ) -> None:
         """Initialize a view set."""
         super().__init__(**kwargs)
         self.system_context_views = set(system_context_views)
         # TODO
-        # self.configuration = Configuration()
+        self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
 
     def create_system_context_view(
