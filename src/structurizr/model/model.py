@@ -17,7 +17,7 @@
 
 
 import logging
-from typing import Any, Iterator, List, Optional, Set
+from typing import Any, Iterable, Iterator, List, Optional, Set
 
 from pydantic import Field
 
@@ -86,10 +86,10 @@ class Model(AbstractBase):
     def __init__(
         self,
         enterprise: Optional[Enterprise] = None,
-        people: Optional[Set[Person]] = None,
-        software_systems: Optional[Set[SoftwareSystem]] = None,
+        people: Optional[Iterable[Person]] = (),
+        software_systems: Optional[Iterable[SoftwareSystem]] = (),
         # TODO
-        deployment_nodes: Optional[Set[Any]] = None,
+        deployment_nodes: Optional[Iterable[Any]] = (),
         **kwargs,
     ) -> None:
         """
@@ -101,9 +101,10 @@ class Model(AbstractBase):
         """
         super().__init__(**kwargs)
         self.enterprise = enterprise
-        self.people = set() if people is None else people
-        self.software_systems = set() if software_systems is None else software_systems
-        self.deployment_nodes = set() if deployment_nodes is None else deployment_nodes
+        self.people = set(people)
+        self.software_systems = set(software_systems)
+        self.deployment_nodes = set(deployment_nodes)
+        # TODO: simply iterate attributes
         self._elements_by_id = {}
         self._relationships_by_id = {}
         self._id_generator = SequentialIntegerIDGenerator()
@@ -113,6 +114,18 @@ class Model(AbstractBase):
             element in self.people
             or element in self.software_systems
             or element in self.deployment_nodes
+        )
+
+    @classmethod
+    def hydrate(cls, model_io: ModelIO) -> "Model":
+        """"""
+        return Model(
+            enterprise=Enterprise.hydrate(model_io.enterprise)
+            if model_io.enterprise is not None
+            else None,
+            people=map(Person.hydrate, model_io.people),
+            software_systems=map(SoftwareSystem.hydrate, model_io.software_systems),
+            # TODO: deployment nodes, relationships
         )
 
     def add_person(self, person=None, **kwargs) -> Person:
