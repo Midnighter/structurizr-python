@@ -25,3 +25,4 @@ from .person import Person, PersonIO
 from .software_system import SoftwareSystem, SoftwareSystemIO
 from .relationship import Relationship, RelationshipIO
 from .model import Model, ModelIO
+from .tags import Tags
