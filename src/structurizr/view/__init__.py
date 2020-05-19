@@ -15,6 +15,8 @@
 
 """Provide different views onto a Structurizr software architecture."""
 
+from .border import Border
+from .shape import Shape
 from .orientation import Orientation
 from .paper_size import PaperSize
 from .rank_direction import RankDirection
@@ -22,3 +24,4 @@ from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
 from .animation import Animation, AnimationIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .view_set import ViewSet, ViewSetIO
+from .element_style import ElementStyle
