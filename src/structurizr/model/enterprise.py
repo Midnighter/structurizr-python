@@ -50,3 +50,8 @@ class Enterprise(AbstractBase):
         """Initialize an enterprise by name."""
         super().__init__(**kwargs)
         self.name = name
+
+    @classmethod
+    def hydrate(cls, enterprise_io: EnterpriseIO) -> "Enterprise":
+        """"""
+        return cls(name=enterprise_io.name)
