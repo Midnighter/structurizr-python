@@ -67,3 +67,10 @@ class SoftwareSystem(StaticStructureElement):
         super().__init__(**kwargs)
         self.location = location
         self.containers = set() if containers is None else containers
+
+    @classmethod
+    def hydrate(cls, software_system_io: SoftwareSystemIO) -> "SoftwareSystem":
+        """"""
+        return cls(
+            name=software_system_io.name, description=software_system_io.description
+        )
