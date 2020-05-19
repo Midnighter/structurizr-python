@@ -57,6 +57,11 @@ class Person(StaticStructureElement):
         super().__init__(**kwargs)
         self.location = location
 
+    @classmethod
+    def hydrate(cls, person_io: PersonIO) -> "Person":
+        """"""
+        return cls(name=person_io.name, description=person_io.description)
+
     def interacts_with(self):
         # TODO
         pass
