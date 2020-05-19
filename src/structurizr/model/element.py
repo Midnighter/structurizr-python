@@ -17,7 +17,7 @@
 
 
 from abc import ABC
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Optional
 
 from pydantic import Field, HttpUrl
 
@@ -45,7 +45,7 @@ class ElementIO(ModelItemIO, ABC):
 
     name: str = Field(...)
     description: str = Field("")
-    url: HttpUrl = Field("")
+    url: Optional[HttpUrl] = Field(None)
 
 
 class Element(ModelRefMixin, ModelItem, ABC):
@@ -60,7 +60,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
     """
 
     def __init__(
-        self, *, name: str, description: str = "", url: str = "", **kwargs
+        self, *, name: str, description: str = "", url: Optional[str] = None, **kwargs
     ) -> None:
         """Initialize an element with an empty 'private' model reference."""
         super().__init__(**kwargs)
