@@ -60,3 +60,13 @@ class SystemContextView(StaticView):
         """Add all software systems and all people to this view."""
         self.add_all_software_systems()
         self.add_all_people()
+
+    @classmethod
+    def hydrate(cls, system_context_view_io: SystemContextViewIO) -> "SystemContextView":
+        """"""
+        return cls(
+            enterprise_boundary_visible=system_context_view_io.enterprise_boundary_visible,
+            description=system_context_view_io.description,
+            key=system_context_view_io.key,
+            software_system=system_context_view_io.software_system,
+        )
