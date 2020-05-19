@@ -31,8 +31,8 @@ jobs:
     - name: Test with tox
       run: tox -- --cov-report=xml
       env:
-        - STRUCTURIZR_WORKSPACE_ID: ${{ secrets.STRUCTURIZR_WORKSPACE_ID }}
-        - STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
-        - STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
+        STRUCTURIZR_WORKSPACE_ID: ${{ secrets.STRUCTURIZR_WORKSPACE_ID }}
+        STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
+        STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
     - name: Report coverage
       run: bash <(curl -f https://codecov.io/bash)
