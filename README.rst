@@ -18,14 +18,6 @@ Structurizr for Python
    :target: https://github.com/Midnighter/structurizr-python/blob/master/.github/CODE_OF_CONDUCT.md
    :alt: Code of Conduct
 
-.. image:: https://img.shields.io/travis/Midnighter/structurizr-python/master.svg?label=Travis%20CI
-   :target: https://travis-ci.org/Midnighter/structurizr-python
-   :alt: Travis CI
-
-.. image:: https://ci.appveyor.com/api/projects/status/github/Midnighter/structurizr-python?branch=master&svg=true
-   :target: https://ci.appveyor.com/project/Midnighter/structurizr-python
-   :alt: AppVeyor
-
 .. image:: https://codecov.io/gh/Midnighter/structurizr-python/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/Midnighter/structurizr-python
    :alt: Codecov
