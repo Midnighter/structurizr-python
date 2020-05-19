@@ -16,8 +16,10 @@
 """Provide the workspace model."""
 
 
+import gzip
 from datetime import datetime
-from typing import Any, Optional
+from pathlib import Path
+from typing import Any, Optional, Union
 
 from pydantic import Field
 
@@ -184,3 +186,31 @@ class Workspace(AbstractBase):
         self.views = ViewSet(model=self.model) if views is None else views
         self.documentation = documentation
         self.configuration = configuration
+
+    @classmethod
+    def load(cls, filename: Union[str, Path]) -> "Workspace":
+        """"""
+        filename = Path(filename)
+        try:
+            with gzip.open(filename, "rt") as handle:
+                ws_io = WorkspaceIO.parse_raw(handle.read())
+        except FileNotFoundError as error:
+            raise error
+        except OSError:
+            with filename.open() as handle:
+                ws_io = WorkspaceIO.parse_raw(handle.read())
+        return cls.hydrate(ws_io)
+
+    @classmethod
+    def hydrate(cls, workspace_io: WorkspaceIO) -> "Workspace":
+        """"""
+        return cls(
+            id=workspace_io.id,
+            name=workspace_io.name,
+            description=workspace_io.description,
+            version=workspace_io.version,
+            model=Model.hydrate(workspace_io.model),
+            last_modified_date=workspace_io.last_modified_date,
+            last_modified_user=workspace_io.last_modified_user,
+            last_modified_agent=workspace_io.last_modified_agent,
+        )
