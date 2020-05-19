@@ -19,6 +19,6 @@
 from depinfo import print_dependencies
 
 
-def show_versions():
+def show_versions() -> None:
     """Print dependency information."""
     print_dependencies("structurizr-python")
