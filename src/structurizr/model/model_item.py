@@ -17,9 +17,9 @@
 
 
 from abc import ABC
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Union
 
-from pydantic import Field
+from pydantic import Field, validator
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
@@ -45,6 +45,18 @@ class ModelItemIO(BaseModel, ABC):
     tags: List[str] = Field([])
     properties: Dict[str, str] = Field({})
     perspectives: List[PerspectiveIO] = Field([])
+
+    @validator("tags", pre=True)
+    def split_tags(cls, tags: Union[str, List[str]]) -> List[str]:
+        if isinstance(tags, str):
+            return tags.split(",")
+        return tags
+
+    def dict(self, **kwargs) -> dict:
+        """"""
+        obj = super().dict(**kwargs)
+        obj["tags"] = ",".join(obj["tags"])
+        return obj
 
 
 class ModelItem(AbstractBase, ABC):
