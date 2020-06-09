@@ -76,8 +76,7 @@ def test_interact_with_workspace_without_encryption(settings):
     # Verify the generated archive.
     archives = list(settings.workspace_archive_location.glob("*.json.gz"))
     assert len(archives) == 1
-    with gzip.open(archives[0], mode="rt") as handle:
-        archived_ws: Workspace = Workspace.parse_raw(handle.read())
+    archived_ws: Workspace = Workspace.load(archives[0])
     assert archived_ws.id == 20081
     assert archived_ws.name == "structurizr-python e2e-tests - without encryption"
     assert len(archived_ws.model.software_systems) == 1
