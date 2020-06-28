@@ -34,48 +34,14 @@ Structurizr for Python
 
 A Python client package for the Structurizr cloud service and on-premises installation.
 
-Post Template-Instantiation Steps
-=================================
+Warning
+=======
 
-1. Start working with git.
-
-   .. code-block:: console
-
-       git init
-
-2. Check for an updated versioneer.
-
-   .. code-block:: console
-
-       pip install versioneer
-       versioneer install
-
-   You probably have to remove the mess in ``src/structurizr/__init__.py``.
-
-3. Commit all the files.
-
-   .. code-block:: console
-
-       git add .
-       git commit
-
-4. Create a repository on `GitHub <https://github.com/>`_ if you haven't done
-   so yet and link it to `Travis CI <https://travis-ci.org/>`_.
-5. Browse through the architecture decision records (``docs/adr``) if you want
-   to understand details of the package design.
-6. Remove this section from the readme and describe what your package is all
-   about.
-7. When you're ready to make a release, perform the following steps.
-
-   1. On `Travis CI <https://travis-ci.org/>`_ set the secure environment
-      variables ``PYPI_USERNAME``, ``PYPI_PASSWORD``, and ``GITHUB_TOKEN``.
-   2. Tag your latest commit with the desired version and let Travis handle
-      the release.
-
-      .. code-block:: console
-
-          git tag 0.1.0
-          git push origin 0.1.0
+The structurizr-python package is in active development and should be considered Alpha
+software. Reports of problems are appreciated but please do not expect fully working
+software at this point. If you want to get involved, you are most welcome as this is
+a spare time project. Please write me an e-mail or on the
+`Structurizr Slack team <https://structurizr.com/help>`_ so that we can coordinate.
 
 Install
 =======
@@ -84,7 +50,7 @@ It's as simple as:
 
 .. code-block:: console
 
-    pip install structurizr-python
+    pip install --pre structurizr-python
 
 Copyright
 =========
