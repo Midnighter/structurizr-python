@@ -25,9 +25,9 @@ from pydantic import ValidationError
 from structurizr import Workspace, WorkspaceIO
 
 
-DEFINITIONS = Path("data") / "workspace_definition"
+DEFINITIONS = Path(__file__).parent / "data" / "workspace_definition"
 EXAMPLES = Path(__file__).parent.parent.parent / "examples"
-VALIDATIONS = Path("data") / "workspace_validation"
+VALIDATIONS = Path(__file__).parent / "data" / "workspace_validation"
 
 
 def pytest_generate_tests(metafunc) -> None:
