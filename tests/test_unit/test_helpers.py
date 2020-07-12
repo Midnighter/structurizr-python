@@ -16,7 +16,7 @@
 """Ensure the expected outcomes of helper functions."""
 
 
-import structurizr.helpers as helpers
+from structurizr import helpers
 
 
 def test_show_versions(capsys):
