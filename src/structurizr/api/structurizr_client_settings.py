@@ -16,6 +16,7 @@
 """Provide the Structurizr client settings."""
 
 
+import logging
 from getpass import getuser
 from pathlib import Path
 from socket import getfqdn
@@ -28,7 +29,17 @@ from .. import __version__
 __all__ = ("StructurizrClientSettings",)
 
 
-USER = getuser()
+logger = logging.getLogger(__name__)
+
+
+try:
+    USER = getuser()
+except ModuleNotFoundError:
+    logger.error(
+        "Could not determine the username. Please set it manually or provide a "
+        "STRUCTURIZR_USER environment variable."
+    )
+    USER = "anonymous"
 hostname = getfqdn()
 if hostname:
     USER = f"{USER}@{hostname}"
