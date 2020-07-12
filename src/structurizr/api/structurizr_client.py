@@ -276,10 +276,9 @@ class StructurizrClient:
 
     @staticmethod
     def _number_once() -> str:
-        """Return a unique number as a string."""
-        # The number of microseconds since the epoch.
+        """Return the number of milliseconds since the epoch."""
         return str(
-            int((datetime.utcnow() - datetime(1970, 1, 1)) / timedelta(microseconds=1))
+            int((datetime.utcnow() - datetime(1970, 1, 1)) / timedelta(milliseconds=1))
         )
 
     @staticmethod
