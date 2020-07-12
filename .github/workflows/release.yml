@@ -27,9 +27,9 @@ jobs:
       - name: Test with tox
         run: tox
         env:
-          STRUCTURIZR_WORKSPACE_ID: ${{ secrets.STRUCTURIZR_WORKSPACE_ID }}
-          STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
-          STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
+          SECRET_WORKSPACE_ID: ${{ secrets.STRUCTURIZR_WORKSPACE_ID }}
+          SECRET_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
+          SECRET_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
       - name: Build package
         run: python setup.py sdist bdist_wheel
       - name: Check the package
