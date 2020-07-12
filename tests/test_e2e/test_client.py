@@ -16,11 +16,23 @@
 """Ensure a consistent public package interface."""
 
 
-import gzip
+import os
 
 import pytest
 
 from structurizr import StructurizrClient, StructurizrClientSettings, Workspace
+
+
+if not (
+    os.getenv("SECRET_WORKSPACE_ID")
+    and os.getenv("SECRET_API_KEY")
+    and os.getenv("SECRET_API_SECRET")
+):
+    pytest.skip(
+        "The e2e tests require setting the secret environment variables with the "
+        "workspace credentials.",
+        allow_module_level=True,
+    )
 
 
 @pytest.fixture(scope="module")
@@ -32,7 +44,12 @@ def archive_location(tmp_path_factory):
 @pytest.fixture(scope="module")
 def settings(archive_location):
     """Provide the settings with values taken from the environment."""
-    return StructurizrClientSettings(workspace_archive_location=archive_location)
+    return StructurizrClientSettings(
+        workspace_id=os.getenv("SECRET_WORKSPACE_ID"),
+        api_key=os.getenv("SECRET_API_KEY"),
+        api_secret=os.getenv("SECRET_API_SECRET"),
+        workspace_archive_location=archive_location,
+    )
 
 
 def test_empty_workspace_without_encryption(settings):
