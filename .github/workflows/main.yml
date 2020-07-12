@@ -36,4 +36,6 @@ jobs:
         STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
         STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
     - name: Report coverage
-      run: bash <(curl -f https://codecov.io/bash)
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
