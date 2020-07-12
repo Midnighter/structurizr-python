@@ -173,9 +173,11 @@ class StructurizrClient:
         )
         response = self._client.send(request)
         if response.status_code != 200:
+            body = response.json()
             raise StructurizrClientException(
                 f"Failed to update the Structurizr workspace {self.workspace_id}.\n"
-                f"HTTP Status {response.status_code} - {response.reason_phrase}"
+                f"HTTP Status {response.status_code} - {response.reason_phrase}\n"
+                f"Error message: {body.get('message', '')}"
             )
 
     def lock_workspace(self) -> bool:
@@ -189,6 +191,7 @@ class StructurizrClient:
         request = self._client.build_request("PUT", self._lock_url, params=self._params)
         request.headers.update(self._add_headers(request.url.full_path, method="PUT"))
         response = self._client.send(request)
+        logger.debug("%r", response.json())
         response.raise_for_status()
         response = APIResponse.parse_raw(response.text)
         if not response.success:
@@ -245,9 +248,9 @@ class StructurizrClient:
         message_digest = self._message_digest(
             method, unquote_plus(url_path), definition_md5, content_type, nonce,
         )
-        logger.debug("The message digest:\n{message_digest}")
+        logger.debug("The message digest:\n%s", message_digest)
         message_hash = self._base64_str(self._hmac_hex(self.api_secret, message_digest))
-        logger.debug("The hashed message digest: '{message_hash}'.")
+        logger.debug("The hashed message digest: %r.", message_hash)
         headers = {
             "X-Authorization": f"{self.api_key}:{message_hash}",
             "Nonce": nonce,
