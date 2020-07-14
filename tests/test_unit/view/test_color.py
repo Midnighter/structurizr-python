@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-"""Ensure the expected behaviour of the code element."""
+"""Ensure the expected behaviour of the color type."""
 
 
 import pydantic
