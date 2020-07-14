@@ -19,7 +19,7 @@
 from typing import Optional
 
 from pydantic import Field
-from pydantic.color import Color
+from .color import Color
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
