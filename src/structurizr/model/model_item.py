@@ -55,7 +55,7 @@ class ModelItemIO(BaseModel, ABC):
     def dict(self, **kwargs) -> dict:
         """"""
         obj = super().dict(**kwargs)
-        if "tags" in obj and len(obj["tags"]) > 0:
+        if "tags" in obj:
             obj["tags"] = ",".join(obj["tags"])
         return obj
 
