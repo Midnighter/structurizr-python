@@ -23,17 +23,18 @@ from structurizr.view.color import Color
 
 
 @pytest.mark.parametrize(
-    "color",
+    "value, expected",
     [
-        {"value": "#ffffff", "expected": "#ffffff"},
-        {"value": "#fff", "expected": "#ffffff"},
-        {"value": "#f0f0f0", "expected": "#f0f0f0"},
-        {"value": "#000", "expected": "#000000"},
-        {"value": "#000000", "expected": "#000000"},
-        {"value": "green", "expected": "#008000"},
-        {"value": "white", "expected": "#ffffff"},
+        ("#ffffff", "#ffffff"),
+        ("#fff", "#ffffff"),
+        ("#f0f0f0", "#f0f0f0"),
+        ("#000", "#000000"),
+        ("#000000", "#000000"),
+        ("green", "#008000"),
+        ("white", "#ffffff"),
         pytest.param(
-            {"value": "never-gonna-let-you-down", "expected": None},
+            "never-gonna-let-you-down",
+            "",
             marks=pytest.mark.raises(
                 exception=pydantic.errors.ColorError,
                 message=(
@@ -44,6 +45,6 @@ from structurizr.view.color import Color
         ),
     ],
 )
-def test_code_element_init(color):
-    """Expect proper initialization from arguments."""
-    assert str(Color(color["value"])) == color["expected"]
+def test_color_str_value(value: str, expected: str) -> None:
+    """Expect that the color string value is a six character hex code."""
+    assert str(Color(value)) == expected
