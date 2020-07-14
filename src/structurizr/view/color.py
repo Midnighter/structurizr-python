@@ -20,10 +20,10 @@ import pydantic.color
 
 
 class Color(pydantic.color.Color):
+    """Represent a natural color."""
+
     def as_hex(self) -> str:
-        """
-        Hex string representing the color
-        """
+        """Return a six character hex representation of the color."""
         values = [pydantic.color.float_to_255(c) for c in self._rgba[:3]]
         if self._rgba.alpha is not None:
             values.append(pydantic.color.float_to_255(self._rgba.alpha))
@@ -32,4 +32,5 @@ class Color(pydantic.color.Color):
         return "#" + as_hex
 
     def __str__(self) -> str:
+        """Return a hex string representation of the color."""
         return self.as_hex()
