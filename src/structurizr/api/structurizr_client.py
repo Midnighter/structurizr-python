@@ -158,7 +158,7 @@ class StructurizrClient:
         ws_io.last_modified_date = datetime.now(timezone.utc)
         ws_io.last_modified_agent = self.agent
         ws_io.last_modified_user = self.user
-        workspace_json = ws_io.json(by_alias=True, exclude_none=True, exclude_defaults=False)
+        workspace_json = ws_io.json()
         logger.debug(workspace_json)
         request = self._client.build_request(
             "PUT", self._workspace_url, data=workspace_json
