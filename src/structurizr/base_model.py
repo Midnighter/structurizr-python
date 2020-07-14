@@ -33,7 +33,12 @@ class BaseModel(BaseModel_):
         orm_mode = True
 
     def dict(
-        self, *, by_alias: bool = True, exclude_defaults: bool = True, **kwargs
+        self,
+        *,
+        by_alias: bool = True,
+        exclude_defaults: bool = False,
+        exclude_none: bool = True,
+        **kwargs
     ) -> dict:
         """
         Serialize the model using custom settings.
@@ -42,8 +47,11 @@ class BaseModel(BaseModel_):
             by_alias (bool, optional): Whether to create serialized field names by
                 their alias (default `True`).
             exclude_defaults (bool, optional): Whether to exclude fields that are equal
-                to their default value from being serialized (default `True`).
-            **kwargs:
+                to their default value from being serialized (default `False`).
+            exclude_none (bool, optional): Whether to exclude keys with `None` values
+                entirely (default `True`).
+            **kwargs: Further keyword arguments are passed to the pydantic super method
+                `.dict`.
 
         Returns:
             dict: The serialized model as a (nested) dictionary.
@@ -53,7 +61,10 @@ class BaseModel(BaseModel_):
 
         """
         return super().dict(
-            by_alias=by_alias, exclude_defaults=exclude_defaults, **kwargs
+            by_alias=by_alias,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+            **kwargs
         )
 
     def json(
