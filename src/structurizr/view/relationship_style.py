@@ -19,10 +19,10 @@
 from typing import Optional
 
 from pydantic import Field
-from .color import Color
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
+from .color import Color
 from .routing import Routing
 
 
