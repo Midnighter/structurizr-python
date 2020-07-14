@@ -28,8 +28,7 @@ class Color(pydantic.color.Color):
         if self._rgba.alpha is not None:
             values.append(pydantic.color.float_to_255(self._rgba.alpha))
 
-        as_hex = "".join(f"{v:02x}" for v in values)
-        return "#" + as_hex
+        return f"#{''.join(f'{v:02x}' for v in values)}"
 
     def __str__(self) -> str:
         """Return a hex string representation of the color."""
