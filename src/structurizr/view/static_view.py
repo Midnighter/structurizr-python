@@ -85,12 +85,12 @@ class StaticView(View, ABC):
 
     def add_all_people(self) -> None:
         """Add all people in the model to this view."""
-        for person in self.software_system.get_model().people:
+        for person in self.model.people:
             self.add(person)
 
     def add_all_software_systems(self) -> None:
         """Add all people in the model to this view."""
-        for system in self.software_system.get_model().software_systems:
+        for system in self.model.software_systems:
             self.add(system)
 
     def add_nearest_neighbours(self, element: Element,) -> None:
@@ -101,7 +101,7 @@ class StaticView(View, ABC):
         # TODO(ilaif): @midnighter - Should we move to @property instead
         #  of get_X()? More pythonic.
         # (midnighter): Probably yes.
-        for relationship in self.software_system.get_model().get_relationships():
+        for relationship in self.model.get_relationships():
             if relationship.source == element and isinstance(
                 relationship.destination, element_type
             ):
