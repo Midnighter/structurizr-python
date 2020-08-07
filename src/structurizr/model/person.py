@@ -19,7 +19,9 @@
 from pydantic import Field
 
 from .location import Location
+from .relationship import Relationship
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
+from .tags import Tags
 
 
 __all__ = ("PersonIO", "Person")
@@ -35,7 +37,7 @@ class PersonIO(StaticStructureElementIO):
     """
 
     location: Location = Field(
-        Location.Unspecified, description="The location of this person."
+        default=Location.Unspecified, description="The location of this person."
     )
 
 
@@ -48,20 +50,22 @@ class Person(StaticStructureElement):
 
     """
 
-    location: Location = Field(
-        Location.Unspecified, description="The location of this person."
-    )
-
     def __init__(self, *, location: Location = Location.Unspecified, **kwargs) -> None:
         """"""
         super().__init__(**kwargs)
         self.location = location
 
+        self.tags.add(Tags.PERSON)
+
     @classmethod
     def hydrate(cls, person_io: PersonIO) -> "Person":
         """"""
-        return cls(name=person_io.name, description=person_io.description)
+        return cls(
+            name=person_io.name,
+            location=person_io.location,
+            description=person_io.description,
+            relationships=map(Relationship.hydrate, person_io.relationships),
+        )
 
-    def interacts_with(self):
-        # TODO
-        pass
+    def interacts_with(self, destination: "Person", description: str, **kwargs):
+        return self.uses(destination=destination, description=description, **kwargs)
