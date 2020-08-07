@@ -50,7 +50,7 @@ class ContainerIO(StaticStructureElementIO):
     """
 
     technology: Optional[str] = ""
-    components: List[Component] = set()
+    components: List["Component"] = set()
 
 
 class Container(StaticStructureElement):
@@ -76,9 +76,9 @@ class Container(StaticStructureElement):
     def __init__(
         self,
         *,
-        parent: SoftwareSystem,
+        parent: "SoftwareSystem",
         technology: str = "",
-        components: Iterable[Component] = (),
+        components: Iterable["Component"] = (),
         **kwargs
     ):
         """
