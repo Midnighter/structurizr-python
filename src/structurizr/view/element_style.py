@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Moritz E. Beber, Ilai Fallach.
+# Copyright (c) 2020, Moritz E. Beber.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class ElementStyleIO(BaseModel):
     background: Optional[Color]
     stroke: Optional[str]
     color: Optional[Color]
-    font_size: Optional[int] = Field(None, alias="fontSize")
+    font_size: Optional[int] = Field(default=None, alias="fontSize")
     shape: Optional[Shape]
     icon: Optional[str]
     border: Optional[Border]
@@ -97,3 +97,22 @@ class ElementStyle(AbstractBase):
         self.opacity = opacity
         self.metadata = metadata
         self.description = description
+
+    @classmethod
+    def hydrate(cls, element_style_io: ElementStyleIO) -> "ElementStyle":
+        """"""
+        return cls(
+            tag=element_style_io.tag,
+            width=element_style_io.width,
+            height=element_style_io.height,
+            background=element_style_io.background,
+            stroke=element_style_io.stroke,
+            color=element_style_io.color,
+            font_size=element_style_io.font_size,
+            shape=element_style_io.shape,
+            icon=element_style_io.icon,
+            border=element_style_io.border,
+            opacity=element_style_io.opacity,
+            metadata=element_style_io.metadata,
+            description=element_style_io.description,
+        )

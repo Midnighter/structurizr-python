@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Moritz E. Beber, Ilai Fallach.
+# Copyright (c) 2020, Moritz E. Beber.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class RelationshipStyleIO(BaseModel):
     thickness: Optional[int]
     width: Optional[int]
     color: Optional[Color]
-    font_size: Optional[int] = Field(None, alias="fontSize")
+    font_size: Optional[int] = Field(default=None, alias="fontSize")
     dashed: Optional[bool]
     routing: Optional[Routing]
     position: Optional[int]
@@ -84,3 +84,18 @@ class RelationshipStyle(AbstractBase):
         self.routing = routing
         self.position = position
         self.opacity = opacity
+
+    @classmethod
+    def hydrate(cls, relationship_style_io: RelationshipStyleIO) -> "RelationshipStyle":
+        """"""
+        return cls(
+            tag=relationship_style_io.tag,
+            thickness=relationship_style_io.thickness,
+            color=relationship_style_io.color,
+            font_size=relationship_style_io.font_size,
+            width=relationship_style_io.width,
+            dashed=relationship_style_io.dashed,
+            routing=relationship_style_io.routing,
+            position=relationship_style_io.position,
+            opacity=relationship_style_io.opacity,
+        )
