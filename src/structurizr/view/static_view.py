@@ -19,9 +19,9 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, List, Optional, Union
 
+from ..model import Element, Person, SoftwareSystem
 from .animation import Animation, AnimationIO
 from .view import View, ViewIO
-from ..model import Element, Person, SoftwareSystem
 
 
 __all__ = ("StaticView", "StaticViewIO")

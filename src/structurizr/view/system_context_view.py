@@ -18,6 +18,9 @@
 
 from pydantic import Field
 
+from structurizr.view.element_view import ElementView
+from structurizr.view.relationship_view import RelationshipView
+
 from .static_view import StaticView, StaticViewIO
 
 
@@ -67,8 +70,16 @@ class SystemContextView(StaticView):
     ) -> "SystemContextView":
         """"""
         return cls(
-            enterprise_boundary_visible=system_context_view_io.enterprise_boundary_visible,
-            description=system_context_view_io.description,
+            element_views=map(
+                ElementView.hydrate, system_context_view_io.element_views
+            ),
+            relationship_views=map(
+                RelationshipView.hydrate, system_context_view_io.relationship_views
+            ),
             key=system_context_view_io.key,
-            software_system=system_context_view_io.software_system,
+            description=system_context_view_io.description,
+            enterprise_boundary_visible=(
+                system_context_view_io.enterprise_boundary_visible
+            ),
+            # software_system=system_context_view_io.software_system,
         )
