@@ -16,7 +16,9 @@
 """Provide a collection of styles."""
 
 
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, List, Union
+
+from pydantic import Field
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
@@ -35,8 +37,8 @@ class StylesIO(BaseModel):
 
     """
 
-    elements: Optional[List[ElementStyleIO]]
-    relationships: Optional[List[RelationshipStyleIO]]
+    elements: List[ElementStyleIO] = Field(default=())
+    relationships: List[RelationshipStyleIO] = Field(default=())
 
 
 class Styles(AbstractBase):
@@ -85,3 +87,11 @@ class Styles(AbstractBase):
     def clear_relationships_styles(self) -> None:
         """"""
         self.relationships.clear()
+
+    @classmethod
+    def hydrate(cls, styles_io: StylesIO) -> "Styles":
+        """"""
+        return cls(
+            elements=map(ElementStyle.hydrate, styles_io.elements),
+            relationships=map(RelationshipStyle.hydrate, styles_io.relationships),
+        )
