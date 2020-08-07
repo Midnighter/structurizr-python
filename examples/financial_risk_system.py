@@ -20,14 +20,18 @@
 import logging
 
 from structurizr import Workspace
-from structurizr.model import InteractionStyle
+from structurizr.model import InteractionStyle, Tags
+from structurizr.view import Border, ElementStyle, RelationshipStyle, Shape
 
 
 TAG_ALERT = "Alert"
 
 
-def main():
+def main() -> Workspace:
     """Create the financial risk system example."""
+
+    ALERT_TAG = "Alert"
+
     workspace = Workspace(
         name="Financial Risk System",
         description="This is a simple (incomplete) example C4 model based upon the "
@@ -39,14 +43,14 @@ def main():
 
     financial_risk_system = model.add_software_system(
         name="Financial Risk System",
-        description="Calculates the bank's exposure to risk for product X.",
+        description="Calculates the banks exposure to risk for product X.",
     )
 
     business_user = model.add_person(
         name="Business User", description="A regular business user."
     )
     business_user.uses(
-        destination=financial_risk_system, description="View reports using"
+        destination=financial_risk_system, description="Views reports using"
     )
 
     configuration_user = model.add_person(
@@ -80,13 +84,13 @@ def main():
         description="Manages reference data for all counterparties the bank interacts "
         "with.",
     )
-    reference_data_system_v2.add_tags("Future State")
+    reference_data_system_v2.tags.add("Future State")
     financial_risk_system.uses(
         destination=reference_data_system_v2, description="Gets counterparty data from"
-    ).add_tags("Future State")
+    ).tags.add("Future State")
 
     email_system = model.add_software_system(
-        name="E-mail system", description="The bank's Microsoft Exchange system."
+        name="E-mail system", description="The banks Microsoft Exchange system."
     )
     financial_risk_system.uses(
         destination=email_system,
@@ -101,23 +105,65 @@ def main():
 
     central_monitoring_service = model.add_software_system(
         name="Central Monitoring Service",
-        description="The bank's central monitoring and alerting dashboard.",
+        description="The banks central monitoring and alerting dashboard.",
     )
     financial_risk_system.uses(
         destination=central_monitoring_service,
         description="Sends critical failure alerts to",
         technology="SNMP",
         interaction_style=InteractionStyle.Asynchronous,
-    ).add_tags(TAG_ALERT)
+    ).tags.add(ALERT_TAG)
 
     active_directory = model.add_software_system(
         name="Active Directory",
-        description="The bank's authentication and authorisation system.",
+        description="The banks authentication and authorisation system.",
     )
     financial_risk_system.uses(
         destination=active_directory,
         description="Uses for user authentication and authorisation",
     )
+
+    views = workspace.views
+    contextView = views.create_system_context_view(
+        software_system=financial_risk_system,
+        key="Context",
+        description="An example System Context diagram for the Financial Risk System architecture kata.",
+    )
+    contextView.add_all_software_systems()
+    contextView.add_all_people()
+
+    styles = views.configuration.styles
+    financial_risk_system.tags.add("Risk System")
+
+    styles.add(ElementStyle(tag=Tags.ELEMENT, color="#ffffff", font_size=34))
+    styles.add(ElementStyle(tag="Risk System", background="#550000", color="#ffffff"))
+    styles.add(
+        ElementStyle(
+            tag=Tags.SOFTWARE_SYSTEM,
+            width=650,
+            height=400,
+            background="#801515",
+            shape=Shape.RoundedBox,
+        )
+    )
+    styles.add(
+        ElementStyle(
+            tag=Tags.PERSON, width=550, background="#d46a6a", shape=Shape.Person
+        )
+    )
+
+    styles.add(
+        RelationshipStyle(
+            tag=Tags.RELATIONSHIP, thickness=4, dashed=False, font_size=32, width=400
+        )
+    )
+    styles.add(RelationshipStyle(tag=Tags.SYNCHRONOUS, dashed=False))
+    styles.add(RelationshipStyle(tag=Tags.ASYNCHRONOUS, dashed=True))
+    styles.add(RelationshipStyle(tag=ALERT_TAG, color="#ff0000"))
+    styles.add(ElementStyle(tag="Future State", opacity=30, border=Border.Dashed))
+    styles.add(RelationshipStyle(tag="Future State", opacity=30, dashed=True))
+
+    return workspace
 
 
 if __name__ == "__main__":
