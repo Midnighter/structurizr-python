@@ -27,3 +27,8 @@ from .relationship import Relationship, RelationshipIO
 from .model import Model, ModelIO
 from .tags import Tags
 from .container import Container, ContainerIO
+
+
+_symbols = locals()
+
+RelationshipIO.update_forward_refs(**_symbols)
