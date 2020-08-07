@@ -24,15 +24,13 @@ import logging
 
 from structurizr import Workspace
 from structurizr.model import Tags
-from structurizr.view import ElementStyle
+from structurizr.view import ElementStyle, Shape
 
 
 def main() -> Workspace:
     """Create the 'getting started' example."""
     workspace = Workspace(
-        name="Getting Started",
-        description="This is a model of my software system which can be found at "
-        "https://structurizr.com/help/examples.",
+        name="Getting Started", description="This is a model of my software system.",
     )
 
     model = workspace.model
@@ -54,7 +52,11 @@ def main() -> Workspace:
     styles.add(
         ElementStyle(tag=Tags.SOFTWARE_SYSTEM, background="#1168bd", color="#ffffff")
     )
-    styles.add(ElementStyle(tag=Tags.PERSON, background="#08427b", color="#ffffff"))
+    styles.add(
+        ElementStyle(
+            tag=Tags.PERSON, background="#08427b", color="#ffffff", shape=Shape.Person,
+        )
+    )
     return workspace
 
 
