@@ -17,16 +17,13 @@
 
 
 from abc import ABC
-from typing import TYPE_CHECKING, Iterator, Optional
+from typing import Iterable, Iterator, List, Optional
 
 from pydantic import Field, HttpUrl
 
 from ..mixin import ModelRefMixin
 from .model_item import ModelItem, ModelItemIO
-
-
-if TYPE_CHECKING:
-    from .relationship import Relationship
+from .relationship import Relationship, RelationshipIO
 
 
 __all__ = ("ElementIO", "Element")
@@ -46,6 +43,7 @@ class ElementIO(ModelItemIO, ABC):
     name: str = Field(...)
     description: str = Field("")
     url: Optional[HttpUrl] = Field(None)
+    relationships: Optional[List[RelationshipIO]] = Field([])
 
 
 class Element(ModelRefMixin, ModelItem, ABC):
@@ -60,15 +58,26 @@ class Element(ModelRefMixin, ModelItem, ABC):
     """
 
     def __init__(
-        self, *, name: str, description: str = "", url: Optional[str] = None, **kwargs
+        self,
+        *,
+        name: str,
+        description: str = "",
+        url: Optional[str] = None,
+        relationships: Optional[Iterable[Relationship]] = (),
+        **kwargs,
     ) -> None:
         """Initialize an element with an empty 'private' model reference."""
         super().__init__(**kwargs)
         self.name = name
         self.description = description
         self.url = url
+        self.relationships = set(relationships)
 
-    def get_relationships(self) -> Iterator["Relationship"]:
+    def __repr__(self):
+        """Return a string representation of this instance."""
+        return f"{type(self).__name__}(id={self.id}, name={self.name})"
+
+    def get_relationships(self) -> Iterator[Relationship]:
         """Return a Iterator over all relationships involving this element."""
         return (
             r
@@ -76,12 +85,17 @@ class Element(ModelRefMixin, ModelItem, ABC):
             if self is r.source or self is r.destination
         )
 
-    def get_efferent_relationships(self) -> Iterator["Relationship"]:
+    def get_efferent_relationships(self) -> Iterator[Relationship]:
         """Return a Iterator over all outgoing relationships involving this element."""
         return (r for r in self.get_model().get_relationships() if self is r.source)
 
-    def get_afferent_relationships(self) -> Iterator["Relationship"]:
+    def get_afferent_relationships(self) -> Iterator[Relationship]:
         """Return a Iterator over all incoming relationships involving this element."""
         return (
             r for r in self.get_model().get_relationships() if self is r.destination
         )
+
+    def add_relationship(self, relationship: Optional[Relationship] = None, **kwargs):
+        if relationship is None:
+            relationship = Relationship(**kwargs)
+        self.relationships.add(relationship)

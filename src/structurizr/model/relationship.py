@@ -16,14 +16,16 @@
 """Provide the relationship model."""
 
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import Field
 
-from .element import Element
 from .interaction_style import InteractionStyle
 from .model_item import ModelItem, ModelItemIO
 
+
+if TYPE_CHECKING:
+    from .element import Element
 
 __all__ = ("Relationship", "RelationshipIO")
 
@@ -73,9 +75,9 @@ class Relationship(ModelItem):
     def __init__(
         self,
         *,
-        source: Optional[Element] = None,
+        source: Optional["Element"] = None,
         source_id: str = "",
-        destination: Optional[Element] = None,
+        destination: Optional["Element"] = None,
         destination_id: str = "",
         description: str = "",
         technology: str = "",
