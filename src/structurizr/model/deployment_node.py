@@ -62,3 +62,13 @@ class DeploymentNode(DeploymentElement):
         self.instances = instances
         self.children = set(children)
         self.container_instances = set(container_instances)
+
+    @classmethod
+    def hydrate(cls, deployment_node_io: DeploymentNodeIO) -> "DeploymentNode":
+        """"""
+        # TODO (midnighter): Initialization requires `parent`.
+        return cls(
+            # parent=deployment_node_io.parent,
+            name=deployment_node_io.name,
+            description=deployment_node_io.description,
+        )
