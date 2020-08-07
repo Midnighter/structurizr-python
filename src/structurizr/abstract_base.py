@@ -28,3 +28,7 @@ class AbstractBase(ABC):
     def __hash__(self) -> int:
         """Return an integer that represents a unique hash value for this instance."""
         return id(self)
+
+    def __repr__(self) -> str:
+        """Return a string representation of this instance."""
+        return f"{type(self).__name__}({id(self)})"
