@@ -26,3 +26,4 @@ from .software_system import SoftwareSystem, SoftwareSystemIO
 from .relationship import Relationship, RelationshipIO
 from .model import Model, ModelIO
 from .tags import Tags
+from .container import Container, ContainerIO
