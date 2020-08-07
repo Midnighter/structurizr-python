@@ -23,7 +23,6 @@ import pytest
 from pydantic import ValidationError
 
 from structurizr import Workspace, WorkspaceIO
-from structurizr.model import ModelIO
 
 
 DEFINITIONS = Path(__file__).parent / "data" / "workspace_definition"
@@ -65,5 +64,7 @@ def test_serialize_workspace(example, filename, monkeypatch):
     monkeypatch.syspath_prepend(EXAMPLES)
     example = import_module(example)
     path = DEFINITIONS / filename
-    expected = ModelIO.from_orm(Workspace.load(path).model)
-    assert ModelIO.from_orm(example.main().model) == expected
+    # TODO (midnighter): Use `from_orm` like `.construct` bypassing validation. (
+    #  Requires a pull request on pydantic.)
+    expected = WorkspaceIO.from_orm(Workspace.load(path))
+    assert WorkspaceIO.from_orm(example.main()) == expected
