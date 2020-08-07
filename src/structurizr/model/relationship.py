@@ -22,6 +22,7 @@ from pydantic import Field
 
 from .interaction_style import InteractionStyle
 from .model_item import ModelItem, ModelItemIO
+from .tags import Tags
 
 
 if TYPE_CHECKING:
@@ -88,10 +89,45 @@ class Relationship(ModelItem):
         """Initialize a relationship between two elements."""
         super().__init__(**kwargs)
         self.source = source
-        self.source_id = source_id
+        self._source_id = source_id
         self.destination = destination
-        self.destination_id = destination_id
+        self._destination_id = destination_id
         self.description = description
         self.technology = technology
-        self.interaction_style = interaction_style
         self.linked_relationship_id = linked_relationship_id
+
+        self.tags.add(Tags.RELATIONSHIP)
+        self.tags.add(
+            Tags.SYNCHRONOUS
+            if interaction_style == InteractionStyle.Synchronous
+            else Tags.ASYNCHRONOUS
+        )
+
+    @property
+    def source_id(self) -> str:
+        if self.source is not None:
+            return self.source.id
+
+        return self._source_id
+
+    @property
+    def destination_id(self) -> str:
+        if self.destination is not None:
+            return self.destination.id
+
+        return self._destination_id
+
+    @classmethod
+    def hydrate(cls, relationship_io: RelationshipIO) -> "Relationship":
+        """"""
+        return cls(
+            id=relationship_io.id,
+            tags=relationship_io.tags,
+            properties=relationship_io.properties,
+            perspectives=relationship_io.perspectives,
+            source_id=relationship_io.source_id,
+            destination_id=relationship_io.destination_id,
+            description=relationship_io.description,
+            technology=relationship_io.technology,
+            interaction_style=relationship_io.interaction_style,
+        )
