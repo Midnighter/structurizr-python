@@ -17,12 +17,16 @@
 
 
 import logging
-from typing import Any, Iterable, Iterator, List, Optional, Set
+from typing import Iterable, List, Optional, ValuesView
 
 from pydantic import Field
 
+from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
+
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
+from .container import Container
+from .container_instance import ContainerInstance
 from .element import Element
 from .enterprise import Enterprise, EnterpriseIO
 from .person import Person, PersonIO
@@ -52,18 +56,18 @@ class ModelIO(BaseModel):
     """
 
     enterprise: Optional[EnterpriseIO] = Field(
-        None, description="The enterprise associated with this model."
+        default=None, description="The enterprise associated with this model."
     )
-    people: Optional[List[PersonIO]] = Field(
-        [], description="The set of people belonging to this model."
+    people: List[PersonIO] = Field(
+        default=[], description="The set of people belonging to this model."
     )
-    software_systems: Optional[List[SoftwareSystemIO]] = Field(
-        [],
+    software_systems: List[SoftwareSystemIO] = Field(
+        default=[],
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
     )
-    deployment_nodes: Optional[List[Any]] = Field(
-        [],
+    deployment_nodes: List[DeploymentNodeIO] = Field(
+        default=[],
         alias="deploymentNodes",
         description="The set of deployment nodes belonging to this model.",
     )
@@ -87,9 +91,8 @@ class Model(AbstractBase):
         self,
         enterprise: Optional[Enterprise] = None,
         people: Optional[Iterable[Person]] = (),
-        software_systems: Optional[Iterable[SoftwareSystem]] = (),
-        # TODO
-        deployment_nodes: Optional[Iterable[Any]] = (),
+        software_systems: Iterable[SoftwareSystem] = (),
+        deployment_nodes: Iterable[DeploymentNode] = (),
         **kwargs,
     ) -> None:
         """
@@ -110,23 +113,39 @@ class Model(AbstractBase):
         self._id_generator = SequentialIntegerIDGenerator()
 
     def __contains__(self, element: Element):
-        return (
-            element in self.people
-            or element in self.software_systems
-            or element in self.deployment_nodes
-        )
+        return element in self.get_elements()
 
     @classmethod
     def hydrate(cls, model_io: ModelIO) -> "Model":
         """"""
-        return Model(
+        model = cls(
             enterprise=Enterprise.hydrate(model_io.enterprise)
             if model_io.enterprise is not None
             else None,
-            people=map(Person.hydrate, model_io.people),
-            software_systems=map(SoftwareSystem.hydrate, model_io.software_systems),
-            # TODO: deployment nodes, relationships
+            # TODO: relationships
         )
+
+        for person_io in model_io.people:
+            person = Person.hydrate(person_io)
+            model.add_person(person=person)
+
+        for software_system_io in model_io.software_systems:
+            software_system = SoftwareSystem.hydrate(software_system_io)
+            model.add_software_system(software_system=software_system)
+
+        for deployment_node_io in model_io.deployment_nodes:
+            deployment_node = DeploymentNode.hydrate(deployment_node_io)
+            model.add_deployment_node(deployment_node=deployment_node)
+
+        for element in model.get_elements():
+            for relationship in element.relationships:  # type: Relationship
+                relationship.source = model.get_element(relationship.source_id)
+                relationship.destination = model.get_element(
+                    relationship.destination_id
+                )
+                model.add_relationship(relationship)
+
+        return model
 
     def add_person(self, person=None, **kwargs) -> Person:
         """
@@ -171,7 +190,7 @@ class Model(AbstractBase):
             SoftwareSystem: Either the same or a new instance, depending on arguments.
 
         Raises:
-            ValueError: When a person with the same name already exists.
+            ValueError: When a software system with the same name already exists.
 
         See Also:
             SoftwareSystem
@@ -188,17 +207,100 @@ class Model(AbstractBase):
         self.software_systems.add(software_system)
         return software_system
 
-    # def add_deployment_node(self, deployment_node=None,
-    #                         **kwargs) -> DeploymentNode:
-    #     """Add a new software system to the model."""
-    #     if deployment_node is None:
-    #         deployment_node = DeploymentNode(**kwargs)
-    #     if deployment_node.id in {d.id for d in self.deployment_nodes}:
-    #         ValueError(
-    #             f"A deployment node with the ID {deployment_node.id} already "
-    #             f"exists in the model.")
-    #     self.deployment_nodes.add(deployment_node)
-    #     return deployment_node
+    def add_container(
+        self, container: Optional[Container] = None, **kwargs
+    ) -> Container:
+        """
+        Add a new container to the model.
+
+        Args:
+            container (Container, optional): Either provide a
+                `Container` instance or
+            **kwargs: Provide keyword arguments for instantiating a `Container`
+                (recommended).
+
+        Returns:
+            SoftwareSystem: Either the same or a new instance, depending on arguments.
+
+        Raises:
+            ValueError: When a container with the same name already exists.
+
+        See Also:
+            Container
+
+        """
+        if container is None:
+            container = Container(**kwargs)
+        if any(container.name == c.name for c in container.parent.containers):
+            ValueError(
+                f"A container with the name {container.name} already "
+                f"exists in the model."
+            )
+        # TODO (midnighter): Modifying the parent seems like creating an undesired
+        #  tight link here.
+        container.parent.add(container)
+        self._add_element(container)
+        return container
+
+    def add_container_instance(
+        self,
+        deployment_node: DeploymentNode,
+        container: Container,
+        replicate_container_relationships: bool,
+    ) -> ContainerInstance:
+        """
+        Add a new container instance to the model.
+
+        Args:
+            deployment_node (DeploymentNode, optional): `DeploymentNode` instance
+            container (Container, optional): `Container` instance
+
+        Returns:
+            ContainerInstance: A container instance.
+
+        Raises:
+            ValueError: When a container with the same name already exists.
+
+        See Also:
+            ContainerInstance
+
+        """
+        if container is None:
+            raise ValueError("A container must be specified.")
+        # TODO: implement
+        # instance_number =
+
+    def add_deployment_node(
+        self, deployment_node: Optional[DeploymentNode] = None, **kwargs
+    ) -> DeploymentNode:
+        """
+        Add a new deployment node to the model.
+        Args:
+            deployment_node (DeploymentNode, optional): Either provide a
+                `DeploymentNode` instance or
+            **kwargs: Provide keyword arguments for instantiating a `DeploymentNode`
+                (recommended).
+
+        Returns:
+            DeploymentNode: Either the same or a new instance, depending on arguments.
+
+        Raises:
+            ValueError: When a deployment node with the same name already exists.
+
+        See Also:
+            DeploymentNode
+
+        """
+        if deployment_node is None:
+            deployment_node = DeploymentNode(**kwargs)
+        if deployment_node.id in {d.id for d in self.deployment_nodes}:
+            ValueError(
+                f"A deployment node with the ID {deployment_node.id} already "
+                f"exists in the model."
+            )
+        self.deployment_nodes.add(deployment_node)
+        self._add_element(deployment_node)
+        return deployment_node
 
     def add_relationship(
         self, relationship: Relationship = None, **kwargs
@@ -257,9 +359,18 @@ class Model(AbstractBase):
         """
         return self._relationships_by_id.get(id)
 
-    def get_relationships(self) -> Iterator[Relationship]:
+    def get_relationships(self) -> ValuesView[Relationship]:
         """Return an iterator over all relationships contained in this model."""
         return self._relationships_by_id.values()
+
+    def get_elements(self) -> ValuesView[Element]:
+        return self._elements_by_id.values()
+
+    def get_software_system_with_id(self, id: str) -> Optional[SoftwareSystem]:
+        result = self.get_element(id)
+        if not isinstance(result, SoftwareSystem):
+            return None
+        return result
 
     def _add_element(self, element: Element) -> None:
         """"""
@@ -279,10 +390,16 @@ class Model(AbstractBase):
         if not relationship.id:
             relationship.id = self._id_generator.generate_id()
         elif (
+            # TODO(ilaif): @midnighter: not sure this is the best check,
+            #  we should have a global id check?
             relationship.id in self._elements_by_id
             or relationship.id in self._relationships_by_id
         ):
             raise ValueError(f"The relationship {relationship} has an existing ID.")
+        relationship.source.add_relationship(relationship)
+        self._add_relationship_to_internal_structures(relationship)
+        return True
+
+    def _add_relationship_to_internal_structures(self, relationship: Relationship):
         self._relationships_by_id[relationship.id] = relationship
         self._id_generator.found(relationship.id)
-        return True

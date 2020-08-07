@@ -16,12 +16,14 @@
 """Provide a software system element model."""
 
 
-from typing import Any, List, Optional, Set
+from typing import List, Optional
 
 from pydantic import Field
 
+from .container import Container, ContainerIO
 from .location import Location
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
+from .tags import Tags
 
 
 __all__ = ("SoftwareSystem", "SoftwareSystemIO")
@@ -38,11 +40,11 @@ class SoftwareSystemIO(StaticStructureElementIO):
     """
 
     location: Location = Field(
-        Location.Unspecified, description="The location of this software system."
+        default=Location.Unspecified,
+        description="The location of this software system.",
     )
-    # TODO
-    containers: List[Any] = Field(
-        [], description="The containers within this software system."
+    containers: List[ContainerIO] = Field(
+        default=(), description="The containers within this software system."
     )
 
 
@@ -56,21 +58,31 @@ class SoftwareSystem(StaticStructureElement):
 
     """
 
-    def __init__(
-        self,
-        *,
-        location: Location = Location.Unspecified,
-        containers: Optional[Set[Any]] = None,
-        **kwargs
-    ) -> None:
+    def __init__(self, *, location: Location = Location.Unspecified, **kwargs) -> None:
         """"""
         super().__init__(**kwargs)
         self.location = location
-        self.containers = set() if containers is None else containers
+        self.containers = set()
+
+        # TODO: canonical_name
+        # TODO: parent
+
+        self.tags.add(Tags.ELEMENT)
+        self.tags.add(Tags.SOFTWARE_SYSTEM)
+
+    def add(self, container: Container):
+        self.containers.add(container)
+
+    def add_container(self, name: str, description: str, technology: str,) -> Container:
+        return self.get_model().add_container(
+            parent=self, name=name, description=description, technology=technology,
+        )
 
     @classmethod
     def hydrate(cls, software_system_io: SoftwareSystemIO) -> "SoftwareSystem":
         """"""
         return cls(
-            name=software_system_io.name, description=software_system_io.description
+            name=software_system_io.name,
+            description=software_system_io.description,
+            location=software_system_io.location,
         )
