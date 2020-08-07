@@ -37,17 +37,17 @@ class TerminologyIO(BaseModel):
 
     enterprise: Optional[str]
     person: Optional[str]
-    software_system: Optional[str] = Field(None, alias="softwareSystem")
+    software_system: Optional[str] = Field(default=None, alias="softwareSystem")
     container: Optional[str]
     component: Optional[str]
     code: Optional[str]
-    deployment_node: Optional[str] = Field(None, alias="deploymentNode")
+    deployment_node: Optional[str] = Field(default=None, alias="deploymentNode")
     relationship: Optional[str]
 
 
 class Terminology(AbstractBase):
     """
-    Provides a way for the terminology on diagrams, etc to be modified (e.g. language translations).
+    Provide a way for the terminology on diagrams, etc. to be modified.
 
     Attributes:
 
