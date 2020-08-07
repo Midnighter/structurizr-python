@@ -24,4 +24,6 @@ from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
 from .animation import Animation, AnimationIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .view_set import ViewSet, ViewSetIO
-from .element_style import ElementStyle
+from .element_style import ElementStyle, ElementStyleIO
+from .relationship_style import RelationshipStyle, RelationshipStyleIO
+from .configuration import Configuration, ConfigurationIO
