@@ -17,7 +17,6 @@
 
 
 import pytest
-from pydantic import ValidationError
 
 from structurizr.model.software_system import SoftwareSystem
 
