@@ -17,7 +17,6 @@
 
 
 import pytest
-from pydantic import ValidationError
 
 from structurizr.model.person import Person
 
