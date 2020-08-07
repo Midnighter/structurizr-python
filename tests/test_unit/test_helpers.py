@@ -32,4 +32,4 @@ def test_show_versions(capsys):
 
     assert lines[7].startswith("Package Versions")
     assert lines[8].startswith("================")
-    assert any(l.startswith("structurizr-python") for l in lines[9:])
+    assert any(line.startswith("structurizr-python") for line in lines[9:])
