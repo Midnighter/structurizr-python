@@ -41,10 +41,10 @@ class ModelItemIO(BaseModel, ABC):
 
     """
 
-    id: str = Field("")
-    tags: List[str] = Field([])
-    properties: Dict[str, str] = Field({})
-    perspectives: List[PerspectiveIO] = Field([])
+    id: str = Field(default="")
+    tags: List[str] = Field(default=[])
+    properties: Dict[str, str] = Field(default={})
+    perspectives: List[PerspectiveIO] = Field(default=[])
 
     @validator("tags", pre=True)
     def split_tags(cls, tags: Union[str, List[str]]) -> List[str]:
@@ -79,7 +79,7 @@ class ModelItem(AbstractBase, ABC):
         id: str = "",
         origin_id: str = "",
         tags: Iterable[str] = (),
-        properties: [Dict[str, str]] = (),
+        properties: Dict[str, str] = (),
         perspectives: Iterable[Perspective] = (),
         **kwargs
     ):
