@@ -17,9 +17,9 @@
 
 
 from abc import ABC, abstractmethod
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, List, Optional, Type, Union
 
-from ..model import Element, Person, SoftwareSystem
+from ..model import Container, Element, Person, SoftwareSystem
 from .animation import Animation, AnimationIO
 from .view import View, ViewIO
 
@@ -93,11 +93,14 @@ class StaticView(View, ABC):
         for system in self.model.software_systems:
             self.add(system)
 
-    def add_nearest_neighbours(self, element: Element,) -> None:
+    def add_nearest_neighbours(
+        self,
+        element: Element,
+        element_type: Union[Type[Person], Type[SoftwareSystem], Type[Container]],
+    ) -> None:
         """Add all permitted elements from a model to this view."""
         self._add_element(element, True)
 
-        element_type = type(element)
         # TODO(ilaif): @midnighter - Should we move to @property instead
         #  of get_X()? More pythonic.
         # (midnighter): Probably yes.
