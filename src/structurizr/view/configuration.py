@@ -45,7 +45,9 @@ class ConfigurationIO(BaseModel):
     terminology: Optional[TerminologyIO]
     default_view: Optional[str] = Field(None, alias="defaultView")
     last_saved_view: Optional[str] = Field(None, alias="lastSavedView")
-    view_sort_order: Optional[ViewSortOrder] = Field(None, alias="viewSortOrder")
+    view_sort_order: ViewSortOrder = Field(
+        default=ViewSortOrder.Default, alias="viewSortOrder",
+    )
 
 
 class Configuration(AbstractBase):
@@ -65,7 +67,7 @@ class Configuration(AbstractBase):
         terminology: Optional[Terminology] = None,
         default_view: Optional[str] = None,
         last_saved_view: Optional[str] = None,
-        view_sort_order: Optional[ViewSortOrder] = None,
+        view_sort_order: ViewSortOrder = ViewSortOrder.Default,
         **kwargs
     ) -> None:
         """Initialize an element view."""
@@ -77,3 +79,17 @@ class Configuration(AbstractBase):
         self.default_view = default_view
         self.last_saved_view = last_saved_view
         self.view_sort_order = view_sort_order
+
+    @classmethod
+    def hydrate(cls, configuration_io: ConfigurationIO) -> "Configuration":
+        """"""
+        return cls(
+            # TODO:
+            # branding=Branding.hydrate(configuration_io.branding),
+            styles=Styles.hydrate(configuration_io.styles),
+            theme=configuration_io.theme,
+            # terminology=Terminology.hydrate(configuration_io.terminology),
+            default_view=configuration_io.default_view,
+            last_saved_view=configuration_io.last_saved_view,
+            view_sort_order=configuration_io.view_sort_order,
+        )
