@@ -20,7 +20,7 @@ from typing import Optional
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from ..model import Element, ElementIO
+from ..model import Element
 
 
 __all__ = ("ElementView", "ElementViewIO")
@@ -34,7 +34,6 @@ class ElementViewIO(BaseModel):
 
     """
 
-    element: ElementIO
     id: Optional[str]
     x: Optional[int]
     y: Optional[int]
@@ -51,7 +50,7 @@ class ElementView(AbstractBase):
     def __init__(
         self,
         *,
-        element: Element,
+        element: Optional[Element] = None,
         x: Optional[int] = None,
         y: Optional[int] = None,
         id: str = "",
@@ -63,3 +62,8 @@ class ElementView(AbstractBase):
         self.id = id
         self.x = x
         self.y = y
+
+    @classmethod
+    def hydrate(cls, element_view_io: ElementViewIO) -> "ElementView":
+        """"""
+        return cls(id=element_view_io.id, x=element_view_io.x, y=element_view_io.y)
