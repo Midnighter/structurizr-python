@@ -19,9 +19,9 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, List, Optional, Union
 
-from ..model import Person, SoftwareSystem
 from .animation import Animation, AnimationIO
 from .view import View, ViewIO
+from ..model import Element, Person, SoftwareSystem
 
 
 __all__ = ("StaticView", "StaticViewIO")
@@ -92,3 +92,22 @@ class StaticView(View, ABC):
         """Add all people in the model to this view."""
         for system in self.software_system.get_model().software_systems:
             self.add(system)
+
+    def add_nearest_neighbours(self, element: Element,) -> None:
+        """Add all permitted elements from a model to this view."""
+        self._add_element(element, True)
+
+        element_type = type(element)
+        # TODO(ilaif): @midnighter - Should we move to @property instead
+        #  of get_X()? More pythonic.
+        # (midnighter): Probably yes.
+        for relationship in self.software_system.get_model().get_relationships():
+            if relationship.source == element and isinstance(
+                relationship.destination, element_type
+            ):
+                self._add_element(relationship.destination, add_relationships=True)
+
+            if relationship.destination == element and isinstance(
+                relationship.source, element_type
+            ):
+                self._add_element(relationship.source, add_relationships=True)
