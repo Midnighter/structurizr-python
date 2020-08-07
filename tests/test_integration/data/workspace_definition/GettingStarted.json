@@ -1,0 +1,108 @@
+{
+    "model": {
+        "people": [
+            {
+                "location": "Unspecified",
+                "name": "User",
+                "description": "A user of my software system.",
+                "relationships": [
+                    {
+                        "description": "Uses",
+                        "sourceId": "1",
+                        "destinationId": "2",
+                        "id": "3",
+                        "tags": "Relationship,Synchronous",
+                        "properties": {},
+                        "perspectives": []
+                    }
+                ],
+                "id": "1",
+                "tags": "Element,Person",
+                "properties": {},
+                "perspectives": []
+            }
+        ],
+        "softwareSystems": [
+            {
+                "location": "Unspecified",
+                "containers": [],
+                "name": "Software System",
+                "description": "My software system.",
+                "relationships": [],
+                "id": "2",
+                "tags": "Element,Software System",
+                "properties": {},
+                "perspectives": []
+            }
+        ],
+        "deploymentNodes": []
+    },
+    "views": {
+        "systemLandscapeViews": [],
+        "systemContextViews": [
+            {
+                "animations": [],
+                "key": "SystemContext",
+                "softwareSystemId": "2",
+                "description": "An example of a System Context diagram.",
+                "paperSize": "A5_Landscape",
+                "elements": [
+                    {
+                        "properties": {},
+                        "id": "2"
+                    },
+                    {
+                        "properties": {},
+                        "id": "1"
+                    }
+                ],
+                "relationships": [
+                    {
+                        "properties": {},
+                        "id": "3"
+                    }
+                ]
+            }
+        ],
+        "containerViews": [],
+        "componentViews": [],
+        "dynamicViews": [],
+        "deploymentViews": [],
+        "filteredViews": [],
+        "configuration": {
+            "styles": {
+                "relationships": [],
+                "elements": [
+                    {
+                        "tag": "Software System",
+                        "background": "#1168bd",
+                        "color": "#ffffff"
+                    },
+                    {
+                        "tag": "Person",
+                        "background": "#08427b",
+                        "color": "#ffffff",
+                        "shape": "Person"
+                    }
+                ]
+            },
+            "branding": {},
+            "terminology": {},
+            "viewSortOrder": "Default"
+        }
+    },
+    "documentation": {
+        "sections": [],
+        "decisions": [],
+        "images": []
+    },
+    "id": 53898,
+    "name": "Getting Started",
+    "description": "This is a model of my software system.",
+    "lastModifiedDate": "2020-05-07T08:20:46.6858149Z",
+    "lastModifiedUser": "ilaif",
+    "lastModifiedAgent": "structurizr-dotnet/0.9.6",
+    "configuration": {
+        "users": []
+    }
+}
