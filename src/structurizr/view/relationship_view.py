@@ -22,7 +22,6 @@ from pydantic import Field
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from ..model import Relationship, RelationshipIO
 
 
 __all__ = ("RelationshipView", "RelationshipViewIO")
@@ -40,12 +39,11 @@ class RelationshipViewIO(BaseModel):
 
     """
 
-    relationship: RelationshipIO
     id: Optional[str]
-    description: Optional[str]
     order: Optional[str]
+    description: Optional[str]
     # TODO
-    vertices: List[Any] = Field([])
+    vertices: List[Any] = Field(default=())
     # TODO
     routing: Optional[Any]
     position: Optional[int]
@@ -62,10 +60,9 @@ class RelationshipView(AbstractBase):
     def __init__(
         self,
         *,
-        relationship: Relationship,
-        id: str = "",
-        description: str = "",
-        order: str = "",
+        id: Optional[str] = None,
+        description: Optional[str] = None,
+        order: Optional[str] = None,
         vertices: Iterable[Any] = (),
         routing: Optional[Any] = None,
         position: Optional[int] = None,
@@ -73,10 +70,21 @@ class RelationshipView(AbstractBase):
     ) -> None:
         """Initialize a relationship view."""
         super().__init__(**kwargs)
-        self.relationship = relationship
         self.id = id
         self.description = description
         self.order = order
         self.vertices = set(vertices)
         self.routing = routing
         self.position = position
+
+    @classmethod
+    def hydrate(cls, relationship_view_io: RelationshipViewIO) -> "RelationshipView":
+        """"""
+        return cls(
+            id=relationship_view_io.id,
+            description=relationship_view_io.description,
+            order=relationship_view_io.order,
+            vertices=relationship_view_io.vertices,
+            routing=relationship_view_io.routing,
+            position=relationship_view_io.position,
+        )
