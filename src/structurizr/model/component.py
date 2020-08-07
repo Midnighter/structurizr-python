@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from pydantic import Field
 
-from .code_element import CodeElement
+from .code_element import CodeElement, CodeElementIO
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 
 
@@ -53,7 +53,7 @@ class ComponentIO(StaticStructureElementIO):
     """
 
     technology: str = ""
-    code_elements: List[CodeElement] = Field([], alias="codeElements")
+    code_elements: List[CodeElementIO] = Field([], alias="codeElements")
     size: Optional[int] = None
 
 
@@ -81,7 +81,7 @@ class Component(StaticStructureElement):
     def __init__(
         self,
         *,
-        parent: Container,
+        parent: "Container",
         technology: str = "",
         code_elements: Iterable[CodeElement] = (),
         size: Optional[int] = None,
@@ -103,3 +103,14 @@ class Component(StaticStructureElement):
         self.technology = technology
         self.code_elements = set(code_elements)
         self.size = size
+
+    @classmethod
+    def hydrate(cls, component_io: ComponentIO) -> "Component":
+        """"""
+        # TODO (midnighter): Initialization requires `parent`.
+        return cls(
+            name=component_io.name,
+            description=component_io.description,
+            technology=component_io.technology,
+            # code_elements=map(CodeElement.hydrate, component_io.components),
+        )
