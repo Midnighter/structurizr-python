@@ -33,7 +33,7 @@ VALIDATIONS = Path(__file__).parent / "data" / "workspace_validation"
 
 def pytest_generate_tests(metafunc) -> None:
     if "invalid_workspace" in metafunc.fixturenames:
-        files = sorted(Path("data", "workspace_validation").glob("*.json.gz"))
+        files = sorted(Path("data", "workspace_validation").glob("*.json"))
         ids = [p.name for p in files]
         metafunc.parametrize(
             "invalid_workspace",
@@ -49,7 +49,7 @@ def test_invalid_workspace(invalid_workspace):
     WorkspaceIO.parse_file(invalid_workspace)
 
 
-@pytest.mark.parametrize("filename", ["Trivial.json.gz", "GettingStarted.json.gz"])
+@pytest.mark.parametrize("filename", ["Trivial.json", "GettingStarted.json"])
 def test_deserialize_workspace(filename):
     """Expect that a trivial workspace definition is successfully deserialized."""
     path = DEFINITIONS / filename
@@ -58,7 +58,7 @@ def test_deserialize_workspace(filename):
 
 @pytest.mark.xfail(reason="Workspace and model comparison is still id dependent.")
 @pytest.mark.parametrize(
-    "example, filename", [("getting_started", "GettingStarted.json.gz")]
+    "example, filename", [("getting_started", "GettingStarted.json")]
 )
 def test_serialize_workspace(example, filename, monkeypatch):
     """Expect that ."""
