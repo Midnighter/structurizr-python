@@ -64,7 +64,7 @@ class StructurizrClientSettings(BaseSettings):
     """
 
     url: HttpUrl = Field(
-        "https://api.structurizr.com",
+        default="https://api.structurizr.com",
         env="STRUCTURIZR_URL",
         description="The Structurizr API URL.",
     )
@@ -84,18 +84,18 @@ class StructurizrClientSettings(BaseSettings):
         description="The Structurizr workspace API secret.",
     )
     user: str = Field(
-        USER,
+        default=USER,
         env="STRUCTURIZR_USER",
         description="A string identifying the user (e.g. an e-mail address or "
         "username).",
     )
     agent: str = Field(
-        AGENT,
+        default=AGENT,
         env="STRUCTURIZR_AGENT",
         description="A string identifying the agent (e.g. 'structurizr-java/1.2.0').",
     )
     workspace_archive_location: DirectoryPath = Field(
-        Path.cwd(),
+        default=Path.cwd(),
         env="STRUCTURIZR_WORKSPACE_ARCHIVE_LOCATION",
         description="A directory for archiving downloaded workspaces.",
     )

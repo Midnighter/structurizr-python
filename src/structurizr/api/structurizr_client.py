@@ -103,6 +103,7 @@ class StructurizrClient:
             raise StructurizrClientException(
                 f"Failed to lock the Structurizr workspace {self.workspace_id}."
             )
+
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -161,11 +162,11 @@ class StructurizrClient:
         workspace_json = ws_io.json()
         logger.debug(workspace_json)
         request = self._client.build_request(
-            "PUT", self._workspace_url, data=workspace_json
+            method="PUT", url=self._workspace_url, data=workspace_json,
         )
         request.headers.update(
             self._add_headers(
-                request.url.full_path,
+                url_path=request.url.full_path,
                 method="PUT",
                 content=workspace_json,
                 content_type=self._application_json,
