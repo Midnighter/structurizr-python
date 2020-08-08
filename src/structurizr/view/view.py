@@ -46,32 +46,29 @@ class ViewIO(BaseModel, ABC):
 
     key: str
     description: str
-    software_system_id: str = Field(default="", alias="softwareSystemId")
+    software_system_id: str = Field(default=None, alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(default=None, alias="paperSize")
     automatic_layout: Optional[AutomaticLayoutIO] = Field(
         default=None, alias="automaticLayout"
     )
     title: str = ""
 
-    element_views: List[ElementViewIO] = Field(default=(), alias="elementViews")
+    element_views: List[ElementViewIO] = Field(default=(), alias="elements")
     relationship_views: List[RelationshipViewIO] = Field(
-        default=(), alias="relationshipViews"
+        default=(), alias="relationships"
     )
 
     # TODO
-    layout_merge_strategy: Optional[Any] = Field(
-        default=None, alias="layoutMergeStrategy"
-    )
+    # layout_merge_strategy: Optional[Any] = Field(
+    #     default=None, alias="layoutMergeStrategy"
+    # )
 
 
 class View(ViewSetRefMixin, AbstractBase, ABC):
     """
     Define an abstract base class for all views.
-
     Views include static views, dynamic views and deployment views.
-
     Attributes:
-
     """
 
     def __init__(
