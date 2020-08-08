@@ -19,10 +19,10 @@
 from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
+from .component import Component, ComponentIO
 
 
 if TYPE_CHECKING:
-    from .component import Component
     from .software_system import SoftwareSystem
 
 
@@ -50,7 +50,7 @@ class ContainerIO(StaticStructureElementIO):
     """
 
     technology: Optional[str] = ""
-    components: List["Component"] = set()
+    components: List[ComponentIO] = set()
 
 
 class Container(StaticStructureElement):
@@ -78,7 +78,7 @@ class Container(StaticStructureElement):
         *,
         parent: "SoftwareSystem",
         technology: str = "",
-        components: Iterable["Component"] = (),
+        components: Iterable[Component] = (),
         **kwargs
     ):
         """
@@ -96,3 +96,14 @@ class Container(StaticStructureElement):
         self.parent = parent
         self.technology = technology
         self.components = set(components)
+
+    @classmethod
+    def hydrate(cls, container_io: ContainerIO) -> "Container":
+        """"""
+        return cls(
+            name=container_io.name,
+            description=container_io.description,
+            parent=container_io.parent,
+            technology=container_io.technology,
+            components=map(Component.hydrate, container_io.components),
+        )
