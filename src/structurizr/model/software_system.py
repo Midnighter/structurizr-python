@@ -44,7 +44,7 @@ class SoftwareSystemIO(StaticStructureElementIO):
         description="The location of this software system.",
     )
     containers: List[ContainerIO] = Field(
-        default=(), description="The containers within this software system."
+        default=[], description="The containers within this software system."
     )
 
 
@@ -82,7 +82,6 @@ class SoftwareSystem(StaticStructureElement):
     def hydrate(cls, software_system_io: SoftwareSystemIO) -> "SoftwareSystem":
         """"""
         return cls(
-            name=software_system_io.name,
-            description=software_system_io.description,
-            location=software_system_io.location,
+            **super().hydrate_arguments(software_system_io),
+            location=software_system_io.location
         )

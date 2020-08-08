@@ -66,7 +66,6 @@ class ModelItem(AbstractBase, ABC):
 
     Attributes:
         id (str):
-        origin_id (str):
         tags (set of str):
         properties (dict):
         perspectives (set of Perspective):
@@ -77,16 +76,27 @@ class ModelItem(AbstractBase, ABC):
         self,
         *,
         id: str = "",
-        origin_id: str = "",
         tags: Iterable[str] = (),
         properties: Dict[str, str] = (),
         perspectives: Iterable[Perspective] = (),
-        **kwargs
+        **kwargs,
     ):
         """"""
         super().__init__(**kwargs)
         self.id = id
-        self.origin_id = origin_id
         self.tags = set(tags)
         self.properties = dict(properties)
         self.perspectives = set(perspectives)
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(id={self.id})"
+
+    @classmethod
+    def hydrate_arguments(cls, model_item_io: ModelItemIO) -> dict:
+        print(model_item_io)
+        return {
+            "id": model_item_io.id,
+            "tags": model_item_io.tags,
+            "properties": model_item_io.properties,  # TODO: implement
+            "perspectives": map(Perspective.hydrate, model_item_io.perspectives),
+        }

@@ -68,3 +68,7 @@ class Perspective(AbstractBase):
         super().__init__(**kwargs)
         self.name = name
         self.description = description
+
+    @classmethod
+    def hydrate(cls, perspective_io: PerspectiveIO) -> "Perspective":
+        return cls(name=perspective_io.name, description=perspective_io.description)
