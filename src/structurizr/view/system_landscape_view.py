@@ -63,6 +63,10 @@ class SystemLandscapeView(ModelRefMixin, StaticView):
         self.enterprise_boundary_visible = enterprise_boundary_visible
         self.set_model(model)
 
+    @property
+    def model(self) -> Model:
+        return self.get_model()
+
     def add_all_elements(self) -> None:
         """Add all software systems and all people to this view."""
         self.add_all_software_systems()
