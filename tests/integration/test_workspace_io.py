@@ -48,7 +48,9 @@ def test_invalid_workspace(invalid_workspace):
     WorkspaceIO.parse_file(invalid_workspace)
 
 
-@pytest.mark.parametrize("filename", ["Trivial.json", "GettingStarted.json"])
+@pytest.mark.parametrize(
+    "filename", ["Trivial.json", "GettingStarted.json", "FinancialRiskSystem.json"]
+)
 def test_deserialize_workspace(filename):
     """Expect that a trivial workspace definition is successfully deserialized."""
     path = DEFINITIONS / filename
@@ -57,7 +59,11 @@ def test_deserialize_workspace(filename):
 
 @pytest.mark.xfail(reason="Workspace and model comparison is still id dependent.")
 @pytest.mark.parametrize(
-    "example, filename", [("getting_started", "GettingStarted.json")]
+    "example, filename",
+    [
+        ("getting_started", "GettingStarted.json"),
+        ("financial_risk_system", "FinancialRiskSystem.json"),
+    ],
 )
 def test_serialize_workspace(example, filename, monkeypatch):
     """Expect that ."""
