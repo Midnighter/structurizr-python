@@ -27,3 +27,4 @@ from .view_set import ViewSet, ViewSetIO
 from .element_style import ElementStyle, ElementStyleIO
 from .relationship_style import RelationshipStyle, RelationshipStyleIO
 from .configuration import Configuration, ConfigurationIO
+from .element_style import ElementStyle, ElementStyleIO
