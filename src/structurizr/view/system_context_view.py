@@ -18,8 +18,9 @@
 
 from pydantic import Field
 
-from structurizr.view.element_view import ElementView
-from structurizr.view.relationship_view import RelationshipView
+from .element_view import ElementView
+from .relationship_view import RelationshipView
+from ..model import Element, SoftwareSystem, Person
 
 from .static_view import StaticView, StaticViewIO
 
@@ -63,6 +64,10 @@ class SystemContextView(StaticView):
         """Add all software systems and all people to this view."""
         self.add_all_software_systems()
         self.add_all_people()
+
+    def add_nearest_neighbours(self, element: Element):
+        super().add_nearest_neighbours(element, SoftwareSystem)
+        super().add_nearest_neighbours(element, Person)
 
     @classmethod
     def hydrate(

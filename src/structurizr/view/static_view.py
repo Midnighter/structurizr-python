@@ -89,14 +89,16 @@ class StaticView(View, ABC):
             self.add(person)
 
     def add_all_software_systems(self) -> None:
-        """Add all people in the model to this view."""
+        """Add all software systems in the model to this view."""
         for system in self.model.software_systems:
             self.add(system)
 
     def add_nearest_neighbours(
         self,
         element: Element,
-        element_type: Union[Type[Person], Type[SoftwareSystem], Type[Container]],
+        element_type: Optional[
+            Union[Type[Person], Type[SoftwareSystem], Type[Container]]
+        ],
     ) -> None:
         """Add all permitted elements from a model to this view."""
         self._add_element(element, True)
