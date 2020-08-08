@@ -60,46 +60,46 @@ class WorkspaceIO(BaseModel):
 
     """
 
-    id: int = Field(..., description="The workspace ID.")
+    id: int = Field(default=None, description="The workspace ID.")
     name: str = Field(..., description="The name of the workspace.")
     description: str = Field(..., description="A short description of the workspace.")
     version: Optional[str] = Field(
-        None, description="A version number for the workspace."
+        default=None, description="A version number for the workspace."
     )
     thumbnail: Optional[str] = Field(
-        None,
+        default=None,
         description="The thumbnail associated with the workspace; a Base64 encoded PNG"
         " file as a Data URI (data:image/png;base64).",
     )
     last_modified_date: Optional[datetime] = Field(
-        None,
+        default=None,
         alias="lastModifiedDate",
         description="The last modified date, in ISO 8601 format"
         " (e.g. '2018-09-08T12:40:03Z').",
     )
     last_modified_user: Optional[str] = Field(
-        None,
+        default=None,
         alias="lastModifiedUser",
         description="A string identifying the user who last modified the workspace"
         " (e.g. an e-mail address or username).",
     )
     last_modified_agent: Optional[str] = Field(
-        None,
+        default=None,
         alias="lastModifiedAgent",
         description="A string identifying the agent that was last used to modify the"
         " workspace (e.g. 'structurizr-java/1.2.0').",
     )
     model: Optional[ModelIO] = Field(None, description="A software architecture model.")
     views: Optional[ViewSetIO] = Field(
-        None, description="The set of views onto a software architecture model."
+        default=None, description="The set of views onto a software architecture model."
     )
     documentation: Optional[Any] = Field(
-        None,
+        default=None,
         description="The documentation associated with this software architecture "
         "model.",
     )
     configuration: Optional[Any] = Field(
-        None, description="The workspace configuration."
+        default=None, description="The workspace configuration."
     )
 
 
