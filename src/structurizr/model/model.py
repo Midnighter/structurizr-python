@@ -138,7 +138,7 @@ class Model(AbstractBase):
             model.add_deployment_node(deployment_node=deployment_node)
 
         for element in model.get_elements():
-            for relationship in element.relationships:  # type: Relationship
+            for relationship in element.relationships:
                 relationship.source = model.get_element(relationship.source_id)
                 relationship.destination = model.get_element(
                     relationship.destination_id
@@ -389,13 +389,16 @@ class Model(AbstractBase):
         """"""
         if not relationship.id:
             relationship.id = self._id_generator.generate_id()
-        elif (
-            # TODO(ilaif): @midnighter: not sure this is the best check,
-            #  we should have a global id check?
-            relationship.id in self._elements_by_id
-            or relationship.id in self._relationships_by_id
-        ):
-            raise ValueError(f"The relationship {relationship} has an existing ID.")
+        elif relationship.id in self._elements_by_id:
+            raise ValueError(
+                f"{relationship} has the same ID of "
+                f"{self._elements_by_id[relationship.id]}"
+            )
+        elif relationship.id in self._relationships_by_id:
+            raise ValueError(
+                f"{relationship} has the same ID of "
+                f"{self._relationships_by_id[relationship.id]}"
+            )
         relationship.source.add_relationship(relationship)
         self._add_relationship_to_internal_structures(relationship)
         return True
