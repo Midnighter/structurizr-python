@@ -47,13 +47,13 @@ class ViewSetIO(BaseModel):
     """
 
     system_landscape_views: List[SystemLandscapeViewIO] = Field(
-        default=(), alias="systemLandscapeViews"
+        default=[], alias="systemLandscapeViews"
     )
     system_context_views: List[SystemContextViewIO] = Field(
-        default=(), alias="systemContextViews"
+        default=[], alias="systemContextViews"
     )
     configuration: Optional[ConfigurationIO] = None
-    container_views: List[ContainerViewIO] = Field(default=(), alias="containerViews")
+    container_views: List[ContainerViewIO] = Field(default=[], alias="containerViews")
 
     # TODO:
     # component_views: List[ComponentView] = Field(set(), alias="componentViews")
