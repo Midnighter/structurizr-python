@@ -61,10 +61,8 @@ class Person(StaticStructureElement):
     def hydrate(cls, person_io: PersonIO) -> "Person":
         """"""
         return cls(
-            name=person_io.name,
+            **super().hydrate_arguments(person_io),
             location=person_io.location,
-            description=person_io.description,
-            relationships=map(Relationship.hydrate, person_io.relationships),
         )
 
     def interacts_with(self, destination: "Person", description: str, **kwargs):

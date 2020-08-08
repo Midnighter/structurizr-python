@@ -71,7 +71,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
         self.name = name
         self.description = description
         self.url = url
-        self.relationships = set(relationships)
+        self.relationships: Iterable[Relationship] = set(relationships)
 
     def __repr__(self):
         """Return a string representation of this instance."""
@@ -99,3 +99,13 @@ class Element(ModelRefMixin, ModelItem, ABC):
         if relationship is None:
             relationship = Relationship(**kwargs)
         self.relationships.add(relationship)
+
+    @classmethod
+    def hydrate_arguments(cls, element_io: ElementIO) -> dict:
+        return {
+            **super().hydrate_arguments(element_io),
+            'name': element_io.name,
+            'description': element_io.description,
+            'url': element_io.url,
+            'relationships': map(Relationship.hydrate, element_io.relationships),
+        }
