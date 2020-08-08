@@ -27,6 +27,7 @@ from .relationship import Relationship, RelationshipIO
 from .model import Model, ModelIO
 from .tags import Tags
 from .container import Container, ContainerIO
+from .component import Component, ComponentIO
 
 
 _symbols = locals()
