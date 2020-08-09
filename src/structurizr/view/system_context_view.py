@@ -18,10 +18,7 @@
 
 from pydantic import Field
 
-from .element_view import ElementView
-from .relationship_view import RelationshipView
-from ..model import Element, SoftwareSystem, Person
-
+from ..model import Element, Person, SoftwareSystem
 from .static_view import StaticView, StaticViewIO
 
 
@@ -71,18 +68,14 @@ class SystemContextView(StaticView):
 
     @classmethod
     def hydrate(
-        cls, system_context_view_io: SystemContextViewIO
+        cls,
+        system_context_view_io: SystemContextViewIO,
+        software_system: SoftwareSystem,
     ) -> "SystemContextView":
         """"""
         return cls(
-            element_views=map(
-                ElementView.hydrate, system_context_view_io.element_views
-            ),
-            relationship_views=map(
-                RelationshipView.hydrate, system_context_view_io.relationship_views
-            ),
-            key=system_context_view_io.key,
-            description=system_context_view_io.description,
+            **super().hydrate_arguments(system_context_view_io),
+            software_system=software_system,
             enterprise_boundary_visible=(
                 system_context_view_io.enterprise_boundary_visible
             ),
