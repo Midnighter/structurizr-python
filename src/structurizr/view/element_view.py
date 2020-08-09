@@ -59,11 +59,18 @@ class ElementView(AbstractBase):
         """Initialize an element view."""
         super().__init__(**kwargs)
         self.element = element
-        self.id = id
+        self.id = element.id if element else id
         self.x = x
         self.y = y
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(id={self.id})"
 
     @classmethod
     def hydrate(cls, element_view_io: ElementViewIO) -> "ElementView":
         """"""
         return cls(id=element_view_io.id, x=element_view_io.x, y=element_view_io.y)
+
+    def copy_layout_information_from(self, source: "ElementView") -> None:
+        self.x = source.x
+        self.y = source.y

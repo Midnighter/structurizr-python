@@ -94,11 +94,31 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         self.paper_size = paper_size
         self.automatic_layout = automatic_layout
         self.title = title
-        self.element_views = set(element_views)
-        self.relationship_views = set(relationship_views)
+        self.element_views: Iterable[ElementView] = set(element_views)
+        self.relationship_views: Iterable[RelationshipView] = set(relationship_views)
 
         # TODO
         self.layout_merge_strategy = layout_merge_strategy
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(key={self.key})"
+
+    @classmethod
+    def hydrate_arguments(cls, view_io: ViewIO) -> "View":
+        return {
+            # TODO: should we add this here? probably not: "software_system"
+            "key": view_io.key,
+            "description": view_io.description,
+            "paper_size": view_io.paper_size,
+            "automatic_layout": AutomaticLayout.hydrate(view_io.automatic_layout)
+            if view_io.automatic_layout
+            else None,
+            "title": view_io.title,
+            "element_views": map(ElementView.hydrate, view_io.element_views),
+            "relationship_views": map(
+                RelationshipView.hydrate, view_io.relationship_views
+            ),
+        }
 
     @property
     def model(self):
@@ -119,10 +139,34 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 f"The element {element} does not exist in the model associated with "
                 f"this view."
             )
-        # TODO: finish x,y coordinates , x=0, y=0
-        self.element_views.add(ElementView(id=element.id))
+        self.element_views.add(ElementView(element=element))
         if add_relationships:
             self._add_relationships(element)
+
+    def _remove_element(self, element: Element) -> None:
+        """
+        Remove the given element from this view.
+
+        Args:
+            element (Element): The element to remove from the view.
+
+        """
+        if element not in self.model:
+            raise RuntimeError(
+                f"The element {element} does not exist in the model associated with "
+                f"this view."
+            )
+        self.element_views.add(ElementView(id=element.id))
+        for element_view in self.element_views:
+            if element_view.id == element.id:
+                self.element_views.remove(element_view)
+
+        for relationship_view in self.relationship_views:
+            if (
+                relationship_view.relationship.source.id == element.id
+                or relationship_view.relationship.destination.id == element.id
+            ):
+                self.relationship_views.remove(relationship_view)
 
     def _add_relationships(self, element: Element) -> None:
         """
@@ -136,10 +180,45 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
 
         for relationship in element.get_efferent_relationships():
             if relationship.destination.id in elements:
-                # TODO: finish relationshipview construction
-                self.relationship_views.add(RelationshipView(id=relationship.id))
+                self.relationship_views.add(RelationshipView(relationship=relationship))
 
         for relationship in element.get_afferent_relationships():
             if relationship.source.id in elements:
-                # TODO: finish relationshipview construction
-                self.relationship_views.add(RelationshipView(id=relationship.id))
+                self.relationship_views.add(RelationshipView(relationship=relationship))
+
+    def copy_layout_information_from(self, source: "View") -> None:
+        if not self.paper_size:
+            self.paper_size = source.paper_size
+
+        for source_element_view in source.element_views:
+            destination_element_view = self.find_element_view(source_element_view)
+            if destination_element_view:
+                destination_element_view.copy_layout_information_from(
+                    source_element_view
+                )
+
+        for source_relationship_view in source.relationship_views:
+            destintion_relationship_view = self.find_relationship_view(
+                source_relationship_view
+            )
+            if destintion_relationship_view:
+                destintion_relationship_view.copy_layout_information_from(
+                    source_relationship_view
+                )
+
+    def find_element_view(self, source_element_view: ElementView) -> ElementView:
+        for element_view in self.element_views:
+            if element_view.element.id == source_element_view.element.id:
+                return element_view
+        return None
+
+    def find_relationship_view(
+        self, source_relationship_view: RelationshipView
+    ) -> RelationshipView:
+        for relationship_view in self.relationship_views:
+            if (
+                relationship_view.relationship.id
+                == source_relationship_view.relationship.id
+            ):
+                return relationship_view
+        return None
