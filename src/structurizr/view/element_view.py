@@ -54,7 +54,7 @@ class ElementView(AbstractBase):
         x: Optional[int] = None,
         y: Optional[int] = None,
         id: str = "",
-        **kwargs
+        **kwargs,
     ) -> None:
         """Initialize an element view."""
         super().__init__(**kwargs)
