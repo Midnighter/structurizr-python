@@ -19,7 +19,6 @@
 from pydantic import Field
 
 from .location import Location
-from .relationship import Relationship
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
 
@@ -60,10 +59,7 @@ class Person(StaticStructureElement):
     @classmethod
     def hydrate(cls, person_io: PersonIO) -> "Person":
         """"""
-        return cls(
-            **super().hydrate_arguments(person_io),
-            location=person_io.location,
-        )
+        return cls(**super().hydrate_arguments(person_io), location=person_io.location,)
 
     def interacts_with(self, destination: "Person", description: str, **kwargs):
         return self.uses(destination=destination, description=description, **kwargs)
