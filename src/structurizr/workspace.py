@@ -44,6 +44,7 @@ class WorkspaceIO(BaseModel):
         name (str): The name of the workspace.
         description (str): A short description of the workspace.
         version (str): A version number for the workspace.
+        revision (int): The internal revision number.
         thumbnail (str): The thumbnail associated with the workspace; a Base64
             encoded PNG file as a Data URI (data:image/png;base64).
         last_modified_date (datetime.datetime): The last modified date, in ISO 8601
@@ -65,6 +66,9 @@ class WorkspaceIO(BaseModel):
     description: str = Field(..., description="A short description of the workspace.")
     version: Optional[str] = Field(
         default=None, description="A version number for the workspace."
+    )
+    revision: Optional[int] = Field(
+        default=None, description="The internal revision number."
     )
     thumbnail: Optional[str] = Field(
         default=None,
@@ -204,13 +208,21 @@ class Workspace(AbstractBase):
     @classmethod
     def hydrate(cls, workspace_io: WorkspaceIO) -> "Workspace":
         """"""
+        model = Model.hydrate(workspace_io.model)
+        views = ViewSet.hydrate(views=workspace_io.views, model=model)
+
         return cls(
             id=workspace_io.id,
             name=workspace_io.name,
             description=workspace_io.description,
             version=workspace_io.version,
-            model=Model.hydrate(workspace_io.model),
+            revision=workspace_io.revision,
+            thumbnail=workspace_io.thumbnail,
             last_modified_date=workspace_io.last_modified_date,
             last_modified_user=workspace_io.last_modified_user,
             last_modified_agent=workspace_io.last_modified_agent,
+            model=model,
+            views=views,
+            # documentation=Documentation.hydrate(workspace_io.documentation),
+            configuration=views.configuration,
         )
