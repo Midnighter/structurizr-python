@@ -74,14 +74,12 @@ class SystemLandscapeView(ModelRefMixin, StaticView):
 
     @classmethod
     def hydrate(
-        cls, system_landscape_view_io: SystemLandscapeViewIO
+        cls, system_landscape_view_io: SystemLandscapeViewIO, model: Model,
     ) -> "SystemLandscapeView":
         """"""
         return cls(
-            # TODO (midnighter): Set the model somehow.
-            # model=...,
-            key=system_landscape_view_io.key,
-            description=system_landscape_view_io.description,
+            **super().hydrate_arguments(system_landscape_view_io),
+            model=model,
             enterprise_boundary_visible=(
                 system_landscape_view_io.enterprise_boundary_visible
             ),
