@@ -61,27 +61,31 @@ class StaticView(View, ABC):
         super().__init__(**kwargs)
         self.animations = [] if animations is None else list(animations)
 
+    @classmethod
+    def hydrate_arguments(cls, static_view_io: StaticViewIO) -> "View":
+        return {
+            **super().hydrate_arguments(static_view_io),
+            "animations": map(Animation.hydrate, static_view_io.animations),
+        }
+
     @abstractmethod
     def add_all_elements(self) -> None:
         """Add all permitted elements from a model to this view."""
         pass
 
     def add(
-        self,
-        static_element: Union[Person, SoftwareSystem],
-        add_relationships: bool = True,
+        self, element: Union[Person, SoftwareSystem], add_relationships: bool = True,
     ) -> None:
         """
         Add the given person or software system to this view.
 
         Args:
-            static_element (Person or SoftwareSystem): The static element to add to
-                this view.
+            element (Person or SoftwareSystem): The element to add to this view.
             add_relationships (bool, optional): Whether to include all of the static
                 element's relationships with other elements (default `True`).
 
         """
-        self._add_element(static_element, add_relationships)
+        self._add_element(element, add_relationships)
 
     def add_all_people(self) -> None:
         """Add all people in the model to this view."""
