@@ -66,3 +66,13 @@ class AutomaticLayout(AbstractBase):
         self.node_separation = node_separation
         self.edge_separation = edge_separation
         self.vertices = vertices
+
+    @classmethod
+    def hydrate(cls, automatic_layout_io: AutomaticLayoutIO) -> "AutomaticLayout":
+        return cls(
+            rank_direction=automatic_layout_io.rank_direction,
+            rank_separation=automatic_layout_io.rank_separation,
+            node_separation=automatic_layout_io.node_separation,
+            edge_separation=automatic_layout_io.edge_separation,
+            vertices=automatic_layout_io.vertices,
+        )
