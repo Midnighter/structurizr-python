@@ -18,11 +18,13 @@
 
 from typing import TYPE_CHECKING, Iterable, List, Optional
 
-from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .component import Component, ComponentIO
+from .static_structure_element import StaticStructureElement, StaticStructureElementIO
+from .tags import Tags
 
 
 if TYPE_CHECKING:
+    from .model import Model
     from .software_system import SoftwareSystem
 
 
@@ -97,13 +99,38 @@ class Container(StaticStructureElement):
         self.technology = technology
         self.components = set(components)
 
+        self.tags.add(Tags.CONTAINER)
+
     @classmethod
-    def hydrate(cls, container_io: ContainerIO) -> "Container":
+    def hydrate(
+        cls,
+        container_io: ContainerIO,
+        software_system: "SoftwareSystem",
+        model: "Model",
+    ) -> "Container":
         """"""
-        return cls(
-            name=container_io.name,
-            description=container_io.description,
-            parent=container_io.parent,
+        container = cls(
+            **super().hydrate_arguments(container_io),
+            parent=software_system,
             technology=container_io.technology,
-            components=map(Component.hydrate, container_io.components),
         )
+
+        for component_io in container_io.components:
+            component = Component.hydrate(component_io, container=container)
+            model.add_component(component, parent=container)
+
+        return container
+
+    def add_component(self, component: Component = None, **kwargs) -> Component:
+        return self.get_model().add_component(
+            parent=self, component=component, **kwargs,
+        )
+
+    def add(self, component: Component) -> None:
+        self.components.add(component)
+
+    def get_component_with_name(self, name: str) -> Component:
+        for component in self.components:
+            if component.name == name:
+                return component
+        return None
