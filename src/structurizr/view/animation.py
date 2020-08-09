@@ -65,3 +65,11 @@ class Animation(AbstractBase):
         self.order = order
         self.elements = set(elements)
         self.relationships = set(relationships)
+
+    @classmethod
+    def hydrate(cls, animation_io: AnimationIO) -> "Animation":
+        return cls(
+            order=animation_io.order,
+            elements=animation_io.elements,
+            relationships=animation_io.relationships,
+        )
