@@ -16,7 +16,7 @@
 """Provide a software system element model."""
 
 
-from typing import List, Optional
+from typing import TYPE_CHECKING, Iterable, List
 
 from pydantic import Field
 
@@ -24,6 +24,10 @@ from .container import Container, ContainerIO
 from .location import Location
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
+
+
+if TYPE_CHECKING:
+    from .model import Model
 
 
 __all__ = ("SoftwareSystem", "SoftwareSystemIO")
@@ -62,7 +66,7 @@ class SoftwareSystem(StaticStructureElement):
         """"""
         super().__init__(**kwargs)
         self.location = location
-        self.containers = set()
+        self.containers: Iterable[Container] = set()
 
         # TODO: canonical_name
         # TODO: parent
@@ -79,9 +83,19 @@ class SoftwareSystem(StaticStructureElement):
         )
 
     @classmethod
-    def hydrate(cls, software_system_io: SoftwareSystemIO) -> "SoftwareSystem":
+    def hydrate(
+        cls, software_system_io: SoftwareSystemIO, model: "Model"
+    ) -> "SoftwareSystem":
         """"""
-        return cls(
+        software_system = cls(
             **super().hydrate_arguments(software_system_io),
-            location=software_system_io.location
+            location=software_system_io.location,
         )
+
+        for container_io in software_system_io.containers:
+            container = Container.hydrate(
+                container_io, software_system=software_system, model=model,
+            )
+            model.add_container(container, parent=software_system)
+
+        return software_system
