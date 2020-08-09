@@ -24,6 +24,7 @@ from pydantic import Field, HttpUrl
 from ..mixin import ModelRefMixin
 from .model_item import ModelItem, ModelItemIO
 from .relationship import Relationship, RelationshipIO
+from .tags import Tags
 
 
 __all__ = ("ElementIO", "Element")
@@ -41,9 +42,9 @@ class ElementIO(ModelItemIO, ABC):
     """
 
     name: str = Field(...)
-    description: str = Field("")
-    url: Optional[HttpUrl] = Field(None)
-    relationships: Optional[List[RelationshipIO]] = Field([])
+    description: str = Field(default="")
+    url: Optional[HttpUrl] = Field(default=None)
+    relationships: Optional[List[RelationshipIO]] = Field(default=[])
 
 
 class Element(ModelRefMixin, ModelItem, ABC):
@@ -72,6 +73,8 @@ class Element(ModelRefMixin, ModelItem, ABC):
         self.description = description
         self.url = url
         self.relationships: Iterable[Relationship] = set(relationships)
+
+        self.tags.add(Tags.ELEMENT)
 
     def __repr__(self):
         """Return a string representation of this instance."""
@@ -104,8 +107,8 @@ class Element(ModelRefMixin, ModelItem, ABC):
     def hydrate_arguments(cls, element_io: ElementIO) -> dict:
         return {
             **super().hydrate_arguments(element_io),
-            'name': element_io.name,
-            'description': element_io.description,
-            'url': element_io.url,
-            'relationships': map(Relationship.hydrate, element_io.relationships),
+            "name": element_io.name,
+            "description": element_io.description,
+            "url": element_io.url,
+            "relationships": map(Relationship.hydrate, element_io.relationships),
         }
