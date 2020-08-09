@@ -23,9 +23,9 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ModelRefMixin
+from .component_view import ComponentView, ComponentViewIO
 from .configuration import Configuration, ConfigurationIO
 from .container_view import ContainerView, ContainerViewIO
-from .component_view import ComponentView, ComponentViewIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .system_landscape_view import SystemLandscapeView, SystemLandscapeViewIO
 from .view import View
