@@ -25,6 +25,7 @@ from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
+from .component import Component
 from .container import Container
 from .container_instance import ContainerInstance
 from .element import Element
@@ -130,7 +131,7 @@ class Model(AbstractBase):
             model.add_person(person=person)
 
         for software_system_io in model_io.software_systems:
-            software_system = SoftwareSystem.hydrate(software_system_io)
+            software_system = SoftwareSystem.hydrate(software_system_io, model=model)
             model.add_software_system(software_system=software_system)
 
         for deployment_node_io in model_io.deployment_nodes:
@@ -269,6 +270,21 @@ class Model(AbstractBase):
             raise ValueError("A container must be specified.")
         # TODO: implement
         # instance_number =
+
+    def add_component(
+        self, component: Optional[Component] = None, **kwargs,
+    ) -> Component:
+        name = component.name if component else kwargs["name"]
+        parent = kwargs["parent"]
+        if parent.get_component_with_name(name):
+            raise ValueError(f"{component} already exists for {parent}.")
+
+        if not component:
+            component = Component(**kwargs)
+        # TODO(ilaif): @midnighter - Might want to improve this impl:
+        parent.components.add(component)
+        self._add_element(component)
+        return component
 
     def add_deployment_node(
         self, deployment_node: Optional[DeploymentNode] = None, **kwargs
