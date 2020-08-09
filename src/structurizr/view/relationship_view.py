@@ -20,6 +20,8 @@ from typing import Any, Iterable, List, Optional
 
 from pydantic import Field
 
+from .vertex import Vertex, VertexIO
+from ..model.relationship import Relationship
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 
@@ -42,8 +44,7 @@ class RelationshipViewIO(BaseModel):
     id: Optional[str]
     order: Optional[str]
     description: Optional[str]
-    # TODO
-    vertices: List[Any] = Field(default=[])
+    vertices: List[VertexIO] = Field(default=[])
     # TODO
     routing: Optional[Any]
     position: Optional[int]
@@ -60,22 +61,33 @@ class RelationshipView(AbstractBase):
     def __init__(
         self,
         *,
+        relationship: Relationship = None,
         id: Optional[str] = None,
         description: Optional[str] = None,
         order: Optional[str] = None,
-        vertices: Iterable[Any] = (),
+        vertices: Iterable[Vertex] = (),
         routing: Optional[Any] = None,
         position: Optional[int] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Initialize a relationship view."""
         super().__init__(**kwargs)
-        self.id = id
+        self.relationship = relationship
+        self.id = relationship.id if relationship else id
         self.description = description
         self.order = order
         self.vertices = set(vertices)
         self.routing = routing
         self.position = position
+
+    def __repr__(self) -> str:
+        return (
+            f"{type(self).__name__}("
+            f"id={self.id}, "
+            f"source_id={self.relationship.source_id}, "
+            f"destination_id={self.relationship.destination_id}"
+            f")"
+        )
 
     @classmethod
     def hydrate(cls, relationship_view_io: RelationshipViewIO) -> "RelationshipView":
@@ -84,7 +96,12 @@ class RelationshipView(AbstractBase):
             id=relationship_view_io.id,
             description=relationship_view_io.description,
             order=relationship_view_io.order,
-            vertices=relationship_view_io.vertices,
+            vertices=map(Vertex.hydrate, relationship_view_io.vertices),
             routing=relationship_view_io.routing,
             position=relationship_view_io.position,
         )
+
+    def copy_layout_information_from(self, source: "RelationshipView") -> None:
+        self.vertices = source.vertices
+        self.routing = source.routing
+        self.position = source.position

@@ -79,6 +79,7 @@ class StructurizrClient:
         self.user = settings.user
         self.agent = settings.agent
         self.workspace_archive_location = settings.workspace_archive_location
+        self.merge_from_remote = True
         self._workspace_url = f"/workspace/{self.workspace_id}"
         self._lock_url = f"{self._workspace_url}/lock"
         self._params = {
@@ -131,7 +132,7 @@ class StructurizrClient:
 
         """
         request = self._client.build_request("GET", self._workspace_url)
-        request.headers.update(self._add_headers(request.url.full_path,))
+        request.headers.update(self._add_headers(request.url.full_path))
         response = self._client.send(request)
         if response.status_code != 200:
             raise StructurizrClientException(
@@ -154,6 +155,14 @@ class StructurizrClient:
 
         """
         assert workspace.id == self.workspace_id
+
+        if self.merge_from_remote:
+            remote_workspace = self.get_workspace()
+            if remote_workspace:
+                workspace.views.copy_layout_information_from(remote_workspace.views)
+                # TODO:
+                # workspace.views.configuration.copy_configuration_from(remote_workspace.views.configuration)
+
         ws_io = WorkspaceIO.from_orm(workspace)
         ws_io.thumbnail = None
         ws_io.last_modified_date = datetime.now(timezone.utc)

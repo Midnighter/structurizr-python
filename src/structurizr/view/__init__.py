@@ -28,3 +28,4 @@ from .element_style import ElementStyle, ElementStyleIO
 from .relationship_style import RelationshipStyle, RelationshipStyleIO
 from .configuration import Configuration, ConfigurationIO
 from .element_style import ElementStyle, ElementStyleIO
+from .vertex import Vertex, VertexIO

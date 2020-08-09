@@ -25,8 +25,10 @@ from ..base_model import BaseModel
 from ..mixin import ModelRefMixin
 from .configuration import Configuration, ConfigurationIO
 from .container_view import ContainerView, ContainerViewIO
+from .component_view import ComponentView, ComponentViewIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .system_landscape_view import SystemLandscapeView, SystemLandscapeViewIO
+from .view import View
 
 
 if TYPE_CHECKING:
@@ -54,9 +56,9 @@ class ViewSetIO(BaseModel):
     )
     configuration: Optional[ConfigurationIO] = None
     container_views: List[ContainerViewIO] = Field(default=[], alias="containerViews")
+    component_views: List[ComponentViewIO] = Field(default=[], alias="componentViews")
 
     # TODO:
-    # component_views: List[ComponentView] = Field(set(), alias="componentViews")
     # dynamic_views: List[DynamicView] = Field(set(), alias="dynamicViews")
     # deployment_views: List[DeploymentView] = Field(set(), alias="deploymentViews")
     # filtered_views: List[FilteredView] = Field(set(), alias="filteredViews")
@@ -75,24 +77,84 @@ class ViewSet(ModelRefMixin, AbstractBase):
     def __init__(
         self,
         *,
-        model: Optional["Model"] = None,
+        model: Optional["Model"],
         # TODO:
         # enterprise_context_views: Iterable[EnterpriseContextView] = (),
         system_landscape_views: Iterable[SystemLandscapeView] = (),
         system_context_views: Iterable[SystemContextView] = (),
         container_views: Iterable[ContainerView] = (),
+        component_views: Iterable[ComponentView] = (),
         configuration: Optional[Configuration] = None,
         **kwargs
     ) -> None:
         """Initialize a view set."""
         super().__init__(**kwargs)
         # self.enterprise_context_views = set(enterprise_context_views)
-        self.system_landscape_views = set(system_landscape_views)
-        self.system_context_views = set(system_context_views)
-        self.container_views = set(container_views)
+        self.system_landscape_views: Iterable[SystemLandscapeView] = set(
+            system_landscape_views
+        )
+        self.system_context_views: Iterable[SystemContextView] = set(
+            system_context_views
+        )
+        self.container_views: Iterable[ContainerView] = set(container_views)
+        self.component_views: Iterable[ComponentView] = set(component_views)
         # TODO
         self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
+
+    @classmethod
+    def hydrate(cls, views: ViewSetIO, model: "Model") -> "ViewSet":
+        system_landscape_views = []
+        for view_io in views.system_landscape_views:
+            view = SystemLandscapeView.hydrate(view_io, model=model)
+            cls.hydrate_view(view, model=model)
+            system_landscape_views.append(view)
+
+        system_context_views = []
+        for view_io in views.system_context_views:
+            software_system = model.get_software_system_with_id(
+                view_io.software_system_id
+            )
+            view = SystemContextView.hydrate(view_io, software_system=software_system)
+            cls.hydrate_view(view, model=model)
+            system_context_views.append(view)
+
+        container_views = []
+        for view_io in views.container_views:
+            software_system = model.get_software_system_with_id(
+                id=view_io.software_system_id,
+            )
+            view = ContainerView.hydrate(view_io, software_system=software_system)
+            cls.hydrate_view(view, model=model)
+            container_views.append(view)
+
+        component_views = []
+        for view_io in views.component_views:
+            container = model.get_element(view_io.container_id)
+            view = ComponentView.hydrate(view_io, container=container)
+            cls.hydrate_view(view, model=model)
+            component_views.append(view)
+
+        return cls(
+            model=model,
+            # TODO:
+            # enterprise_context_views: Iterable[EnterpriseContextView] = (),
+            system_landscape_views=system_landscape_views,
+            system_context_views=system_context_views,
+            container_views=container_views,
+            component_views=component_views,
+            configuration=Configuration.hydrate(views.configuration),
+        )
+
+    @classmethod
+    def hydrate_view(cls, view: View, model: "Model") -> None:
+        for element_view in view.element_views:
+            element_view.element = model.get_element(element_view.id)
+
+        for relationship_view in view.relationship_views:
+            relationship_view.relationship = model.get_relationship(
+                relationship_view.id
+            )
 
     def create_system_landscape_view(
         self, system_landscape_view: Optional[SystemLandscapeView] = None, **kwargs
@@ -131,25 +193,86 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self.container_views.add(container_view)
         return container_view
 
-    @classmethod
-    def hydrate(cls, views: ViewSetIO, model: Optional["Model"] = None) -> "ViewSet":
-        system_context_views = []
-        for view_io in views.system_context_views:
-            view = SystemContextView.hydrate(view_io)
-            view.software_system_id = view_io.software_system_id
-            view.software_system = model.get_software_system_with_id(
-                view.software_system_id
-            )
-            system_context_views.append(view)
+    def create_component_view(
+        self, component_view: Optional[ComponentView] = None, **kwargs
+    ) -> ComponentView:
+        # TODO:
+        # AssertThatTheViewKeyIsUnique(key);
+        if component_view is None:
+            component_view = ComponentView(**kwargs)
+        component_view.set_viewset(self)
+        self.component_views.add(component_view)
+        return component_view
 
-        return cls(
-            # model=model,
-            # TODO:
-            # enterprise_context_views: Iterable[EnterpriseContextView] = (),
-            system_landscape_views=map(
-                SystemLandscapeView.hydrate, views.system_landscape_views
-            ),
-            system_context_views=system_context_views,
-            container_views=map(ContainerView.hydrate, views.container_views),
-            configuration=Configuration.hydrate(views.configuration),
-        )
+    def copy_layout_information_from(self, source: "ViewSet") -> None:
+        for source_view in source.system_landscape_views:
+            destination_view = self.find_system_landscape_view(source_view)
+            if destination_view:
+                destination_view.copy_layout_information_from(source_view)
+
+        for source_view in source.system_context_views:
+            destination_view = self.find_system_context_view(source_view)
+            if destination_view:
+                destination_view.copy_layout_information_from(source_view)
+
+        for source_view in source.container_views:
+            destination_view = self.find_container_view(source_view)
+            if destination_view:
+                destination_view.copy_layout_information_from(source_view)
+
+        for source_view in source.component_views:
+            destination_view = self.find_component_view(source_view)
+            if destination_view:
+                destination_view.copy_layout_information_from(source_view)
+
+        # TODO: dynamic view
+        # for source_view in source.dynamic_views:
+        #     destination_view = self.find_dynamic_view(source_view)
+        #     if destination_view:
+        #         destination_view.copy_layout_information_from(source_view)
+
+        # TODO: deployment view
+        # for source_view in source.deployment_views:
+        #     destination_view = self.find_deployment_view(source_view)
+        #     if destination_view:
+        #         destination_view.copy_layout_information_from(source_view)
+
+    def find_system_landscape_view(
+        self, view: SystemLandscapeView
+    ) -> SystemLandscapeView:
+        for current_view in self.system_landscape_views:
+            if view.key == current_view.key:
+                return current_view
+        return None
+
+    def find_system_context_view(self, view: SystemContextView) -> SystemContextView:
+        for current_view in self.system_context_views:
+            if view.key == current_view.key:
+                return current_view
+        return None
+
+    def find_container_view(self, view: ContainerView) -> ContainerView:
+        for current_view in self.container_views:
+            if view.key == current_view.key:
+                return current_view
+        return None
+
+    def find_component_view(self, view: ComponentView) -> ComponentView:
+        for current_view in self.component_views:
+            if view.key == current_view.key:
+                return current_view
+        return None
+
+    # TODO: dynamic view
+    # def find_dynamic_view(self, view: DynamicView) -> DynamicView:
+    #     for current_view in self.dynamic_views:
+    #         if view.key == current_view.key:
+    #             return current_view
+    #     return None
+
+    # TODO: deployment view
+    # def find_deployment_view(self, view: DeploymentView) -> DeploymentView:
+    #     for current_view in self.deployment_views:
+    #         if view.key == current_view.key:
+    #             return current_view
+    #     return None
