@@ -20,10 +20,10 @@ from typing import Any, Iterable, List, Optional
 
 from pydantic import Field
 
-from .vertex import Vertex, VertexIO
-from ..model.relationship import Relationship
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
+from ..model.relationship import Relationship
+from .vertex import Vertex, VertexIO
 
 
 __all__ = ("RelationshipView", "RelationshipViewIO")
