@@ -22,6 +22,7 @@ from pydantic import Field
 
 from .code_element import CodeElement, CodeElementIO
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
+from .tags import Tags
 
 
 if TYPE_CHECKING:
@@ -104,13 +105,15 @@ class Component(StaticStructureElement):
         self.code_elements = set(code_elements)
         self.size = size
 
+        self.tags.add(Tags.COMPONENT)
+
     @classmethod
-    def hydrate(cls, component_io: ComponentIO) -> "Component":
+    def hydrate(cls, component_io: ComponentIO, container: "Container") -> "Component":
         """"""
-        # TODO (midnighter): Initialization requires `parent`.
         return cls(
-            name=component_io.name,
-            description=component_io.description,
+            **super().hydrate_arguments(component_io),
+            parent=container,
             technology=component_io.technology,
-            # code_elements=map(CodeElement.hydrate, component_io.components),
+            # TODO: code_elements=map(CodeElement.hydrate, component_io.components),
+            size=component_io.size,
         )
