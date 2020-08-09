@@ -61,22 +61,31 @@ class ContainerView(StaticView):
             external_software_system_boundary_visible
         )
 
-    def add(
-        self,
-        static_element: Union[Person, SoftwareSystem, Container],
-        add_relationships: bool = True,
-    ) -> None:
+    @classmethod
+    def hydrate(
+        cls, container_view_io: ContainerViewIO, software_system: SoftwareSystem,
+    ) -> "ContainerView":
+        """"""
+        return cls(
+            **super().hydrate_arguments(container_view_io),
+            software_system=software_system,
+            external_software_system_boundary_visible=(
+                container_view_io.external_software_system_boundary_visible
+            ),
+        )
+
+    def add(self, element: Union[Person, SoftwareSystem, Container],) -> None:
         """
         Add the given person, software system, or container to this view.
 
         Args:
-            static_element (Person, SoftwareSystem or Container): The static element
+            element (Person, SoftwareSystem or Container): The element
                 to add to this view.
             add_relationships (bool, optional): Whether to include all of the static
                 element's relationships with other elements (default `True`).
 
         """
-        return self._add_element(static_element, add_relationships=True)
+        return self._add_element(element, add_relationships=True)
 
     def add_all_elements(self) -> None:
         """Add all people, software systems, and containers to this view."""
@@ -92,17 +101,3 @@ class ContainerView(StaticView):
         super().add_nearest_neighbours(element, SoftwareSystem)
         super().add_nearest_neighbours(element, Person)
         super().add_nearest_neighbours(element, Container)
-
-    @classmethod
-    def hydrate(cls, container_view_io: ContainerViewIO) -> "ContainerView":
-        """"""
-        return cls(
-            external_software_system_boundary_visible=(
-                container_view_io.external_software_system_boundary_visible
-            ),
-            description=container_view_io.description,
-            key=container_view_io.key,
-            # TODO: Need an instance here or get an instance from the model by
-            #  reference.
-            # software_system=container_view_io.software_system,
-        )
