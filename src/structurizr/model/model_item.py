@@ -93,7 +93,6 @@ class ModelItem(AbstractBase, ABC):
 
     @classmethod
     def hydrate_arguments(cls, model_item_io: ModelItemIO) -> dict:
-        print(model_item_io)
         return {
             "id": model_item_io.id,
             "tags": model_item_io.tags,
