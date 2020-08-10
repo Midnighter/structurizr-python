@@ -46,7 +46,7 @@ class ContainerViewIO(StaticViewIO):
 class ContainerView(StaticView):
     """
     Represent the container view from the C4 model.
-``
+
     Attributes:
         external_software_system_boundary_visible (bool):
 
