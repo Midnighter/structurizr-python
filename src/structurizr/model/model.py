@@ -291,6 +291,7 @@ class Model(AbstractBase):
     ) -> DeploymentNode:
         """
         Add a new deployment node to the model.
+
         Args:
             deployment_node (DeploymentNode, optional): Either provide a
                 `DeploymentNode` instance or

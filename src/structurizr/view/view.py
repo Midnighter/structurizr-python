@@ -68,6 +68,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
     """
     Define an abstract base class for all views.
     Views include static views, dynamic views and deployment views.
+
     Attributes:
     """
 
