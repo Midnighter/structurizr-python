@@ -96,12 +96,8 @@
         "decisions": [],
         "images": []
     },
-    "id": 53898,
     "name": "Getting Started",
     "description": "This is a model of my software system.",
-    "lastModifiedDate": "2020-05-07T08:20:46.6858149Z",
-    "lastModifiedUser": "ilaif",
-    "lastModifiedAgent": "structurizr-dotnet/0.9.6",
     "configuration": {
         "users": []
     }
