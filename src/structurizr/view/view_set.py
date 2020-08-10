@@ -206,22 +206,22 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         for source_view in source.system_landscape_views:
-            destination_view = self.find_system_landscape_view(source_view)
+            destination_view = self._find_system_landscape_view(source_view)
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
 
         for source_view in source.system_context_views:
-            destination_view = self.find_system_context_view(source_view)
+            destination_view = self._find_system_context_view(source_view)
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
 
         for source_view in source.container_views:
-            destination_view = self.find_container_view(source_view)
+            destination_view = self._find_container_view(source_view)
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
 
         for source_view in source.component_views:
-            destination_view = self.find_component_view(source_view)
+            destination_view = self._find_component_view(source_view)
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
 
@@ -237,27 +237,29 @@ class ViewSet(ModelRefMixin, AbstractBase):
         #     if destination_view:
         #         destination_view.copy_layout_information_from(source_view)
 
-    def find_system_landscape_view(
-        self, view: SystemLandscapeView
+    def _find_system_landscape_view(
+        self, view: Optional[SystemLandscapeView]
     ) -> SystemLandscapeView:
         for current_view in self.system_landscape_views:
             if view.key == current_view.key:
                 return current_view
         return None
 
-    def find_system_context_view(self, view: SystemContextView) -> SystemContextView:
+    def _find_system_context_view(
+        self, view: SystemContextView,
+    ) -> Optional[SystemContextView]:
         for current_view in self.system_context_views:
             if view.key == current_view.key:
                 return current_view
         return None
 
-    def find_container_view(self, view: ContainerView) -> ContainerView:
+    def _find_container_view(self, view: ContainerView) -> Optional[ContainerView]:
         for current_view in self.container_views:
             if view.key == current_view.key:
                 return current_view
         return None
 
-    def find_component_view(self, view: ComponentView) -> ComponentView:
+    def _find_component_view(self, view: ComponentView) -> Optional[ComponentView]:
         for current_view in self.component_views:
             if view.key == current_view.key:
                 return current_view
