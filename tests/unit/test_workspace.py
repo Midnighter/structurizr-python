@@ -17,7 +17,6 @@
 
 
 import pytest
-from pydantic import ValidationError
 
 from structurizr.workspace import Workspace, WorkspaceIO
 
@@ -25,24 +24,7 @@ from structurizr.workspace import Workspace, WorkspaceIO
 @pytest.mark.parametrize(
     "attributes",
     [
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="id\n  field required"
-            ),
-        ),
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="name\n  field required"
-            ),
-        ),
-        pytest.param(
-            {},
-            marks=pytest.mark.raises(
-                exception=ValidationError, message="description\n  field required"
-            ),
-        ),
+        {},
         {"id": 42, "name": "Marvin", "description": "depressed robot"},
     ],
 )

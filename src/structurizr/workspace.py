@@ -61,9 +61,11 @@ class WorkspaceIO(BaseModel):
 
     """
 
-    id: int = Field(default=None, description="The workspace ID.")
-    name: str = Field(..., description="The name of the workspace.")
-    description: str = Field(..., description="A short description of the workspace.")
+    id: Optional[int] = Field(default=None, description="The workspace ID.")
+    name: Optional[str] = Field(default=None, description="The name of the workspace.")
+    description: Optional[str] = Field(
+        default=None, description="A short description of the workspace."
+    )
     version: Optional[str] = Field(
         default=None, description="A version number for the workspace."
     )
