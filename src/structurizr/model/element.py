@@ -44,7 +44,7 @@ class ElementIO(ModelItemIO, ABC):
     name: str = Field(...)
     description: str = Field(default="")
     url: Optional[HttpUrl] = Field(default=None)
-    relationships: Optional[List[RelationshipIO]] = Field(default=[])
+    relationships: List[RelationshipIO] = Field(default=())
 
 
 class Element(ModelRefMixin, ModelItem, ABC):

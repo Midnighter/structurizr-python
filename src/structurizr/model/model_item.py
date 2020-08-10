@@ -42,9 +42,9 @@ class ModelItemIO(BaseModel, ABC):
     """
 
     id: str = Field(default="")
-    tags: List[str] = Field(default=[])
+    tags: List[str] = Field(default=())
     properties: Dict[str, str] = Field(default={})
-    perspectives: List[PerspectiveIO] = Field(default=[])
+    perspectives: List[PerspectiveIO] = Field(default=())
 
     @validator("tags", pre=True)
     def split_tags(cls, tags: Union[str, List[str]]) -> List[str]:

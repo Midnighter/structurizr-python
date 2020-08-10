@@ -53,9 +53,9 @@ class ViewIO(BaseModel, ABC):
     )
     title: str = ""
 
-    element_views: List[ElementViewIO] = Field(default=[], alias="elements")
+    element_views: List[ElementViewIO] = Field(default=(), alias="elements")
     relationship_views: List[RelationshipViewIO] = Field(
-        default=[], alias="relationships"
+        default=(), alias="relationships"
     )
 
     # TODO

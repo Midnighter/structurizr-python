@@ -60,15 +60,15 @@ class ModelIO(BaseModel):
         default=None, description="The enterprise associated with this model."
     )
     people: List[PersonIO] = Field(
-        default=[], description="The set of people belonging to this model."
+        default=(), description="The set of people belonging to this model."
     )
     software_systems: List[SoftwareSystemIO] = Field(
-        default=[],
+        default=(),
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
     )
     deployment_nodes: List[DeploymentNodeIO] = Field(
-        default=[],
+        default=(),
         alias="deploymentNodes",
         description="The set of deployment nodes belonging to this model.",
     )

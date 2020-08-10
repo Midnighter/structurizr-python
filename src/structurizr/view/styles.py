@@ -37,8 +37,8 @@ class StylesIO(BaseModel):
 
     """
 
-    elements: List[ElementStyleIO] = Field(default=[])
-    relationships: List[RelationshipStyleIO] = Field(default=[])
+    elements: List[ElementStyleIO] = Field(default=())
+    relationships: List[RelationshipStyleIO] = Field(default=())
 
 
 class Styles(AbstractBase):
