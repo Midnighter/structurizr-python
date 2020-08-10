@@ -226,5 +226,4 @@ class Workspace(AbstractBase):
             model=model,
             views=views,
             # documentation=Documentation.hydrate(workspace_io.documentation),
-            configuration=views.configuration,
         )

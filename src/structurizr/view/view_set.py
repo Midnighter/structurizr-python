@@ -54,7 +54,7 @@ class ViewSetIO(BaseModel):
     system_context_views: List[SystemContextViewIO] = Field(
         default=(), alias="systemContextViews"
     )
-    configuration: Optional[ConfigurationIO] = None
+    configuration: ConfigurationIO
     container_views: List[ContainerViewIO] = Field(default=(), alias="containerViews")
     component_views: List[ComponentViewIO] = Field(default=(), alias="componentViews")
 
