@@ -52,7 +52,7 @@ class ContainerIO(StaticStructureElementIO):
     """
 
     technology: Optional[str] = ""
-    components: List[ComponentIO] = set()
+    components: List[ComponentIO] = Field(default=())
 
 
 class Container(StaticStructureElement):
