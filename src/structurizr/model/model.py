@@ -67,11 +67,12 @@ class ModelIO(BaseModel):
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
     )
-    deployment_nodes: List[DeploymentNodeIO] = Field(
-        default=(),
-        alias="deploymentNodes",
-        description="The set of deployment nodes belonging to this model.",
-    )
+    # TODO:
+    # deployment_nodes: List[DeploymentNodeIO] = Field(
+    #     default=(),
+    #     alias="deploymentNodes",
+    #     description="The set of deployment nodes belonging to this model.",
+    # )
 
 
 class Model(AbstractBase):
@@ -134,9 +135,9 @@ class Model(AbstractBase):
             software_system = SoftwareSystem.hydrate(software_system_io, model=model)
             model.add_software_system(software_system=software_system)
 
-        for deployment_node_io in model_io.deployment_nodes:
-            deployment_node = DeploymentNode.hydrate(deployment_node_io)
-            model.add_deployment_node(deployment_node=deployment_node)
+        # for deployment_node_io in model_io.deployment_nodes:
+        #     deployment_node = DeploymentNode.hydrate(deployment_node_io)
+        #     model.add_deployment_node(deployment_node=deployment_node)
 
         for element in model.get_elements():
             for relationship in element.relationships:
