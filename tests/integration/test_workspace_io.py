@@ -17,6 +17,7 @@
 
 
 from importlib import import_module
+import json
 from pathlib import Path
 
 import pytest
@@ -49,7 +50,8 @@ def test_invalid_workspace(invalid_workspace):
 
 
 @pytest.mark.parametrize(
-    "filename", ["Trivial.json", "GettingStarted.json", "FinancialRiskSystem.json"]
+    "filename",
+    ["Trivial.json", "GettingStarted.json", "FinancialRiskSystem.json", "BigBank.json"],
 )
 def test_deserialize_workspace(filename):
     """Expect that a trivial workspace definition is successfully deserialized."""
@@ -57,12 +59,12 @@ def test_deserialize_workspace(filename):
     Workspace.load(path)
 
 
-@pytest.mark.xfail(reason="Workspace and model comparison is still id dependent.")
 @pytest.mark.parametrize(
     "example, filename",
     [
         ("getting_started", "GettingStarted.json"),
         ("financial_risk_system", "FinancialRiskSystem.json"),
+        # ("big_bank", "BigBank.json"),
     ],
 )
 def test_serialize_workspace(example, filename, monkeypatch):
@@ -73,4 +75,5 @@ def test_serialize_workspace(example, filename, monkeypatch):
     # TODO (midnighter): Use `from_orm` like `.construct` bypassing validation. (
     #  Requires a pull request on pydantic.)
     expected = WorkspaceIO.from_orm(Workspace.load(path))
-    assert WorkspaceIO.from_orm(example.main()) == expected
+    actual = WorkspaceIO.from_orm(example.main())
+    assert json.loads(actual.json()) == json.loads(expected.json())
