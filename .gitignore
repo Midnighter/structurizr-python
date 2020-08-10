@@ -820,3 +820,6 @@ flycheck_*.el
 
 # Until we have sensible defaults, ignore VS code
 /.vscode/
+
+# Ignore default generated workspace DSL from get_workspace
+structurizr-*.json.gz
