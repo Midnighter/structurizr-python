@@ -98,6 +98,9 @@ class ElementStyle(AbstractBase):
         self.metadata = metadata
         self.description = description
 
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(tag={self.tag})"
+
     @classmethod
     def hydrate(cls, element_style_io: ElementStyleIO) -> "ElementStyle":
         """"""
