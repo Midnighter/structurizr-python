@@ -44,7 +44,7 @@ class RelationshipViewIO(BaseModel):
     id: Optional[str]
     order: Optional[str]
     description: Optional[str]
-    vertices: List[VertexIO] = Field(default=[])
+    vertices: List[VertexIO] = Field(default=())
     # TODO
     routing: Optional[Any]
     position: Optional[int]

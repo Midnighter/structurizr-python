@@ -46,7 +46,7 @@ class ContainerInstanceIO(DeploymentElementIO):
     container: "ContainerIO"
     container_id: str
     instance_id: int
-    health_checks: List["HTTPHealthCheckIO"] = Field([], alias="healthChecks")
+    health_checks: List["HTTPHealthCheckIO"] = Field(default=(), alias="healthChecks")
 
 
 class ContainerInstance(DeploymentElement):

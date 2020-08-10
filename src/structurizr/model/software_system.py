@@ -48,7 +48,7 @@ class SoftwareSystemIO(StaticStructureElementIO):
         description="The location of this software system.",
     )
     containers: List[ContainerIO] = Field(
-        default=[], description="The containers within this software system."
+        default=(), description="The containers within this software system."
     )
 
 

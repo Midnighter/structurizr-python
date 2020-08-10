@@ -54,7 +54,7 @@ class ComponentIO(StaticStructureElementIO):
     """
 
     technology: str = ""
-    code_elements: List[CodeElementIO] = Field([], alias="codeElements")
+    code_elements: List[CodeElementIO] = Field(default=(), alias="codeElements")
     size: Optional[int] = None
 
 
