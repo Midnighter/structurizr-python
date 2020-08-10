@@ -78,7 +78,7 @@ class SystemLandscapeView(ModelRefMixin, StaticView):
     ) -> "SystemLandscapeView":
         """"""
         return cls(
-            **super().hydrate_arguments(system_landscape_view_io),
+            **cls.hydrate_arguments(system_landscape_view_io),
             model=model,
             enterprise_boundary_visible=(
                 system_landscape_view_io.enterprise_boundary_visible

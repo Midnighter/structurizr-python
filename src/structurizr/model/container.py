@@ -112,7 +112,7 @@ class Container(StaticStructureElement):
     ) -> "Container":
         """"""
         container = cls(
-            **super().hydrate_arguments(container_io),
+            **cls.hydrate_arguments(container_io),
             parent=software_system,
             technology=container_io.technology,
         )

@@ -74,7 +74,7 @@ class ComponentView(StaticView):
     ) -> "ComponentView":
         """"""
         return cls(
-            **super().hydrate_arguments(component_view_io),
+            **cls.hydrate_arguments(component_view_io),
             container=container,
             external_software_system_boundary_visible=(
                 component_view_io.external_software_system_boundary_visible

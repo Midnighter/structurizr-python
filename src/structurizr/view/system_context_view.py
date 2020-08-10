@@ -74,7 +74,7 @@ class SystemContextView(StaticView):
     ) -> "SystemContextView":
         """"""
         return cls(
-            **super().hydrate_arguments(system_context_view_io),
+            **cls.hydrate_arguments(system_context_view_io),
             software_system=software_system,
             enterprise_boundary_visible=(
                 system_context_view_io.enterprise_boundary_visible

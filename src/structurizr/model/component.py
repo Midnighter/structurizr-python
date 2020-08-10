@@ -111,7 +111,7 @@ class Component(StaticStructureElement):
     def hydrate(cls, component_io: ComponentIO, container: "Container") -> "Component":
         """"""
         return cls(
-            **super().hydrate_arguments(component_io),
+            **cls.hydrate_arguments(component_io),
             parent=container,
             technology=component_io.technology,
             # TODO: code_elements=map(CodeElement.hydrate, component_io.components),

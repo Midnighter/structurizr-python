@@ -67,7 +67,7 @@ class ContainerView(StaticView):
     ) -> "ContainerView":
         """"""
         return cls(
-            **super().hydrate_arguments(container_view_io),
+            **cls.hydrate_arguments(container_view_io),
             software_system=software_system,
             external_software_system_boundary_visible=(
                 container_view_io.external_software_system_boundary_visible

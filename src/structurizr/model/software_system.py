@@ -88,7 +88,7 @@ class SoftwareSystem(StaticStructureElement):
     ) -> "SoftwareSystem":
         """"""
         software_system = cls(
-            **super().hydrate_arguments(software_system_io),
+            **cls.hydrate_arguments(software_system_io),
             location=software_system_io.location,
         )
 
