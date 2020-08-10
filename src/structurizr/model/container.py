@@ -18,6 +18,8 @@
 
 from typing import TYPE_CHECKING, Iterable, List, Optional
 
+from pydantic import Field
+
 from .component import Component, ComponentIO
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
