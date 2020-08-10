@@ -35,7 +35,7 @@ def main() -> Workspace:
     workspace = Workspace(
         name="Financial Risk System",
         description="This is a simple (incomplete) example C4 model based upon the "
-        "financial risk system architecture kata which can be found at "
+        "financial risk system architecture kata, which can be found at "
         "https://structurizr.com/help/examples.",
     )
 
@@ -43,7 +43,7 @@ def main() -> Workspace:
 
     financial_risk_system = model.add_software_system(
         name="Financial Risk System",
-        description="Calculates the banks exposure to risk for product X.",
+        description="Calculates the bank's exposure to risk for product X.",
     )
 
     business_user = model.add_person(
@@ -90,7 +90,7 @@ def main() -> Workspace:
     ).tags.add("Future State")
 
     email_system = model.add_software_system(
-        name="E-mail system", description="The banks Microsoft Exchange system."
+        name="E-mail system", description="The bank's Microsoft Exchange system."
     )
     financial_risk_system.uses(
         destination=email_system,
@@ -105,7 +105,7 @@ def main() -> Workspace:
 
     central_monitoring_service = model.add_software_system(
         name="Central Monitoring Service",
-        description="The banks central monitoring and alerting dashboard.",
+        description="The bank's central monitoring and alerting dashboard.",
     )
     financial_risk_system.uses(
         destination=central_monitoring_service,
@@ -116,7 +116,7 @@ def main() -> Workspace:
 
     active_directory = model.add_software_system(
         name="Active Directory",
-        description="The banks authentication and authorisation system.",
+        description="The bank's authentication and authorisation system.",
     )
     financial_risk_system.uses(
         destination=active_directory,
