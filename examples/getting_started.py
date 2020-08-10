@@ -25,6 +25,7 @@ import logging
 from structurizr import Workspace
 from structurizr.model import Tags
 from structurizr.view import ElementStyle, Shape
+from structurizr.view.paper_size import PaperSize
 
 
 def main() -> Workspace:
@@ -47,6 +48,7 @@ def main() -> Workspace:
         description="An example of a System Context diagram.",
     )
     context_view.add_all_elements()
+    context_view.paper_size = PaperSize.A5_Landscape
 
     styles = workspace.views.configuration.styles
     styles.add(
