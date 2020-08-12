@@ -12,7 +12,7 @@ Report Bugs
 
 Report bugs at https://github.com/Midnighter/structurizr-python/issues.
 
-If you are reporting a bug, please follow the template guide lines. The more 
+If you are reporting a bug, please follow the template guidelines. The more 
 detailed your report, the easier and thus faster we can help you.
 
 Fix Bugs
@@ -93,9 +93,6 @@ local development.
        make qa
        tox
 
-   You can run all tests in parallel using detox. To get detox, just
-   pip install it into your virtualenv.
-
 6. Commit your changes and push your branch to GitHub. Please use `semantic
    commit messages <http://karma-runner.github.io/2.0/dev/git-commit-msg.html>`_.
 
@@ -116,5 +113,3 @@ Before you submit a pull request, check that it meets these guidelines:
 1. The pull request should include tests.
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring.
-3. The pull request should work for Python 3.6 and 3.7. This is also ensured 
-   by our Travis CI.
