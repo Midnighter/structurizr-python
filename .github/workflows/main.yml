@@ -34,20 +34,20 @@ jobs:
         python -m pip install tox tox-gh-actions
     - name: Test isort
       run: tox -e isort
-      if: ${{ matrix.python-version }} == '3.6'
+      if: matrix.python-version == '3.6'
     - name: Test black
       run: tox -e black
-      if: ${{ matrix.python-version }} == '3.6'
+      if: matrix.python-version == '3.6'
 #    - name: Test flake8
 #      run: tox -e flake8
-#      if: ${{ matrix.python-version }} == '3.6'
+#      if: matrix.python-version == '3.6'
 #    - name: Test docs
 #      run: tox -e docs
-#      if: ${{ matrix.python-version }} == '3.6'
+#      if: matrix.python-version == '3.6'
     - name: Test safety
       run: tox -e safety
     - name: Test suite
-      run: tox -e py -- --cov-report=xml
+      run: tox -- --cov-report=xml
       env:
         SECRET_WORKSPACE_ID: ${{ secrets.STRUCTURIZR_WORKSPACE_ID }}
         SECRET_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
