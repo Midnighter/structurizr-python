@@ -15,10 +15,14 @@ Structurizr for Python
    :alt: Apache Software License Version 2.0
 
 .. image:: https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg
-   :target: https://github.com/Midnighter/structurizr-python/blob/master/.github/CODE_OF_CONDUCT.md
+   :target: .github/CODE_OF_CONDUCT.md
    :alt: Code of Conduct
 
-.. image:: https://codecov.io/gh/Midnighter/structurizr-python/branch/master/graph/badge.svg
+.. image:: https://github.com/Midnighter/structurizr-python/workflows/CI-CD/badge.svg
+   :target: https://github.com/Midnighter/structurizr-python/workflows/CI-CD
+   :alt: GitHub Actions
+
+.. image:: https://codecov.io/gh/Midnighter/structurizr-python/branch/stable/graph/badge.svg
    :target: https://codecov.io/gh/Midnighter/structurizr-python
    :alt: Codecov
 
