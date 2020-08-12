@@ -14,7 +14,7 @@
 
 
 """
-Provide a 'getting started' example.
+Provide a 'Big Bank' example.
 
 Illustrate how to create a software architecture diagram using code.
 """
