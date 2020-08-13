@@ -64,4 +64,9 @@ class StaticStructureElement(Element, ABC):
     def delivers(
         self, destination: Element, description: str, technology: str = "", **kwargs,
     ) -> Optional["Relationship"]:
-        return self.uses(destination, description, technology, **kwargs)
+        return self.uses(
+            destination=destination,
+            description=description,
+            technology=technology,
+            **kwargs,
+        )
