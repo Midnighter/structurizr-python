@@ -235,8 +235,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
         #         destination_view.copy_layout_information_from(source_view)
 
     def _find_system_landscape_view(
-        self, view: Optional[SystemLandscapeView]
-    ) -> SystemLandscapeView:
+        self, view: SystemLandscapeView
+    ) -> Optional[SystemLandscapeView]:
         for current_view in self.system_landscape_views:
             if view.key == current_view.key:
                 return current_view
