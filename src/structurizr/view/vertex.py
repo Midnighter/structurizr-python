@@ -14,7 +14,7 @@
 
 
 """Provide a vertex model."""
-
+from typing import Optional
 
 from pydantic import Field
 
@@ -33,8 +33,8 @@ class VertexIO(BaseModel):
 
     """
 
-    x: int = Field(default=None)
-    y: int = Field(default=None)
+    x: Optional[int] = Field(default=None)
+    y: Optional[int] = Field(default=None)
 
 
 class Vertex(AbstractBase):
