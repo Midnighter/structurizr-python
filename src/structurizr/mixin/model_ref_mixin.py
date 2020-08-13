@@ -35,6 +35,11 @@ class ModelRefMixin:
         super().__init__(**kwargs)
         self._model = lambda: None
 
+    @property
+    def model(self) -> "Model":
+        """Return the referenced model."""
+        return self.get_model()
+
     def get_model(self) -> "Model":
         """
         Retrieve the model instance from the reference.
