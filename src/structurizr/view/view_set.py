@@ -104,7 +104,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         system_landscape_views = []
         for view_io in views.system_landscape_views:
             view = SystemLandscapeView.hydrate(view_io, model=model)
-            cls.hydrate_view(view, model=model)
+            cls._hydrate_view(view, model=model)
             system_landscape_views.append(view)
 
         system_context_views = []
@@ -113,7 +113,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
                 view_io.software_system_id
             )
             view = SystemContextView.hydrate(view_io, software_system=software_system)
-            cls.hydrate_view(view, model=model)
+            cls._hydrate_view(view, model=model)
             system_context_views.append(view)
 
         container_views = []
@@ -122,14 +122,14 @@ class ViewSet(ModelRefMixin, AbstractBase):
                 id=view_io.software_system_id,
             )
             view = ContainerView.hydrate(view_io, software_system=software_system)
-            cls.hydrate_view(view, model=model)
+            cls._hydrate_view(view, model=model)
             container_views.append(view)
 
         component_views = []
         for view_io in views.component_views:
             container = model.get_element(view_io.container_id)
             view = ComponentView.hydrate(view_io, container=container)
-            cls.hydrate_view(view, model=model)
+            cls._hydrate_view(view, model=model)
             component_views.append(view)
 
         return cls(
@@ -144,7 +144,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         )
 
     @classmethod
-    def hydrate_view(cls, view: View, model: "Model") -> None:
+    def _hydrate_view(cls, view: View, model: "Model") -> None:
         for element_view in view.element_views:
             element_view.element = model.get_element(element_view.id)
 
