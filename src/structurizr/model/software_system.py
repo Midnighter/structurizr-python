@@ -16,7 +16,7 @@
 """Provide a software system element model."""
 
 
-from typing import TYPE_CHECKING, Iterable, List
+from typing import TYPE_CHECKING, List, Set
 
 from pydantic import Field
 
@@ -66,7 +66,7 @@ class SoftwareSystem(StaticStructureElement):
         """"""
         super().__init__(**kwargs)
         self.location = location
-        self.containers: Iterable[Container] = set()
+        self.containers: Set[Container] = set()
 
         # TODO: canonical_name
         # TODO: parent
