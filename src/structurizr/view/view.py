@@ -95,8 +95,8 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         self.paper_size = paper_size
         self.automatic_layout = automatic_layout
         self.title = title
-        self.element_views: Iterable[ElementView] = set(element_views)
-        self.relationship_views: Iterable[RelationshipView] = set(relationship_views)
+        self.element_views: Set[ElementView] = set(element_views)
+        self.relationship_views: Set[RelationshipView] = set(relationship_views)
 
         # TODO
         self.layout_merge_strategy = layout_merge_strategy
