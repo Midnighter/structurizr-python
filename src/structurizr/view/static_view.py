@@ -17,7 +17,7 @@
 
 
 from abc import ABC, abstractmethod
-from typing import Iterable, List, Optional, Type, Union
+from typing import Dict, Iterable, List, Optional, Type, Union
 
 from ..model import Container, Element, Person, SoftwareSystem
 from .animation import Animation, AnimationIO
@@ -62,7 +62,7 @@ class StaticView(View, ABC):
         self.animations = [] if animations is None else list(animations)
 
     @classmethod
-    def hydrate_arguments(cls, static_view_io: StaticViewIO) -> "View":
+    def hydrate_arguments(cls, static_view_io: StaticViewIO) -> Dict:
         return {
             **super().hydrate_arguments(static_view_io),
             "animations": map(Animation.hydrate, static_view_io.animations),
@@ -100,9 +100,7 @@ class StaticView(View, ABC):
     def add_nearest_neighbours(
         self,
         element: Element,
-        element_type: Optional[
-            Union[Type[Person], Type[SoftwareSystem], Type[Container]]
-        ],
+        element_type: Union[Type[Person], Type[SoftwareSystem], Type[Container]],
     ) -> None:
         """Add all permitted elements from a model to this view."""
         self._add_element(element, True)
