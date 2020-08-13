@@ -207,7 +207,9 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                     source_relationship_view
                 )
 
-    def find_element_view(self, source_element_view: ElementView) -> ElementView:
+    def find_element_view(
+        self, source_element_view: ElementView
+    ) -> Optional[ElementView]:
         for element_view in self.element_views:
             if element_view.element.id == source_element_view.element.id:
                 return element_view
@@ -215,7 +217,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
 
     def find_relationship_view(
         self, source_relationship_view: RelationshipView
-    ) -> RelationshipView:
+    ) -> Optional[RelationshipView]:
         for relationship_view in self.relationship_views:
             if (
                 relationship_view.relationship.id
