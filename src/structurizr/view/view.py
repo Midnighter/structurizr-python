@@ -17,7 +17,7 @@
 
 
 from abc import ABC
-from typing import Any, Iterable, List, Optional, Set
+from typing import Any, Dict, Iterable, List, Optional, Set
 
 from pydantic import Field
 
@@ -46,7 +46,7 @@ class ViewIO(BaseModel, ABC):
 
     key: str
     description: str
-    software_system_id: str = Field(default=None, alias="softwareSystemId")
+    software_system_id: Optional[str] = Field(default=None, alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(default=None, alias="paperSize")
     automatic_layout: Optional[AutomaticLayoutIO] = Field(
         default=None, alias="automaticLayout"
@@ -105,7 +105,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         return f"{type(self).__name__}(key={self.key})"
 
     @classmethod
-    def hydrate_arguments(cls, view_io: ViewIO) -> "View":
+    def hydrate_arguments(cls, view_io: ViewIO) -> Dict:
         return {
             # TODO: should we add this here? probably not: "software_system"
             "key": view_io.key,
