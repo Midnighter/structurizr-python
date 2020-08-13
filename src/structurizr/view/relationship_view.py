@@ -61,7 +61,7 @@ class RelationshipView(AbstractBase):
     def __init__(
         self,
         *,
-        relationship: Relationship = None,
+        relationship: Optional[Relationship] = None,
         id: Optional[str] = None,
         description: Optional[str] = None,
         order: Optional[str] = None,
