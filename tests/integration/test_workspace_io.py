@@ -72,3 +72,6 @@ def test_serialize_workspace(example, filename, monkeypatch):
     expected = WorkspaceIO.from_orm(Workspace.load(path))
     actual = WorkspaceIO.from_orm(example.main())
     assert json.loads(actual.json()) == json.loads(expected.json())
+    # TODO (Midnighter): This should be equivalent to the above. Why is it not?
+    #  Is `.json` not using the same default arguments as `.dict`?
+    # assert actual.dict() == expected.dict()
