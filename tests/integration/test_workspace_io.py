@@ -16,8 +16,8 @@
 """Ensure correct workspace (de-)serialization."""
 
 
-from importlib import import_module
 import json
+from importlib import import_module
 from pathlib import Path
 
 import pytest
