@@ -16,7 +16,7 @@
 """Provide a set of views onto a software architecture model."""
 
 
-from typing import TYPE_CHECKING, Iterable, List, Optional
+from typing import TYPE_CHECKING, Iterable, List, Optional, Set
 
 from pydantic import Field
 
@@ -90,15 +90,12 @@ class ViewSet(ModelRefMixin, AbstractBase):
         """Initialize a view set."""
         super().__init__(**kwargs)
         # self.enterprise_context_views = set(enterprise_context_views)
-        self.system_landscape_views: Iterable[SystemLandscapeView] = set(
+        self.system_landscape_views: Set[SystemLandscapeView] = set(
             system_landscape_views
         )
-        self.system_context_views: Iterable[SystemContextView] = set(
-            system_context_views
-        )
-        self.container_views: Iterable[ContainerView] = set(container_views)
-        self.component_views: Iterable[ComponentView] = set(component_views)
-        # TODO
+        self.system_context_views: Set[SystemContextView] = set(system_context_views)
+        self.container_views: Set[ContainerView] = set(container_views)
+        self.component_views: Set[ComponentView] = set(component_views)
         self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
 
