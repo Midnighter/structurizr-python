@@ -413,13 +413,13 @@ class Model(AbstractBase):
             relationship.id = self._id_generator.generate_id()
         elif relationship.id in self._elements_by_id:
             raise ValueError(
-                f"{relationship} has the same ID of "
-                f"{self._elements_by_id[relationship.id]}"
+                f"{relationship} has the same ID as "
+                f"{self._elements_by_id[relationship.id]}."
             )
         elif relationship.id in self._relationships_by_id:
             raise ValueError(
-                f"{relationship} has the same ID of "
-                f"{self._relationships_by_id[relationship.id]}"
+                f"{relationship} has the same ID as "
+                f"{self._relationships_by_id[relationship.id]}."
             )
         relationship.source.add_relationship(relationship)
         self._add_relationship_to_internal_structures(relationship)
