@@ -80,7 +80,7 @@ class ElementStyle(AbstractBase):
         opacity: Optional[int] = None,
         metadata: Optional[bool] = None,
         description: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Initialize an element style."""
         super().__init__(**kwargs)

@@ -23,19 +23,8 @@ Illustrate how to create a software architecture diagram using code.
 import logging
 
 from structurizr import Workspace
-
-from structurizr.model import (
-    Enterprise,
-    Location,
-    Tags,
-)
-
-from structurizr.view import (
-    ElementStyle,
-    PaperSize,
-    RelationshipStyle,
-    Shape,
-)
+from structurizr.model import Enterprise, Location, Tags
+from structurizr.view import ElementStyle, PaperSize, RelationshipStyle, Shape
 
 
 def main():
