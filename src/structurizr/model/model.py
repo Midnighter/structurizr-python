@@ -275,15 +275,19 @@ class Model(AbstractBase):
     def add_component(
         self, component: Optional[Component] = None, **kwargs,
     ) -> Component:
-        name = component.name if component else kwargs["name"]
-        parent = kwargs["parent"]
-        if parent.get_component_with_name(name):
-            raise ValueError(f"{component} already exists for {parent}.")
-
         if not component:
             component = Component(**kwargs)
+
+        # TODO (Midnighter): It seems like a lot of this logic could be on the
+        #  Component constructor.
+        if component.parent.get_component_with_name(component.name):
+            raise ValueError(
+                f"Component with name {component.name} already exists for "
+                f"{component.parent}."
+            )
+
         # TODO(ilaif): @midnighter - Might want to improve this impl:
-        parent.components.add(component)
+        component.parent.add(component)
         self._add_element(component)
         return component
 
