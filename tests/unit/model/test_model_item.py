@@ -18,8 +18,12 @@
 
 import pytest
 
+from structurizr.model import Model, SoftwareSystem, SoftwareSystemIO
 from structurizr.model.model_item import ModelItem
 
+@pytest.fixture(scope="function")
+def model() -> Model:
+    return Model()
 
 class ConcreteModelItem(ModelItem):
     """Implement a concrete `ModelItem` class for testing purposes."""
@@ -36,3 +40,23 @@ def test_model_item_init(attributes):
     model_item = ConcreteModelItem(**attributes)
     for attr, expected in attributes.items():
         assert getattr(model_item, attr) == expected
+
+def test_get_tags_when_there_are_no_tags(model: Model):
+    element = model.add_software_system(name="Name", description="Description")
+    assert list(element.tags) == ["Element", "Software System"]
+
+def test_get_tags_returns_the_list_of_tags_when_there_are_some_tags(model: Model):
+    # Based on the equivalent Java test, but also checks tag ordering is preserved
+    # See https://github.com/Midnighter/structurizr-python/issues/22
+    element = model.add_software_system(name="Name", description="Description")
+    element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately unsorted
+    assert list(element.tags) == ["Element", "Software System", "tag3", "tag2", "tag1"]
+
+def test_tag_order_is_preserved_to_and_from_io(model: Model):
+    element = model.add_software_system(name="Name", description="Description")
+    element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately unsorted
+
+    elementIO = SoftwareSystemIO.from_orm(element)
+    assert elementIO.tags == ["Element", "Software System", "tag3", "tag2", "tag1"]
+    element2 = SoftwareSystem.hydrate(elementIO, model)
+    assert list(element2.tags) == ["Element", "Software System", "tag3", "tag2", "tag1"]
