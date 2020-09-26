@@ -17,8 +17,9 @@
 
 
 from abc import ABC
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Set, Union
 
+from ordered_set import OrderedSet
 from pydantic import Field, validator
 
 from ..abstract_base import AbstractBase
@@ -47,10 +48,10 @@ class ModelItemIO(BaseModel, ABC):
     perspectives: List[PerspectiveIO] = Field(default=())
 
     @validator("tags", pre=True)
-    def split_tags(cls, tags: Union[str, List[str]]) -> List[str]:
+    def split_tags(cls, tags: Union[str, List[str], Set[str]]) -> List[str]:
         if isinstance(tags, str):
             return tags.split(",")
-        return tags
+        return list(tags)
 
     def dict(self, **kwargs) -> dict:
         """"""
@@ -84,7 +85,7 @@ class ModelItem(AbstractBase, ABC):
         """"""
         super().__init__(**kwargs)
         self.id = id
-        self.tags = set(tags)
+        self.tags = OrderedSet(tags)
         self.properties = dict(properties)
         self.perspectives = set(perspectives)
 
