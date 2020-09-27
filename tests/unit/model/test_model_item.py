@@ -46,7 +46,11 @@ def test_model_item_init(attributes):
 
 
 def test_default_element_tags_order(empty_model: Model):
-    """Test that the default tags get added in the right order."""
+    """
+    Test that the default tags get added in the right order.
+
+    Based on test_getTags_WhenThereAreNoTags() from the Java API.
+    """
     element = empty_model.add_software_system(name="Name", description="Description")
     assert list(element.tags) == ["Element", "Software System"]
 
@@ -54,6 +58,8 @@ def test_default_element_tags_order(empty_model: Model):
 def test_default_and_custom_tags(empty_model: Model):
     """
     Test that tags are in the order that they were added.
+
+    Based on test_getTags_ReturnsTheListOfTags_WhenThereAreSomeTags from the Java API.
 
     See https://github.com/Midnighter/structurizr-python/issues/22
     """
