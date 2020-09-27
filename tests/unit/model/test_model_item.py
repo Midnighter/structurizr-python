@@ -23,7 +23,8 @@ from structurizr.model.model_item import ModelItem
 
 
 @pytest.fixture(scope="function")
-def model() -> Model:
+def empty_model() -> Model:
+    """Provide an empty Model on demand for test cases to use."""
     return Model()
 
 
@@ -44,24 +45,30 @@ def test_model_item_init(attributes):
         assert getattr(model_item, attr) == expected
 
 
-def test_get_tags_when_there_are_no_tags(model: Model):
-    element = model.add_software_system(name="Name", description="Description")
+def test_default_element_tags_order(empty_model: Model):
+    """Test that the default tags get added in the right order."""
+    element = empty_model.add_software_system(name="Name", description="Description")
     assert list(element.tags) == ["Element", "Software System"]
 
 
-def test_get_tags_returns_the_list_of_tags_when_there_are_some_tags(model: Model):
-    # Based on the equivalent Java test, but also checks tag ordering is preserved
-    # See https://github.com/Midnighter/structurizr-python/issues/22
-    element = model.add_software_system(name="Name", description="Description")
-    element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately unsorted
+def test_default_and_custom_tags(empty_model: Model):
+    """
+    Test that tags are in the order that they were added.
+
+    See https://github.com/Midnighter/structurizr-python/issues/22
+    """
+    element = empty_model.add_software_system(name="Name", description="Description")
+    element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately not ascending
     assert list(element.tags) == ["Element", "Software System", "tag3", "tag2", "tag1"]
 
 
-def test_tag_order_is_preserved_to_and_from_io(model: Model):
-    element = model.add_software_system(name="Name", description="Description")
-    element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately unsorted
+def test_tag_order_is_preserved_to_and_from_io(empty_model: Model):
+    """Test that when serializing via IO classes or back that tag ordering is preserved."""
+    element = empty_model.add_software_system(name="Name", description="Description")
+    element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately not ascending
 
-    elementIO = SoftwareSystemIO.from_orm(element)
-    assert elementIO.tags == ["Element", "Software System", "tag3", "tag2", "tag1"]
-    element2 = SoftwareSystem.hydrate(elementIO, model)
+    element_io = SoftwareSystemIO.from_orm(element)
+    assert element_io.tags == ["Element", "Software System", "tag3", "tag2", "tag1"]
+    assert element_io.dict()["tags"] == "Element,Software System,tag3,tag2,tag1"
+    element2 = SoftwareSystem.hydrate(element_io, empty_model)
     assert list(element2.tags) == ["Element", "Software System", "tag3", "tag2", "tag1"]

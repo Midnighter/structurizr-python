@@ -48,7 +48,7 @@ class ModelItemIO(BaseModel, ABC):
     perspectives: List[PerspectiveIO] = Field(default=())
 
     @validator("tags", pre=True)
-    def split_tags(cls, tags: Union[str, List[str], Set[str]]) -> List[str]:
+    def split_tags(cls, tags: Union[str, Iterable[str]]) -> List[str]:
         if isinstance(tags, str):
             return tags.split(",")
         return list(tags)
