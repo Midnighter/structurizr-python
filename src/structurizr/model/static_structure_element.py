@@ -51,7 +51,11 @@ class StaticStructureElement(Element, ABC):
     """
 
     def uses(
-        self, destination: Element, description: str, technology: str = "", **kwargs,
+        self,
+        destination: Element,
+        description: str,
+        technology: str = "",
+        **kwargs,
     ) -> Optional["Relationship"]:
         return self.get_model().add_relationship(
             source=self,
@@ -62,7 +66,11 @@ class StaticStructureElement(Element, ABC):
         )
 
     def delivers(
-        self, destination: Element, description: str, technology: str = "", **kwargs,
+        self,
+        destination: Element,
+        description: str,
+        technology: str = "",
+        **kwargs,
     ) -> Optional["Relationship"]:
         return self.uses(
             destination=destination,

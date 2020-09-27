@@ -40,7 +40,7 @@ class HTTPHealthCheckIO(BaseModel):
         headers: A set of name-value pairs corresponding to HTTP headers that
                  should be sent with the request.
 
-     """
+    """
 
     name: str = ""
     url: HttpUrl = ""
@@ -62,7 +62,7 @@ class HTTPHealthCheck(AbstractBase):
         headers: A set of name-value pairs corresponding to HTTP headers that
                  should be sent with the request.
 
-     """
+    """
 
     def __init__(
         self,

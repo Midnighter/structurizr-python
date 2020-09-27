@@ -31,7 +31,8 @@ from structurizr.view.paper_size import PaperSize
 def main() -> Workspace:
     """Create the 'getting started' example."""
     workspace = Workspace(
-        name="Getting Started", description="This is a model of my software system.",
+        name="Getting Started",
+        description="This is a model of my software system.",
     )
 
     model = workspace.model
@@ -56,7 +57,10 @@ def main() -> Workspace:
     )
     styles.add(
         ElementStyle(
-            tag=Tags.PERSON, background="#08427b", color="#ffffff", shape=Shape.Person,
+            tag=Tags.PERSON,
+            background="#08427b",
+            color="#ffffff",
+            shape=Shape.Person,
         )
     )
     return workspace

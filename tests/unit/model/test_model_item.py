@@ -28,7 +28,8 @@ class ConcreteModelItem(ModelItem):
 
 
 @pytest.mark.parametrize(
-    "attributes", [{}],
+    "attributes",
+    [{}],
 )
 def test_model_item_init(attributes):
     """Expect proper initialization from arguments."""

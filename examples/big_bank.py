@@ -84,11 +84,13 @@ def main():
         description="The internal Microsoft Exchange e-mail system.",
     )
     internet_banking_system.uses(
-        destination=email_system, description="Sends e-mail using",
+        destination=email_system,
+        description="Sends e-mail using",
     )
     email_system.tags.add(existing_system_tag)
     email_system.delivers(
-        destination=customer, description="Sends e-mails to",
+        destination=customer,
+        description="Sends e-mails to",
     )
 
     atm = model.add_software_system(

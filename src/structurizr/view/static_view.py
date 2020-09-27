@@ -74,7 +74,9 @@ class StaticView(View, ABC):
         pass
 
     def add(
-        self, element: Union[Person, SoftwareSystem], add_relationships: bool = True,
+        self,
+        element: Union[Person, SoftwareSystem],
+        add_relationships: bool = True,
     ) -> None:
         """
         Add the given person or software system to this view.

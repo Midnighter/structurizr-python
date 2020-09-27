@@ -243,7 +243,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
         return None
 
     def _find_system_context_view(
-        self, view: SystemContextView,
+        self,
+        view: SystemContextView,
     ) -> Optional[SystemContextView]:
         for current_view in self.system_context_views:
             if view.key == current_view.key:

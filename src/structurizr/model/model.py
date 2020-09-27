@@ -273,7 +273,9 @@ class Model(AbstractBase):
         # instance_number =
 
     def add_component(
-        self, component: Optional[Component] = None, **kwargs,
+        self,
+        component: Optional[Component] = None,
+        **kwargs,
     ) -> Component:
         if not component:
             component = Component(**kwargs)

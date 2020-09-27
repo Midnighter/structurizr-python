@@ -28,7 +28,8 @@ def model() -> Model:
 
 
 @pytest.mark.parametrize(
-    "attributes", [{"name": "User"}],
+    "attributes",
+    [{"name": "User"}],
 )
 def test_add_person_from_args(attributes: dict, model: Model):
     """Expect that a person can be added to the model."""
@@ -40,7 +41,8 @@ def test_add_person_from_args(attributes: dict, model: Model):
 
 
 @pytest.mark.parametrize(
-    "attributes", [{"name": "User"}],
+    "attributes",
+    [{"name": "User"}],
 )
 def test_add_person(attributes: dict, model: Model):
     """Expect that a person can be added to the model."""
@@ -53,7 +55,8 @@ def test_add_person(attributes: dict, model: Model):
 
 
 @pytest.mark.parametrize(
-    "attributes", [{"name": "SkyNet"}],
+    "attributes",
+    [{"name": "SkyNet"}],
 )
 def test_add_software_system_from_args(attributes: dict, model: Model):
     """Expect that a software system can be added to the model."""
@@ -65,7 +68,8 @@ def test_add_software_system_from_args(attributes: dict, model: Model):
 
 
 @pytest.mark.parametrize(
-    "attributes", [{"name": "SkyNet"}],
+    "attributes",
+    [{"name": "SkyNet"}],
 )
 def test_add_software_system(attributes: dict, model: Model):
     """Expect that a software system can be added to the model."""

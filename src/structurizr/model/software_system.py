@@ -77,9 +77,17 @@ class SoftwareSystem(StaticStructureElement):
     def add(self, container: Container):
         self.containers.add(container)
 
-    def add_container(self, name: str, description: str, technology: str,) -> Container:
+    def add_container(
+        self,
+        name: str,
+        description: str,
+        technology: str,
+    ) -> Container:
         return self.get_model().add_container(
-            parent=self, name=name, description=description, technology=technology,
+            parent=self,
+            name=name,
+            description=description,
+            technology=technology,
         )
 
     @classmethod
@@ -94,7 +102,9 @@ class SoftwareSystem(StaticStructureElement):
 
         for container_io in software_system_io.containers:
             container = Container.hydrate(
-                container_io, software_system=software_system, model=model,
+                container_io,
+                software_system=software_system,
+                model=model,
             )
             model.add_container(container, parent=software_system)
 

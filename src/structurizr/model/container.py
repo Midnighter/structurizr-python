@@ -125,7 +125,9 @@ class Container(StaticStructureElement):
 
     def add_component(self, component: Component = None, **kwargs) -> Component:
         return self.get_model().add_component(
-            parent=self, component=component, **kwargs,
+            parent=self,
+            component=component,
+            **kwargs,
         )
 
     def add(self, component: Component) -> None:

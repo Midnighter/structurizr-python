@@ -63,7 +63,9 @@ class ContainerView(StaticView):
 
     @classmethod
     def hydrate(
-        cls, container_view_io: ContainerViewIO, software_system: SoftwareSystem,
+        cls,
+        container_view_io: ContainerViewIO,
+        software_system: SoftwareSystem,
     ) -> "ContainerView":
         """"""
         return cls(
@@ -74,7 +76,10 @@ class ContainerView(StaticView):
             ),
         )
 
-    def add(self, element: Union[Person, SoftwareSystem, Container],) -> None:
+    def add(
+        self,
+        element: Union[Person, SoftwareSystem, Container],
+    ) -> None:
         """
         Add the given person, software system, or container to this view.
 

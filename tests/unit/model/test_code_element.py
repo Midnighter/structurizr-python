@@ -22,7 +22,8 @@ from structurizr.model.code_element import CodeElement
 
 
 @pytest.mark.parametrize(
-    "attributes", [{}],
+    "attributes",
+    [{}],
 )
 def test_code_element_init(attributes):
     """Expect proper initialization from arguments."""

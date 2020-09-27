@@ -22,7 +22,8 @@ from structurizr.model.relationship import Relationship
 
 
 @pytest.mark.parametrize(
-    "attributes", [{}],
+    "attributes",
+    [{}],
 )
 def test_relationship_init(attributes):
     """Expect proper initialization from arguments."""

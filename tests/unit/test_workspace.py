@@ -22,7 +22,11 @@ from structurizr.workspace import Workspace, WorkspaceIO
 
 
 @pytest.mark.parametrize(
-    "attributes", [{}, {"id": 42, "name": "Marvin", "description": "depressed robot"},],
+    "attributes",
+    [
+        {},
+        {"id": 42, "name": "Marvin", "description": "depressed robot"},
+    ],
 )
 def test_workspace_io_init(attributes: dict):
     """Expect proper initialization from arguments."""
@@ -34,7 +38,10 @@ def test_workspace_io_init(attributes: dict):
 @pytest.mark.parametrize(
     "attributes",
     [
-        pytest.param({}, marks=pytest.mark.raises(exception=TypeError),),
+        pytest.param(
+            {},
+            marks=pytest.mark.raises(exception=TypeError),
+        ),
         {"id": 42, "name": "Marvin", "description": "depressed robot"},
     ],
 )

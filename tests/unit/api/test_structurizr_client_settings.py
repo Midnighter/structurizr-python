@@ -107,7 +107,8 @@ def dotenv(tmpdir, monkeypatch, archive_location):
         pytest.param(
             {"url": "proper-url?"},
             marks=pytest.mark.raises(
-                exception=ValidationError, message="url\n  invalid",
+                exception=ValidationError,
+                message="url\n  invalid",
             ),
         ),
         {

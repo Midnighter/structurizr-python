@@ -59,7 +59,10 @@ class Person(StaticStructureElement):
     @classmethod
     def hydrate(cls, person_io: PersonIO) -> "Person":
         """"""
-        return cls(**cls.hydrate_arguments(person_io), location=person_io.location,)
+        return cls(
+            **cls.hydrate_arguments(person_io),
+            location=person_io.location,
+        )
 
     def interacts_with(self, destination: "Person", description: str, **kwargs):
         return self.uses(destination=destination, description=description, **kwargs)

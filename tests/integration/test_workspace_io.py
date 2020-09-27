@@ -60,7 +60,10 @@ def test_deserialize_workspace(filename):
 
 
 @pytest.mark.parametrize(
-    "example, filename", [("getting_started", "GettingStarted.json"),],
+    "example, filename",
+    [
+        ("getting_started", "GettingStarted.json"),
+    ],
 )
 def test_serialize_workspace(example, filename, monkeypatch):
     """Expect that ."""

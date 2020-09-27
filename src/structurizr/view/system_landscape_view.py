@@ -70,7 +70,9 @@ class SystemLandscapeView(ModelRefMixin, StaticView):
 
     @classmethod
     def hydrate(
-        cls, system_landscape_view_io: SystemLandscapeViewIO, model: Model,
+        cls,
+        system_landscape_view_io: SystemLandscapeViewIO,
+        model: Model,
     ) -> "SystemLandscapeView":
         """"""
         return cls(

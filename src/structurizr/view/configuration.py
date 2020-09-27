@@ -46,7 +46,8 @@ class ConfigurationIO(BaseModel):
     default_view: Optional[str] = Field(None, alias="defaultView")
     last_saved_view: Optional[str] = Field(None, alias="lastSavedView")
     view_sort_order: ViewSortOrder = Field(
-        default=ViewSortOrder.Default, alias="viewSortOrder",
+        default=ViewSortOrder.Default,
+        alias="viewSortOrder",
     )
 
 

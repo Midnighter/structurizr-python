@@ -39,7 +39,8 @@ class ComponentViewIO(StaticViewIO):
     """
 
     external_software_system_boundary_visible: bool = Field(
-        default=True, alias="externalSoftwareSystemBoundariesVisible",
+        default=True,
+        alias="externalSoftwareSystemBoundariesVisible",
     )
     container_id: str = Field(..., alias="containerId")
 
@@ -70,7 +71,9 @@ class ComponentView(StaticView):
 
     @classmethod
     def hydrate(
-        cls, component_view_io: ComponentViewIO, container: Container,
+        cls,
+        component_view_io: ComponentViewIO,
+        container: Container,
     ) -> "ComponentView":
         """"""
         return cls(
@@ -85,7 +88,10 @@ class ComponentView(StaticView):
     def name(self):
         return f"{self.software_system.name} - {self.container.name} - Components"
 
-    def add(self, element: Union[SoftwareSystem, Container, Component],) -> None:
+    def add(
+        self,
+        element: Union[SoftwareSystem, Container, Component],
+    ) -> None:
         """
         Add the given software system, container or component to this view.
 

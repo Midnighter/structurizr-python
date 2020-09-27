@@ -88,7 +88,8 @@ class StructurizrClient:
         }
         self._application_json = "application/json; charset=UTF-8"
         self._client = httpx.Client(
-            base_url=self.url, headers={"User-Agent": self.agent},
+            base_url=self.url,
+            headers={"User-Agent": self.agent},
         )
 
     def __repr__(self) -> str:
@@ -171,7 +172,9 @@ class StructurizrClient:
         workspace_json = ws_io.json()
         logger.debug(workspace_json)
         request = self._client.build_request(
-            method="PUT", url=self._workspace_url, data=workspace_json,
+            method="PUT",
+            url=self._workspace_url,
+            data=workspace_json,
         )
         request.headers.update(
             self._add_headers(
@@ -256,7 +259,11 @@ class StructurizrClient:
         definition_md5 = self._md5(content)
         nonce = self._number_once()
         message_digest = self._message_digest(
-            method, unquote_plus(url_path), definition_md5, content_type, nonce,
+            method,
+            unquote_plus(url_path),
+            definition_md5,
+            content_type,
+            nonce,
         )
         logger.debug("The message digest:\n%s", message_digest)
         message_hash = self._base64_str(self._hmac_hex(self.api_secret, message_digest))
