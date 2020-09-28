@@ -28,7 +28,12 @@ from structurizr.model import Enterprise, Location, Tags
 from structurizr.view import ElementStyle, PaperSize, RelationshipStyle, Shape
 
 
-def create_big_bank():
+def main():
+    """Standard entry point for examples.  Do not rename."""
+    return create_big_bank_workspace()
+
+
+def create_big_bank_workspace():
     """Create the big bank example."""
 
     workspace = Workspace(
@@ -464,4 +469,4 @@ def create_big_bank():
 
 if __name__ == "__main__":
     logging.basicConfig(level="INFO")
-    create_big_bank()
+    main()
