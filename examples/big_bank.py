@@ -16,7 +16,8 @@
 """
 Provide a 'Big Bank' example.
 
-Illustrate how to create a software architecture diagram using code.
+Illustrate how to create a software architecture diagram using code, based on
+https://github.com/structurizr/dsl/blob/master/examples/big-bank-plc.dsl.
 """
 
 
@@ -27,7 +28,7 @@ from structurizr.model import Enterprise, Location, Tags
 from structurizr.view import ElementStyle, PaperSize, RelationshipStyle, Shape
 
 
-def main():
+def create_big_bank():
     """Create the big bank example."""
 
     workspace = Workspace(
@@ -55,6 +56,7 @@ def main():
         location=Location.External,
         name="Personal Banking Customer",
         description="A customer of the bank, with personal bank accounts.",
+        id="customer",
     )
 
     internet_banking_system = model.add_software_system(
@@ -64,8 +66,11 @@ def main():
             "Allows customers to view information about "
             "their bank accounts, and make payments."
         ),
+        id="internetBankingSystem",
     )
-    customer.uses(internet_banking_system, "Uses")
+    customer.uses(
+        internet_banking_system, "Views account balances, and makes payments using"
+    )
 
     mainframe_banking_system = model.add_software_system(
         location=Location.Internal,
@@ -74,14 +79,19 @@ def main():
             "Stores all of the core banking information "
             "about customers, accounts, transactions, etc."
         ),
+        id="mainframe",
     )
     mainframe_banking_system.tags.add(existing_system_tag)
-    internet_banking_system.uses(mainframe_banking_system, "Uses")
+    internet_banking_system.uses(
+        mainframe_banking_system,
+        "Gets account information from, and makes payments using",
+    )
 
     email_system = model.add_software_system(
         location=Location.Internal,
         name="E-mail System",
         description="The internal Microsoft Exchange e-mail system.",
+        id="email",
     )
     internet_banking_system.uses(
         destination=email_system,
@@ -97,6 +107,7 @@ def main():
         location=Location.Internal,
         name="ATM",
         description="Allows customers to withdraw cash.",
+        id="atm",
     )
     atm.tags.add(existing_system_tag)
     atm.uses(mainframe_banking_system, "Uses")
@@ -106,6 +117,7 @@ def main():
         location=Location.Internal,
         name="Customer Service Staff",
         description="Customer service staff within the bank.",
+        id="supportStaff",
     )
     customer_service_staff.tags.add(bank_staff_tag)
     customer_service_staff.uses(mainframe_banking_system, "Uses")
@@ -117,6 +129,7 @@ def main():
         location=Location.Internal,
         name="Back Office Staff",
         description="Administration and support staff within the bank.",
+        id="backoffice",
     )
     backOfficeStaff.tags.add(bank_staff_tag)
     backOfficeStaff.uses(mainframe_banking_system, "Uses")
@@ -129,28 +142,33 @@ def main():
             "to customers via their web browser."
         ),
         "JavaScript and Angular",
+        id="singlePageApplication",
     )
     single_page_application.tags.add(web_browser_tag)
     mobile_app = internet_banking_system.add_container(
         "Mobile App",
         "Provides a limited subset of the Internet banking functionality to customers via their mobile device.",
         "Xamarin",
+        id="mobileApp",
     )
     mobile_app.tags.add(mobile_app_tag)
     web_application = internet_banking_system.add_container(
         "Web Application",
         "Delivers the static content and the Internet banking single page application.",
         "Java and Spring MVC",
+        id="webApplication",
     )
     api_application = internet_banking_system.add_container(
         "API Application",
         "Provides Internet banking functionality via a JSON/HTTPS API.",
         "Java and Spring MVC",
+        id="apiApplication",
     )
     database = internet_banking_system.add_container(
         "Database",
         "Stores user registration information, hashed authentication credentials, access logs, etc.",
         "Relational Database Schema",
+        id="database",
     )
     database.tags.add(database_tag)
 
@@ -172,31 +190,37 @@ def main():
         name="Sign In Controller",
         description="Allows users to sign in to the Internet Banking System.",
         technology="Spring MVC Rest Controller",
+        id="signinController",
     )
     accounts_summary_controller = api_application.add_component(
         name="Accounts Summary Controller",
         description="Provides customers with a summary of their bank accounts.",
         technology="Spring MVC Rest Controller",
+        id="accountsSummaryController",
     )
     reset_password_controller = api_application.add_component(
         name="Reset Password Controller",
         description="Allows users to reset their passwords with a single use URL.",
         technology="Spring MVC Rest Controller",
+        id="resetPasswordController",
     )
     security_component = api_application.add_component(
         name="Security Component",
         description="Provides functionality related to signing in, changing passwords, etc.",
         technology="Spring Bean",
+        id="securityComponent",
     )
     mainframe_banking_systemFacade = api_application.add_component(
         name="Mainframe Banking System Facade",
         description="A facade onto the mainframe banking system.",
         technology="Spring Bean",
+        id="mainframeBankingSystemFacade",
     )
     email_component = api_application.add_component(
         name="E-mail Component",
         description="Sends e-mails to users.",
         technology="Spring Bean",
+        id="emailComponent",
     )
 
     for component in api_application.components:
@@ -440,4 +464,4 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig(level="INFO")
-    main()
+    create_big_bank()

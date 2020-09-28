@@ -78,16 +78,14 @@ class SoftwareSystem(StaticStructureElement):
         self.containers.add(container)
 
     def add_container(
-        self,
-        name: str,
-        description: str,
-        technology: str,
+        self, name: str, description: str, technology: str = "", **kwargs
     ) -> Container:
         return self.get_model().add_container(
             parent=self,
             name=name,
             description=description,
             technology=technology,
+            **kwargs,
         )
 
     @classmethod

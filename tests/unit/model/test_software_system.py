@@ -18,6 +18,7 @@
 
 import pytest
 
+from structurizr.model.model import Model
 from structurizr.model.software_system import SoftwareSystem
 
 
@@ -33,3 +34,11 @@ def test_software_system_init(attributes):
     system = SoftwareSystem(**attributes)
     for attr, expected in attributes.items():
         assert getattr(system, attr) == expected
+
+
+def test_add_container_accepts_additional_args():
+    """Test other keyword arguments (e.g. id) are allowed when adding a new container."""
+    model = Model()
+    system = model.add_software_system(name="Banking System")
+    container = system.add_container("container", "description", id="id1")
+    assert container.id == "id1"
