@@ -21,7 +21,7 @@ import pytest
 from structurizr.model import Model
 
 
-@pytest.mark.skip(reason="To be fixed - issue #31")
+@pytest.mark.xfail(strict=True)
 def test_adding_relationship_to_element_adds_to_model():
     """
     Make sure that when a relationship is added via Element.add_relationship it also
@@ -39,7 +39,7 @@ def test_adding_relationship_to_element_adds_to_model():
     assert len(list(sys2.get_relationships())) == 1  # Currently will fail
 
 
-@pytest.mark.skip(reason="To be fixed - issue #31")
+@pytest.mark.xfail(strict=True)
 def test_adding_relationship_via_uses_adds_to_elements():
     """
     Make sure that when a relationship is added via StaticStructureElement.uses
