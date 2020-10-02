@@ -22,6 +22,12 @@ from structurizr.model.model import Model
 from structurizr.model.software_system import SoftwareSystem
 
 
+@pytest.fixture(scope="function")
+def empty_model() -> Model:
+    """Provide an empty Model on demand for test cases to use."""
+    return Model()
+
+
 @pytest.mark.parametrize(
     "attributes",
     [
@@ -42,3 +48,9 @@ def test_add_container_accepts_additional_args():
     system = model.add_software_system(name="Banking System")
     container = system.add_container("container", "description", id="id1")
     assert container.id == "id1"
+
+
+def test_add_container_technology_is_optional(empty_model: Model):
+    system = empty_model.add_software_system(name="sys")
+    container = system.add_container(name="Container", description="Description")
+    assert container.technology == ""
