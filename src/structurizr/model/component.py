@@ -82,7 +82,7 @@ class Component(StaticStructureElement):
     def __init__(
         self,
         *,
-        parent: "Container",
+        parent: "Container" = None,
         technology: str = "",
         code_elements: Iterable[CodeElement] = (),
         size: Optional[int] = None,
