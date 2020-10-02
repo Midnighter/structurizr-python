@@ -99,11 +99,10 @@ class SoftwareSystem(StaticStructureElement):
         )
 
         for container_io in software_system_io.containers:
-            container = Container.hydrate(
+            Container.hydrate(
                 container_io,
                 software_system=software_system,
                 model=model,
             )
-            model.add_container(container, parent=software_system)
 
         return software_system

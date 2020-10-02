@@ -51,6 +51,7 @@ def test_add_container_accepts_additional_args():
 
 
 def test_add_container_technology_is_optional(empty_model: Model):
+    """Ensure that you don't have to specify the technology."""
     system = empty_model.add_software_system(name="sys")
     container = system.add_container(name="Container", description="Description")
     assert container.technology == ""

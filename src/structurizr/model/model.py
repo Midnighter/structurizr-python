@@ -274,22 +274,15 @@ class Model(AbstractBase):
 
     def add_component(
         self,
-        component: Optional[Component] = None,
-        **kwargs,
+        component: Component,
     ) -> Component:
-        if not component:
-            component = Component(**kwargs)
-
-        # TODO (Midnighter): It seems like a lot of this logic could be on the
-        #  Component constructor.
-        if component.parent.get_component_with_name(component.name):
+        """Register a newly constructed Component with the model."""
+        if component.parent is None:
             raise ValueError(
-                f"Component with name {component.name} already exists for "
-                f"{component.parent}."
+                f"Component with name {component.name} has no parent container.  "
+                f"Adding to container will register with the container's model."
             )
 
-        # TODO(ilaif): @midnighter - Might want to improve this impl:
-        component.parent.add(component)
         self._add_element(component)
         return component
 

@@ -16,7 +16,7 @@
 
 import pytest
 
-from structurizr.model import Model
+from structurizr.model import Component, Model
 
 
 @pytest.fixture(scope="function")
@@ -62,3 +62,10 @@ def test_model_cannot_add_relationship_with_same_id_as_element(empty_model: Mode
         ValueError, match="Relationship.* has the same ID as SoftwareSystem.*"
     ):
         empty_model.add_relationship(source=sys1, destination=sys2, id=sys1.id)
+
+
+def test_model_add_component_must_have_parent(empty_model: Model):
+    """Ensure that Model rejects adding Components that aren't within a Container."""
+    component = Component(name="c1")
+    with pytest.raises(ValueError, match="Component with name .* has no parent"):
+        empty_model.add_component(component)
