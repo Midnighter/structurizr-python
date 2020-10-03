@@ -16,7 +16,7 @@
 
 import pytest
 
-from structurizr.model import Component, Model
+from structurizr.model import Component, Container, Model
 
 
 @pytest.fixture(scope="function")
@@ -69,3 +69,10 @@ def test_model_add_component_must_have_parent(empty_model: Model):
     component = Component(name="c1")
     with pytest.raises(ValueError, match="Component with name .* has no parent"):
         empty_model.add_component(component)
+
+
+def test_model_add_container_must_have_parent(empty_model: Model):
+    """Ensure that Model rejects adding Containers that aren't within a SoftwareSystem."""
+    container = Container(name="c1")
+    with pytest.raises(ValueError, match="Container with name .* has no parent"):
+        empty_model.add_container(container)

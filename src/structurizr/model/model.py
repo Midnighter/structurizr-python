@@ -209,38 +209,29 @@ class Model(AbstractBase):
         self.software_systems.add(software_system)
         return software_system
 
-    def add_container(
-        self, container: Optional[Container] = None, **kwargs
-    ) -> Container:
+    def add_container(self, container: Container) -> Container:
         """
-        Add a new container to the model.
+        Register a newly constructed container with the model.
 
         Args:
-            container (Container, optional): Either provide a
-                `Container` instance or
-            **kwargs: Provide keyword arguments for instantiating a `Container`
-                (recommended).
+            container (Container): `Container` instance to register.
 
         Returns:
-            SoftwareSystem: Either the same or a new instance, depending on arguments.
+            Container: The provided container.
 
         Raises:
-            ValueError: When a container with the same name already exists.
+            ValueError: When the container isn't a child of a `SoftwareSystem`
 
         See Also:
             Container
 
         """
-        if container is None:
-            container = Container(**kwargs)
-        if any(container.name == c.name for c in container.parent.containers):
-            ValueError(
-                f"A container with the name {container.name} already "
-                f"exists in the model."
+        if container.parent is None:
+            raise ValueError(
+                f"Container with name {container.name} has no parent software system."
+                f"Adding to software system will register with the system's model."
             )
-        # TODO (midnighter): Modifying the parent seems like creating an undesired
-        #  tight link here.
-        container.parent.add(container)
+
         self._add_element(container)
         return container
 

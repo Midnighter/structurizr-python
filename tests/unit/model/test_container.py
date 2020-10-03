@@ -19,21 +19,23 @@ import pytest
 from structurizr.model import Component, Container, Model
 
 
-_model = Model()
-_system = _model.add_software_system(name="Sys")
+_model = (
+    Model()
+)  # Have to create outside the fixture so it doesn't get garbage-collected.
 
 
 @pytest.fixture(scope="function")
 def empty_container() -> Container:
     """Provide an empty Container on demand for test cases to use."""
-    return _system.add_container(name="Container", description="Description")
+    system = _model.add_software_system(name="Sys")
+    return system.add_container(name="Container", description="Description")
 
 
 @pytest.mark.parametrize(
     "attributes",
     [
         pytest.param({}, marks=pytest.mark.raises(exception=TypeError)),
-        {"name": "Mobile App", "parent": _system, "technology": "tech1"},
+        {"name": "Mobile App", "technology": "tech1"},
     ],
 )
 def test_container_init(attributes):
@@ -81,7 +83,9 @@ def test_container_adding_component_with_same_name_fails(empty_container: Contai
 
 def test_adding_component_with_existing_parent_fails(empty_container: Container):
     """Check that adding a component with a different parent fails."""
-    container2 = _system.add_container(name="Container 2", description="Description")
+    container2 = empty_container.parent.add_container(
+        name="Container 2", description="Description"
+    )
     component = empty_container.add_component(name="Component")
     with pytest.raises(ValueError, match="Component with name .* already has parent"):
         container2 += component
