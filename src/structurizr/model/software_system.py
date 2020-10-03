@@ -74,19 +74,41 @@ class SoftwareSystem(StaticStructureElement):
         self.tags.add(Tags.ELEMENT)
         self.tags.add(Tags.SOFTWARE_SYSTEM)
 
-    def add(self, container: Container):
-        self.containers.add(container)
-
     def add_container(
         self, name: str, description: str, technology: str = "", **kwargs
     ) -> Container:
-        return self.get_model().add_container(
-            parent=self,
-            name=name,
-            description=description,
-            technology=technology,
-            **kwargs,
+        """Construct a new `Container` and add to this system and its model."""
+        container = Container(
+            name=name, description=description, technology=technology, **kwargs
         )
+        self += container
+        return container
+
+    def __iadd__(self, container: Container) -> "SoftwareSystem":
+        """Add a newly constructed container to this system and register with its model."""
+        # TODO: once we move past python 3.6 change to proper return type via __future__.annotations
+        if container in self.containers:
+            # Nothing to do
+            return self
+
+        if self.get_container_with_name(container.name):
+            raise ValueError(
+                f"Container with name {container.name} already exists for {self}."
+            )
+
+        if container.parent is None:
+            container.parent = self
+        elif container.parent is not self:
+            raise ValueError(
+                f"Container with name {container.name} already has parent {container.parent}. Cannot add to {self}."
+            )
+        self.containers.add(container)
+        self.get_model().add_container(container)
+        return self
+
+    def get_container_with_name(self, name: str) -> Container:
+        """Return the container with the given name, or None."""
+        return next((c for c in self.containers if c.name == name), None)
 
     @classmethod
     def hydrate(
