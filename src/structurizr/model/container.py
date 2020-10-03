@@ -79,7 +79,7 @@ class Container(StaticStructureElement):
     def __init__(
         self,
         *,
-        parent: "SoftwareSystem",
+        parent: "SoftwareSystem" = None,
         technology: str = "",
         components: Iterable[Component] = (),
         **kwargs,
