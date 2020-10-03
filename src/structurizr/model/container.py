@@ -15,8 +15,6 @@
 
 """Provide a container model."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from pydantic import Field
@@ -131,7 +129,9 @@ class Container(StaticStructureElement):
         self += component
         return component
 
-    def __iadd__(self, component: Component) -> Container:
+    def __iadd__(self, component: Component) -> "Container":
+        """Add a newly constructed component to this container."""
+        # TODO: once we move past python 3.6 change to proper return type via __future__.annotations
         if component in self.components:
             # Nothing to do
             return self
