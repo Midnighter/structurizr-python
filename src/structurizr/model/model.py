@@ -17,7 +17,7 @@
 
 
 import logging
-from typing import Iterable, List, Optional, ValuesView
+from typing import Iterable, List, Optional, Union, ValuesView
 
 from pydantic import Field
 
@@ -208,6 +208,18 @@ class Model(AbstractBase):
         self._add_element(software_system)
         self.software_systems.add(software_system)
         return software_system
+
+    def __iadd__(self, element: Union[Person, SoftwareSystem]) -> "Model":
+        """Add a new Person or SoftwareSystem to the model."""
+        if isinstance(element, Person):
+            self.add_person(person=element)
+        elif isinstance(element, SoftwareSystem):
+            self.add_software_system(software_system=element)
+        else:
+            raise ValueError(
+                f"Cannot add element with the name {element.name} to Model with += as it is not a Person or a SoftwareSystem."
+            )
+        return self
 
     def add_container(self, container: Container) -> Container:
         """
