@@ -27,7 +27,6 @@ from structurizr.model import Model
 DEFINITIONS = Path(__file__).parent / "data" / "workspace_definition"
 
 
-@pytest.mark.xfail(strict=True)
 def test_adding_relationship_to_element_adds_to_model():
     """
     Make sure that when a relationship is added via Element.add_relationship it also
@@ -39,10 +38,10 @@ def test_adding_relationship_to_element_adds_to_model():
 
     r = sys1.add_relationship(source=sys1, destination=sys2, description="uses")
     assert list(sys1.relationships) == [r]
-    assert list(sys1.get_relationships()) == [r]  # Currently will fail
-    assert list(model.get_relationships()) == [r]  # Currently will fail
+    assert list(sys1.get_relationships()) == [r]
+    assert list(model.get_relationships()) == [r]
     assert list(sys2.relationships) == []  # relationships only contains outbound
-    assert list(sys2.get_relationships()) == [r]  # Currently will fail
+    assert list(sys2.get_relationships()) == [r]
 
 
 def test_adding_relationship_to_model_adds_to_element():

@@ -19,6 +19,7 @@
 import pytest
 
 from structurizr.model.element import Element
+from structurizr.model.model import Model
 
 
 class ConcreteElement(Element):
@@ -60,7 +61,8 @@ def test_element_can_only_add_relationship_to_source():
     element1 = ConcreteElement(name="elt1")
     element2 = ConcreteElement(name="elt1")
     with pytest.raises(
-        ValueError, match="Cannot add relationship .* to element .* that is not its source"
+        ValueError,
+        match="Cannot add relationship .* to element .* that is not its source",
     ):
         element1.add_relationship(source=element2)
 
@@ -72,5 +74,20 @@ def test_element_add_relationship_can_omit_source():
     """
     element1 = ConcreteElement(name="elt1")
     element2 = ConcreteElement(name="elt1")
+    model = Model()
+    model._add_element(element1)
     r = element1.add_relationship(destination=element2)
     assert r.source is element1
+
+
+def test_element_add_relationship_twice_is_ok():
+    """
+    Defensive test that adding the same relationship twice is fine.
+    """
+    element1 = ConcreteElement(name="elt1")
+    element2 = ConcreteElement(name="elt1")
+    model = Model()
+    model._add_element(element1)
+    r = element1.add_relationship(destination=element2)
+    element1.add_relationship(r)
+    assert list(element1.relationships) == [r]
