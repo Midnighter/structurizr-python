@@ -99,14 +99,21 @@ class Element(ModelRefMixin, ModelItem, ABC):
             r for r in self.get_model().get_relationships() if self is r.destination
         )
 
-    def add_relationship(self, relationship: Optional[Relationship] = None, **kwargs) -> Relationship:
+    def add_relationship(
+        self, relationship: Optional[Relationship] = None, **kwargs
+    ) -> Relationship:
         if relationship is None:
             relationship = Relationship(**kwargs)
+        elif relationship in self.relationships:
+            return relationship  # Nothing more to do
         if relationship.source is None:
             relationship.source = self
         elif relationship.source is not self:
-            raise ValueError(f"Cannot add relationship {relationship} to element {self} that is not its source.")
+            raise ValueError(
+                f"Cannot add relationship {relationship} to element {self} that is not its source."
+            )
         self.relationships.add(relationship)
+        self.get_model().add_relationship(relationship)
         return relationship
 
     @classmethod
