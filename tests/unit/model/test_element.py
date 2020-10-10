@@ -53,3 +53,24 @@ def test_model_reference():
     element = ConcreteElement(name="Element")
     element.set_model(model)
     assert element.get_model() is model
+
+
+def test_element_can_only_add_relationship_to_source():
+    """Make sure that nothing adds a relationship to the wrong element."""
+    element1 = ConcreteElement(name="elt1")
+    element2 = ConcreteElement(name="elt1")
+    with pytest.raises(
+        ValueError, match="Cannot add relationship .* to element .* that is not its source"
+    ):
+        element1.add_relationship(source=element2)
+
+
+def test_element_add_relationship_can_omit_source():
+    """
+    When using add_relationship with params rather than an existing instance,
+    it should default the source.
+    """
+    element1 = ConcreteElement(name="elt1")
+    element2 = ConcreteElement(name="elt1")
+    r = element1.add_relationship(destination=element2)
+    assert r.source is element1

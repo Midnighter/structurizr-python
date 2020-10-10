@@ -72,6 +72,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
         self.name = name
         self.description = description
         self.url = url
+        # Note: relationships should always match get_efferent_relationships() - i.e. outbound relationships only
         self.relationships: Iterable[Relationship] = set(relationships)
 
         self.tags.add(Tags.ELEMENT)
@@ -98,10 +99,15 @@ class Element(ModelRefMixin, ModelItem, ABC):
             r for r in self.get_model().get_relationships() if self is r.destination
         )
 
-    def add_relationship(self, relationship: Optional[Relationship] = None, **kwargs):
+    def add_relationship(self, relationship: Optional[Relationship] = None, **kwargs) -> Relationship:
         if relationship is None:
             relationship = Relationship(**kwargs)
+        if relationship.source is None:
+            relationship.source = self
+        elif relationship.source is not self:
+            raise ValueError(f"Cannot add relationship {relationship} to element {self} that is not its source.")
         self.relationships.add(relationship)
+        return relationship
 
     @classmethod
     def hydrate_arguments(cls, element_io: ElementIO) -> dict:
