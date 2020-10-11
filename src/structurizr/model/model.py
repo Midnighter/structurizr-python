@@ -348,7 +348,6 @@ class Model(AbstractBase):
             Relationship
 
         """
-
         if relationship is None:
             relationship = Relationship(**kwargs)
         # Check
