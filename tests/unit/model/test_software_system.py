@@ -66,7 +66,7 @@ def test_add_container_technology_is_optional(empty_system: SoftwareSystem):
 def test_software_system_add_container_adds_to_container_list(
     empty_system: SoftwareSystem,
 ):
-    """Ensure that add_container() adds the new container to SoftwareSystem.containers and sets up other properties."""
+    """Ensure that add_container() adds the container and sets up other properties."""
     container = empty_system.add_container(name="Container", description="Description")
     assert container in empty_system.containers
     assert container.id != ""
@@ -75,7 +75,7 @@ def test_software_system_add_container_adds_to_container_list(
 
 
 def test_software_system_add_constructed_container(empty_system: SoftwareSystem):
-    """Verify behaviour when adding a newly constructed Container rather than calling add_container()."""
+    """Verify behaviour when adding a newly constructed Container."""
     container = Container(name="Container")
     empty_system += container
     assert container in empty_system.containers
@@ -95,7 +95,7 @@ def test_software_system_adding_container_twice_is_ok(empty_system: SoftwareSyst
 def test_software_system_adding_container_with_same_name_fails(
     empty_system: SoftwareSystem,
 ):
-    """Defensive check that adding a container with the same name as an existing one fails."""
+    """Check that adding a container with the same name as an existing one fails."""
     empty_system.add_container(name="Container", description="Description")
     with pytest.raises(ValueError, match="Container with name .* already exists"):
         empty_system.add_container(name="Container", description="Description2")
@@ -106,7 +106,7 @@ def test_software_system_adding_container_with_same_name_fails(
 def test_software_system_adding_container_with_existing_parent_fails(
     empty_system: SoftwareSystem,
 ):
-    """Defensive check that if a container already has a (different) parent then it can't be added."""
+    """Check that adding a container with a (different) parent fails."""
     system2 = empty_system.model.add_software_system(
         name="System 2", description="Description"
     )
