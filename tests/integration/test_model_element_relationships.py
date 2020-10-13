@@ -36,12 +36,14 @@ def test_adding_relationship_to_element_adds_to_model():
     sys1 = model.add_software_system(name="sys1")
     sys2 = model.add_software_system(name="sys2")
 
-    r = sys1.add_relationship(source=sys1, destination=sys2, description="uses")
-    assert list(sys1.relationships) == [r]
-    assert list(sys1.get_relationships()) == [r]
-    assert list(model.get_relationships()) == [r]
-    assert list(sys2.relationships) == []  # relationships only contains outbound
-    assert list(sys2.get_relationships()) == [r]
+    relationship = sys1.add_relationship(
+        source=sys1, destination=sys2, description="uses"
+    )
+    assert sys1.relationships == {relationship}
+    assert set(sys1.get_relationships()) == {relationship}
+    assert set(model.get_relationships()) == {relationship}
+    assert sys2.relationships == set()  # relationships only contains outbound
+    assert set(sys2.get_relationships()) == {relationship}
 
 
 def test_adding_relationship_to_model_adds_to_element():
@@ -53,12 +55,14 @@ def test_adding_relationship_to_model_adds_to_element():
     sys1 = model.add_software_system(name="sys1")
     sys2 = model.add_software_system(name="sys2")
 
-    r = model.add_relationship(source=sys1, destination=sys2, description="uses")
-    assert list(sys1.relationships) == [r]
-    assert list(sys1.get_relationships()) == [r]
-    assert list(model.get_relationships()) == [r]
-    assert list(sys2.relationships) == []  # relationships only contains outbound
-    assert list(sys2.get_relationships()) == [r]
+    relationship = model.add_relationship(
+        source=sys1, destination=sys2, description="uses"
+    )
+    assert sys1.relationships == {relationship}
+    assert set(sys1.get_relationships()) == {relationship}
+    assert set(model.get_relationships()) == {relationship}
+    assert sys2.relationships == set()  # relationships only contains outbound
+    assert set(sys2.get_relationships()) == {relationship}
 
 
 def test_adding_relationship_via_uses_adds_to_elements():
@@ -70,12 +74,12 @@ def test_adding_relationship_via_uses_adds_to_elements():
     sys1 = model.add_software_system(name="sys1")
     sys2 = model.add_software_system(name="sys2")
 
-    r = sys1.uses(sys2, "uses")
-    assert list(sys1.relationships) == [r]
-    assert list(sys1.get_relationships()) == [r]
-    assert list(model.get_relationships()) == [r]
-    assert list(sys2.relationships) == []  # relationships only contains outbound
-    assert list(sys2.get_relationships()) == [r]
+    relationship = sys1.uses(sys2, "uses")
+    assert sys1.relationships == {relationship}
+    assert set(sys1.get_relationships()) == {relationship}
+    assert set(model.get_relationships()) == {relationship}
+    assert sys2.relationships == set()  # relationships only contains outbound
+    assert set(sys2.get_relationships()) == {relationship}
 
 
 @pytest.mark.parametrize(

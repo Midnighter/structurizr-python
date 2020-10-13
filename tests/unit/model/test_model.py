@@ -29,29 +29,31 @@ def test_model_get_relationship_by_id(empty_model: Model):
     """Test retrieving relationships by their IDs."""
     sys1 = empty_model.add_software_system(name="sys1")
     sys2 = empty_model.add_software_system(name="sys2")
-    r = empty_model.add_relationship(source=sys1, destination=sys2, id="r1")
-    assert empty_model.get_relationship("r1") is r
+    relationship = empty_model.add_relationship(source=sys1, destination=sys2, id="r1")
+    assert empty_model.get_relationship("r1") is relationship
 
 
 def test_model_add_relationship_twice_ignored(empty_model: Model):
     """Make sure that adding an existing relationship to the Model makes no difference."""
     sys1 = empty_model.add_software_system(name="sys1")
     sys2 = empty_model.add_software_system(name="sys2")
-    r = empty_model.add_relationship(source=sys1, destination=sys2)
-    assert list(empty_model.get_relationships()) == [r]
-    empty_model.add_relationship(r)
-    assert list(empty_model.get_relationships()) == [r]
+    relationship = empty_model.add_relationship(source=sys1, destination=sys2)
+    assert set(empty_model.get_relationships()) == {relationship}
+    empty_model.add_relationship(relationship)
+    assert set(empty_model.get_relationships()) == {relationship}
 
 
 def test_model_cannot_add_relationship_with_same_id_as_existing(empty_model: Model):
     """Ensure you can't add two relationships with the same ID."""
     sys1 = empty_model.add_software_system(name="sys1")
     sys2 = empty_model.add_software_system(name="sys2")
-    r1 = empty_model.add_relationship(source=sys1, destination=sys2, id="r1")
+    relationship1 = empty_model.add_relationship(source=sys1, destination=sys2, id="r1")
     with pytest.raises(
         ValueError, match="Relationship.* has the same ID as Relationship.*"
     ):
-        r2 = empty_model.add_relationship(source=sys1, destination=sys2, id="r1")
+        relationship2 = empty_model.add_relationship(
+            source=sys1, destination=sys2, id="r1"
+        )
 
 
 def test_model_cannot_add_relationship_with_same_id_as_element(empty_model: Model):

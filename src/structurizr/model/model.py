@@ -411,7 +411,7 @@ class Model(AbstractBase):
     def _add_relationship(self, relationship: Relationship) -> bool:
         """"""
         if relationship in self.get_relationships():
-            return True  # Nothing to do
+            return True
         if not relationship.id:
             relationship.id = self._id_generator.generate_id()
         elif relationship.id in self._elements_by_id:
