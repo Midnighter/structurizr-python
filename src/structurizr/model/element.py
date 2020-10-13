@@ -102,10 +102,16 @@ class Element(ModelRefMixin, ModelItem, ABC):
     def add_relationship(
         self, relationship: Optional[Relationship] = None, **kwargs
     ) -> Relationship:
+        """Add a new relationship from this element to another.
+
+        This can be used either to add a `Relationship` instance that has already been constructed,
+        or by passing the arguments (e.g. description, destination) with which to construct a new
+        one.  The relationship will automatically be registered with the element's model.
+        """
         if relationship is None:
             relationship = Relationship(**kwargs)
         elif relationship in self.relationships:
-            return relationship  # Nothing more to do
+            return relationship
         if relationship.source is None:
             relationship.source = self
         elif relationship.source is not self:

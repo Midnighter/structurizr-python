@@ -19,7 +19,6 @@
 import pytest
 
 from structurizr.model.element import Element
-from structurizr.model.model import Model
 
 
 class ConcreteElement(Element):
@@ -31,7 +30,8 @@ class ConcreteElement(Element):
 class MockModel:
     """Implement a mock model for reference testing."""
 
-    pass
+    def add_relationship(self, relationship):
+        return relationship
 
 
 @pytest.mark.parametrize(
@@ -74,10 +74,10 @@ def test_element_add_relationship_can_omit_source():
     """
     element1 = ConcreteElement(name="elt1")
     element2 = ConcreteElement(name="elt1")
-    model = Model()
-    model._add_element(element1)
-    r = element1.add_relationship(destination=element2)
-    assert r.source is element1
+    model = MockModel()
+    element1.set_model(model)
+    relationship = element1.add_relationship(destination=element2)
+    assert relationship.source is element1
 
 
 def test_element_add_relationship_twice_is_ok():
@@ -86,8 +86,8 @@ def test_element_add_relationship_twice_is_ok():
     """
     element1 = ConcreteElement(name="elt1")
     element2 = ConcreteElement(name="elt1")
-    model = Model()
-    model._add_element(element1)
-    r = element1.add_relationship(destination=element2)
-    element1.add_relationship(r)
-    assert list(element1.relationships) == [r]
+    model = MockModel()
+    element1.set_model(model)
+    relationship = element1.add_relationship(destination=element2)
+    element1.add_relationship(relationship)
+    assert element1.relationships == {relationship}
