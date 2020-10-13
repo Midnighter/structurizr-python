@@ -86,7 +86,7 @@ def test_adding_relationship_via_uses_adds_to_elements():
     "filename",
     ["BigBank.json"],
 )
-def test_relationships_after_deserialisation_are_consistent(filename):
+def test_relationships_after_deserialisation_are_consistent(filename: str):
     """Make sure that relationships are consistent between the Model and the Element after deserialisation."""
     path = DEFINITIONS / filename
     workspace = Workspace.load(path)
@@ -100,6 +100,6 @@ def test_relationships_after_deserialisation_are_consistent(filename):
         len(list(atm.get_relationships())) == 2
     )  # One to mainframe, one from personal banking customer
     assert len(list(atm.get_afferent_relationships())) == 1
-    assert list(atm.get_afferent_relationships())[0].source is customer
+    assert next(atm.get_afferent_relationships()).source is customer
     assert len(list(atm.get_efferent_relationships())) == 1
-    assert list(atm.get_efferent_relationships())[0].destination is mainframe
+    assert next(atm.get_efferent_relationships()).destination is mainframe

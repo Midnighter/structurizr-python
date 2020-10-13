@@ -68,10 +68,7 @@ def test_element_can_only_add_relationship_to_source():
 
 
 def test_element_add_relationship_can_omit_source():
-    """
-    When using add_relationship with params rather than an existing instance,
-    it should default the source.
-    """
+    """Expect that creating a relationship uses the default source."""
     element1 = ConcreteElement(name="elt1")
     element2 = ConcreteElement(name="elt1")
     model = MockModel()
@@ -81,9 +78,7 @@ def test_element_add_relationship_can_omit_source():
 
 
 def test_element_add_relationship_twice_is_ok():
-    """
-    Defensive test that adding the same relationship twice is fine.
-    """
+    """Ensure that adding the same relationship twice is fine."""
     element1 = ConcreteElement(name="elt1")
     element2 = ConcreteElement(name="elt1")
     model = MockModel()
