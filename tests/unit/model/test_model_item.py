@@ -69,7 +69,7 @@ def test_default_and_custom_tags(empty_model: Model):
 
 
 def test_tag_order_is_preserved_to_and_from_io(empty_model: Model):
-    """Test that when serializing via IO classes or back that tag ordering is preserved."""
+    """Test that when serializing via IO classes or back, tag ordering is preserved."""
     element = empty_model.add_software_system(name="Name", description="Description")
     element.tags.update(["tag3", "tag2", "tag1"])  # Deliberately not ascending
 

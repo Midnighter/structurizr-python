@@ -24,6 +24,7 @@ from structurizr.model.model import Model
 
 @pytest.fixture(scope="function")
 def model() -> Model:
+    """Manufacture an empty model for test cases."""
     return Model()
 
 
