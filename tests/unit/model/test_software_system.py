@@ -37,7 +37,7 @@ def test_software_system_init(attributes):
 
 
 def test_add_container_accepts_additional_args():
-    """Test other keyword arguments (e.g. id) are allowed when adding a new container."""
+    """Test keyword arguments (e.g. id) are allowed when adding a new container."""
     model = Model()
     system = model.add_software_system(name="Banking System")
     container = system.add_container("container", "description", id="id1")

@@ -28,7 +28,8 @@ DEFINITIONS = Path(__file__).parent / "data" / "workspace_definition"
 
 
 def test_adding_relationship_to_element_adds_to_model():
-    """
+    """Ensure relationships are added to the model.
+
     Make sure that when a relationship is added via Element.add_relationship it also
     gets added to the model and to the other element.
     """
@@ -47,9 +48,10 @@ def test_adding_relationship_to_element_adds_to_model():
 
 
 def test_adding_relationship_to_model_adds_to_element():
-    """
-    Make sure that when a relationship is added via Element.add_relationship it also
-    gets added to the model and to the other element.
+    """Ensure relationships are added to elements.
+
+    Make sure that when a relationship is added via Model.add_relationship it also
+    gets added to the elements.
     """
     model = Model()
     sys1 = model.add_software_system(name="sys1")
@@ -66,10 +68,7 @@ def test_adding_relationship_to_model_adds_to_element():
 
 
 def test_adding_relationship_via_uses_adds_to_elements():
-    """
-    Make sure that when a relationship is added via StaticStructureElement.uses
-    then it is reflected in the Elements.
-    """
+    """Ensure uses() adds relationships to the model and elements."""
     model = Model()
     sys1 = model.add_software_system(name="sys1")
     sys2 = model.add_software_system(name="sys2")
@@ -87,7 +86,7 @@ def test_adding_relationship_via_uses_adds_to_elements():
     ["BigBank.json"],
 )
 def test_relationships_after_deserialisation_are_consistent(filename: str):
-    """Make sure that relationships are consistent between the Model and the Element after deserialisation."""
+    """Ensure deserialisaton leaves realationships consistent."""
     path = DEFINITIONS / filename
     workspace = Workspace.load(path)
     model = workspace.model
