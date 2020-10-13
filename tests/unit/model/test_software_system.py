@@ -19,19 +19,28 @@
 import pytest
 
 from structurizr.model.container import Container
-from structurizr.model.model import Model
 from structurizr.model.software_system import SoftwareSystem
 
 
-_model = (
-    Model()
-)  # Have to create outside the fixture so it doesn't get garbage-collected.
+class MockModel:
+    """Implement a mock model for testing."""
+
+    def add_container(self, container):
+        """Simulate the model assigning IDs to new elements."""
+        if not container.id:
+            container.id = "id"
+        container.set_model(self)
+        pass
+
+
+_model = MockModel()
 
 
 @pytest.fixture(scope="function")
 def empty_system() -> SoftwareSystem:
     """Provide an empty SoftwareSystem on demand for test cases to use."""
-    software_system = _model.add_software_system(name="Sys")
+    software_system = SoftwareSystem(name="Sys")
+    software_system.set_model(_model)
     return software_system
 
 
@@ -49,11 +58,9 @@ def test_software_system_init(attributes):
         assert getattr(system, attr) == expected
 
 
-def test_add_container_accepts_additional_args():
+def test_add_container_accepts_additional_args(empty_system: SoftwareSystem):
     """Test keyword arguments (e.g. id) are allowed when adding a new container."""
-    model = Model()
-    system = model.add_software_system(name="Banking System")
-    container = system.add_container("container", "description", id="id1")
+    container = empty_system.add_container("container", "description", id="id1")
     assert container.id == "id1"
 
 
@@ -107,9 +114,9 @@ def test_software_system_adding_container_with_existing_parent_fails(
     empty_system: SoftwareSystem,
 ):
     """Check that adding a container with a (different) parent fails."""
-    system2 = empty_system.model.add_software_system(
-        name="System 2", description="Description"
-    )
+    system2 = SoftwareSystem(name="System 2", description="Description")
+    system2.set_model(empty_system.model)
+
     container = empty_system.add_container(name="Container", description="Description")
     with pytest.raises(ValueError, match="Container with name .* already has parent"):
         system2 += container
