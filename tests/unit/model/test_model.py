@@ -72,14 +72,14 @@ def test_model_add_component_must_have_parent(empty_model: Model):
 
 
 def test_model_add_container_must_have_parent(empty_model: Model):
-    """Ensure that Model rejects adding Containers that aren't within a SoftwareSystem."""
+    """Ensure Model rejects adding Containers that aren't within a SoftwareSystem."""
     container = Container(name="c1")
     with pytest.raises(ValueError, match="Container with name .* has no parent"):
         empty_model.add_container(container)
 
 
 def test_model_add_person_with_plusequals(empty_model: Model):
-    """Check that adding a Person to a Model with += works, consistent with += on SoftwareSystem and Container."""
+    """Check that adding a Person to a Model with += works."""
     bob = Person(name="Bob")
     empty_model += bob
     assert bob in empty_model.people
@@ -87,7 +87,7 @@ def test_model_add_person_with_plusequals(empty_model: Model):
 
 
 def test_model_add_software_system_with_plusequals(empty_model: Model):
-    """Check that adding a SoftwareSystem to a Model with += works, consistent with += on SoftwareSystem and Container."""
+    """Check that adding a SoftwareSystem to a Model with += works."""
     sys = SoftwareSystem(name="Sys")
     empty_model += sys
     assert sys in empty_model.software_systems
@@ -97,7 +97,7 @@ def test_model_add_software_system_with_plusequals(empty_model: Model):
 def test_model_can_only_add_person_or_software_system_with_plusequals(
     empty_model: Model,
 ):
-    """Ensure that passing something other than a Person or SoftwareSystem in to += fails."""
+    """Ensure passing something other than a Person or SoftwareSystem in to += fails."""
     c = Container(name="C")
     with pytest.raises(
         ValueError, match="Cannot add element with the name .* to Model"
