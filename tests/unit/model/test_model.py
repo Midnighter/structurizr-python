@@ -67,15 +67,15 @@ def test_model_cannot_add_relationship_with_same_id_as_element(empty_model: Mode
 def test_model_add_component_must_have_parent(empty_model: Model):
     """Ensure that Model rejects adding Components that aren't within a Container."""
     component = Component(name="c1")
-    with pytest.raises(ValueError, match="Component with name .* has no parent"):
-        empty_model.add_component(component)
+    with pytest.raises(ValueError, match="Element with name .* has no parent"):
+        empty_model += component
 
 
 def test_model_add_container_must_have_parent(empty_model: Model):
     """Ensure Model rejects adding Containers that aren't within a SoftwareSystem."""
     container = Container(name="c1")
-    with pytest.raises(ValueError, match="Container with name .* has no parent"):
-        empty_model.add_container(container)
+    with pytest.raises(ValueError, match="Element with name .* has no parent"):
+        empty_model += container
 
 
 def test_model_add_person_with_plusequals(empty_model: Model):
@@ -94,12 +94,31 @@ def test_model_add_software_system_with_plusequals(empty_model: Model):
     assert sys.id != ""
 
 
-def test_model_can_only_add_person_or_software_system_with_plusequals(
+def test_model_can_add_elements_with_plusequals(
     empty_model: Model,
 ):
-    """Ensure passing something other than a Person or SoftwareSystem in to += fails."""
+    """Ensure passing something other than a Person or SoftwareSystem to += works."""
+    sys = SoftwareSystem(name="Sys")
     c = Container(name="C")
+    c.parent = sys
+    empty_model += c
+    assert c in empty_model.get_elements()
+
+
+def test_model_cannot_add_two_people_with_same_name(empty_model: Model):
+    """Ensure duplicate people are not allowed."""
+    empty_model.add_person(name="Bob")
     with pytest.raises(
-        ValueError, match="Cannot add element with the name .* to Model"
+        ValueError, match="A person with the name 'Bob' already exists in the model."
     ):
-        empty_model += c
+        empty_model.add_person(name="Bob")
+
+
+def test_model_cannot_add_two_software_systems_with_same_name(empty_model: Model):
+    """Ensure duplicate software systems are not allowed."""
+    empty_model.add_software_system(name="Bob")
+    with pytest.raises(
+        ValueError,
+        match="A software system with the name 'Bob' already exists in the model.",
+    ):
+        empty_model.add_software_system(name="Bob")

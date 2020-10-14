@@ -120,7 +120,7 @@ class Container(StaticStructureElement):
             parent=software_system,
             technology=container_io.technology,
         )
-        model.add_container(container)
+        model += container
 
         for component_io in container_io.components:
             component = Component.hydrate(component_io, container=container)
@@ -139,7 +139,6 @@ class Container(StaticStructureElement):
         # TODO: once we move past python 3.6 change to proper return type via
         # __future__.annotations
         if component in self.components:
-            # Nothing to do
             return self
 
         if self.get_component_with_name(component.name):
@@ -155,7 +154,8 @@ class Container(StaticStructureElement):
                 f"{component.parent}. Cannot add to {self}."
             )
         self._components.add(component)
-        self.get_model().add_component(component)
+        model = self.get_model()
+        model += component
         return self
 
     def get_component_with_name(self, name: str) -> Component:

@@ -16,9 +16,12 @@
 """Provide a person model."""
 
 
+from typing import Optional
+
 from pydantic import Field
 
 from .location import Location
+from .relationship import Relationship
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
 
@@ -50,7 +53,7 @@ class Person(StaticStructureElement):
     """
 
     def __init__(self, *, location: Location = Location.Unspecified, **kwargs) -> None:
-        """"""
+        """Initialise a Person."""
         super().__init__(**kwargs)
         self.location = location
 
@@ -58,11 +61,14 @@ class Person(StaticStructureElement):
 
     @classmethod
     def hydrate(cls, person_io: PersonIO) -> "Person":
-        """"""
+        """Create a new person and hydrate from its IO."""
         return cls(
             **cls.hydrate_arguments(person_io),
             location=person_io.location,
         )
 
-    def interacts_with(self, destination: "Person", description: str, **kwargs):
+    def interacts_with(
+        self, destination: "Person", description: str, **kwargs
+    ) -> Optional[Relationship]:
+        """Create a relationship with the given other Person."""
         return self.uses(destination=destination, description=description, **kwargs)

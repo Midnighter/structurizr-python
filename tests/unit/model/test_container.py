@@ -22,12 +22,12 @@ from structurizr.model import Component, Container, ContainerIO
 class MockModel:
     """Implement a mock model for testing."""
 
-    def add_component(self, component):
+    def __iadd__(self, component):
         """Simulate the model assigning IDs to new elements."""
         if not component.id:
             component.id = "id"
         component.set_model(self)
-        pass
+        return self
 
 
 _model = MockModel()

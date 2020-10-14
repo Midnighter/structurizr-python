@@ -48,7 +48,7 @@ def test_add_person_from_args(attributes: dict, model: Model):
 def test_add_person(attributes: dict, model: Model):
     """Expect that a person can be added to the model."""
     person = Person(**attributes)
-    model.add_person(person)
+    model += person
     assert person.id == "1"
     assert len(model.people) == 1
     for attr, expected in attributes.items():
@@ -75,7 +75,7 @@ def test_add_software_system_from_args(attributes: dict, model: Model):
 def test_add_software_system(attributes: dict, model: Model):
     """Expect that a software system can be added to the model."""
     software_system = SoftwareSystem(**attributes)
-    model.add_software_system(software_system)
+    model += software_system
     assert software_system.id == "1"
     assert len(model.software_systems) == 1
     for attr, expected in attributes.items():
