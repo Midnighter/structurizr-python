@@ -16,7 +16,7 @@
 
 import pytest
 
-from structurizr.model import Component, Container
+from structurizr.model import Component, Container, ContainerIO
 
 
 class MockModel:
@@ -97,3 +97,14 @@ def test_adding_component_with_existing_parent_fails(empty_container: Container)
     component = empty_container.add_component(name="Component")
     with pytest.raises(ValueError, match="Component with name .* already has parent"):
         container2 += component
+
+
+def test_serialisation_of_child_components():
+    """Make sure that components are serialised even though read-only."""
+    container = Container(name="Container", description="Description")
+    container.set_model(_model)
+    container.add_component(name="Component")
+    io = ContainerIO.from_orm(container)
+
+    assert len(io.components) == 1
+    assert io.components[0].name == "Component"

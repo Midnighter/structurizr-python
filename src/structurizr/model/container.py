@@ -69,7 +69,7 @@ class Container(StaticStructureElement):
         technology: The technology associated with this container
                     (e.g. Apache Tomcat).
         tags: A comma separated list of tags associated with this container.
-        components: The set of components within this container.  Do not modify directly.
+        components: The set of components within this container.
         properties: A set of arbitrary name-value properties.
         relationships: The set of relationships from this container to
                        other elements.
@@ -98,9 +98,14 @@ class Container(StaticStructureElement):
         super().__init__(**kwargs)
         self.parent = parent
         self.technology = technology
-        self.components = set(components)
+        self._components = set(components)
 
         self.tags.add(Tags.CONTAINER)
+
+    @property
+    def components(self) -> Iterable[Component]:
+        """Return read-only list of child components."""
+        return [c for c in self._components]
 
     @classmethod
     def hydrate(
@@ -109,7 +114,7 @@ class Container(StaticStructureElement):
         software_system: "SoftwareSystem",
         model: "Model",
     ) -> "Container":
-        """"""
+        """Hydrate a new Container instance from its IO."""
         container = cls(
             **cls.hydrate_arguments(container_io),
             parent=software_system,
@@ -131,7 +136,8 @@ class Container(StaticStructureElement):
 
     def __iadd__(self, component: Component) -> "Container":
         """Add a newly constructed component to this container."""
-        # TODO: once we move past python 3.6 change to proper return type via __future__.annotations
+        # TODO: once we move past python 3.6 change to proper return type via
+        # __future__.annotations
         if component in self.components:
             # Nothing to do
             return self
@@ -145,13 +151,15 @@ class Container(StaticStructureElement):
             component.parent = self
         elif component.parent is not self:
             raise ValueError(
-                f"Component with name {component.name} already has parent {component.parent}. Cannot add to {self}."
+                f"Component with name {component.name} already has parent "
+                f"{component.parent}. Cannot add to {self}."
             )
-        self.components.add(component)
+        self._components.add(component)
         self.get_model().add_component(component)
         return self
 
     def get_component_with_name(self, name: str) -> Component:
+        """Return a matching `Component` or None if not found."""
         for component in self.components:
             if component.name == name:
                 return component
