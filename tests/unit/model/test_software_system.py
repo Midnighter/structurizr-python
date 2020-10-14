@@ -25,6 +25,11 @@ from structurizr.model.software_system import SoftwareSystem
 class MockModel:
     """Implement a mock model for testing."""
 
+    def __init__(self):
+        """Set up an empty system for testing."""
+        self.empty_system = SoftwareSystem(name="Sys")
+        self.empty_system.set_model(self)
+
     def add_container(self, container):
         """Simulate the model assigning IDs to new elements."""
         if not container.id:
@@ -33,15 +38,10 @@ class MockModel:
         pass
 
 
-_model = MockModel()
-
-
 @pytest.fixture(scope="function")
-def empty_system() -> SoftwareSystem:
-    """Provide an empty SoftwareSystem on demand for test cases to use."""
-    software_system = SoftwareSystem(name="Sys")
-    software_system.set_model(_model)
-    return software_system
+def model_with_system() -> MockModel:
+    """Provide a model and empty SoftwareSystem on demand for test cases to use."""
+    return MockModel()
 
 
 @pytest.mark.parametrize(
@@ -58,41 +58,46 @@ def test_software_system_init(attributes):
         assert getattr(system, attr) == expected
 
 
-def test_add_container_accepts_additional_args(empty_system: SoftwareSystem):
+def test_add_container_accepts_additional_args(model_with_system: MockModel):
     """Test keyword arguments (e.g. id) are allowed when adding a new container."""
+    empty_system = model_with_system.empty_system
     container = empty_system.add_container("container", "description", id="id1")
     assert container.id == "id1"
 
 
-def test_add_container_technology_is_optional(empty_system: SoftwareSystem):
+def test_add_container_technology_is_optional(model_with_system: MockModel):
     """Ensure that you don't have to specify the technology."""
+    empty_system = model_with_system.empty_system
     container = empty_system.add_container(name="Container", description="Description")
     assert container.technology == ""
 
 
 def test_software_system_add_container_adds_to_container_list(
-    empty_system: SoftwareSystem,
+    model_with_system: MockModel,
 ):
     """Ensure that add_container() adds the container and sets up other properties."""
+    empty_system = model_with_system.empty_system
     container = empty_system.add_container(name="Container", description="Description")
     assert container in empty_system.containers
     assert container.id != ""
-    assert container.model is _model
+    assert container.model is model_with_system
     assert container.parent is empty_system
 
 
-def test_software_system_add_constructed_container(empty_system: SoftwareSystem):
+def test_software_system_add_constructed_container(model_with_system: MockModel):
     """Verify behaviour when adding a newly constructed Container."""
+    empty_system = model_with_system.empty_system
     container = Container(name="Container")
     empty_system += container
     assert container in empty_system.containers
     assert container.id != ""
-    assert container.model is _model
+    assert container.model is model_with_system
     assert container.parent is empty_system
 
 
-def test_software_system_adding_container_twice_is_ok(empty_system: SoftwareSystem):
+def test_software_system_adding_container_twice_is_ok(model_with_system: MockModel):
     """Defensive check that adding the same container twice is OK."""
+    empty_system = model_with_system.empty_system
     container = Container(name="Container")
     empty_system += container
     empty_system += container
@@ -100,9 +105,10 @@ def test_software_system_adding_container_twice_is_ok(empty_system: SoftwareSyst
 
 
 def test_software_system_adding_container_with_same_name_fails(
-    empty_system: SoftwareSystem,
+    model_with_system: MockModel,
 ):
     """Check that adding a container with the same name as an existing one fails."""
+    empty_system = model_with_system.empty_system
     empty_system.add_container(name="Container", description="Description")
     with pytest.raises(ValueError, match="Container with name .* already exists"):
         empty_system.add_container(name="Container", description="Description2")
@@ -111,9 +117,10 @@ def test_software_system_adding_container_with_same_name_fails(
 
 
 def test_software_system_adding_container_with_existing_parent_fails(
-    empty_system: SoftwareSystem,
+    model_with_system: MockModel,
 ):
     """Check that adding a container with a (different) parent fails."""
+    empty_system = model_with_system.empty_system
     system2 = SoftwareSystem(name="System 2", description="Description")
     system2.set_model(empty_system.model)
 
@@ -122,8 +129,9 @@ def test_software_system_adding_container_with_existing_parent_fails(
         system2 += container
 
 
-def test_software_system_get_container_with_name(empty_system: SoftwareSystem):
+def test_software_system_get_container_with_name(model_with_system: MockModel):
     """Test getting containers by name."""
+    empty_system = model_with_system.empty_system
     container = empty_system.add_container(name="Test", description="Description")
     assert empty_system.get_container_with_name("Test") is container
     assert empty_system.get_container_with_name("FooBar") is None
