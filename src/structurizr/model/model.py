@@ -17,15 +17,14 @@
 
 
 import logging
-from typing import Iterable, List, Optional, Union, ValuesView
+from typing import Iterable, List, Optional, Set, ValuesView
 
 from pydantic import Field
 
-from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
+from structurizr.model.deployment_node import DeploymentNode
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from .component import Component
 from .container import Container
 from .container_instance import ContainerInstance
 from .element import Element
@@ -106,8 +105,6 @@ class Model(AbstractBase):
         """
         super().__init__(**kwargs)
         self.enterprise = enterprise
-        self.people = set(people)
-        self.software_systems = set(software_systems)
         self.deployment_nodes = set(deployment_nodes)
         # TODO: simply iterate attributes
         self._elements_by_id = {}
@@ -115,11 +112,22 @@ class Model(AbstractBase):
         self._id_generator = SequentialIntegerIDGenerator()
 
     def __contains__(self, element: Element):
+        """Return True if the element is in the model."""
         return element in self.get_elements()
+
+    @property
+    def software_systems(self) -> Set[SoftwareSystem]:
+        """Return the software systems in the model."""
+        return set([e for e in self.get_elements() if isinstance(e, SoftwareSystem)])
+
+    @property
+    def people(self) -> Set[Person]:
+        """Return the people in the model."""
+        return set([e for e in self.get_elements() if isinstance(e, Person)])
 
     @classmethod
     def hydrate(cls, model_io: ModelIO) -> "Model":
-        """"""
+        """Return a new model, hydrated from its IO."""
         model = cls(
             enterprise=Enterprise.hydrate(model_io.enterprise)
             if model_io.enterprise is not None
@@ -128,12 +136,10 @@ class Model(AbstractBase):
         )
 
         for person_io in model_io.people:
-            person = Person.hydrate(person_io)
-            model.add_person(person=person)
+            model += Person.hydrate(person_io)
 
         for software_system_io in model_io.software_systems:
-            software_system = SoftwareSystem.hydrate(software_system_io, model=model)
-            model.add_software_system(software_system=software_system)
+            model += SoftwareSystem.hydrate(software_system_io, model=model)
 
         # for deployment_node_io in model_io.deployment_nodes:
         #     deployment_node = DeploymentNode.hydrate(deployment_node_io)
@@ -154,12 +160,10 @@ class Model(AbstractBase):
         Add a new person to the model.
 
         Args:
-            person (Person, optional): Either provide a `Person` instance or
-            **kwargs: Provide keyword arguments for instantiating a `Person`
-                (recommended).
+            **kwargs: Provide keyword arguments for instantiating a `Person`.
 
         Returns:
-            Person: Either the same or a new instance, depending on arguments.
+            Person: New instance.
 
         Raises:
             ValueError: When a person with the same name already exists.
@@ -168,28 +172,20 @@ class Model(AbstractBase):
             Person
 
         """
-        if person is None:
-            person = Person(**kwargs)
-        if any(person.name == p.name for p in self.people):
-            ValueError(
-                f"A person with the name '{person.name}' already exists in the model."
-            )
-        self._add_element(person)
-        self.people.add(person)
+        person = Person(**kwargs)
+        self += person
         return person
 
-    def add_software_system(self, software_system=None, **kwargs) -> SoftwareSystem:
+    def add_software_system(self, **kwargs) -> SoftwareSystem:
         """
         Add a new software system to the model.
 
         Args:
-            software_system (SoftwareSystem, optional): Either provide a
-                `SoftwareSystem` instance or
             **kwargs: Provide keyword arguments for instantiating a `SoftwareSystem`
                 (recommended).
 
         Returns:
-            SoftwareSystem: Either the same or a new instance, depending on arguments.
+            SoftwareSystem: New instance.
 
         Raises:
             ValueError: When a software system with the same name already exists.
@@ -198,54 +194,31 @@ class Model(AbstractBase):
             SoftwareSystem
 
         """
-        if software_system is None:
-            software_system = SoftwareSystem(**kwargs)
-        if any(software_system.name == s.name for s in self.software_systems):
-            ValueError(
-                f"A software system with the name {software_system.name} already "
-                f"exists in the model."
-            )
-        self._add_element(software_system)
-        self.software_systems.add(software_system)
+        software_system = SoftwareSystem(**kwargs)
+        self += software_system
         return software_system
 
-    def __iadd__(self, element: Union[Person, SoftwareSystem]) -> "Model":
-        """Add a new Person or SoftwareSystem to the model."""
+    def __iadd__(self, element: Element) -> "Model":
+        """Add a newly constructed element to the model."""
         if isinstance(element, Person):
-            self.add_person(person=element)
+            if any(element.name == p.name for p in self.people):
+                raise ValueError(
+                    f"A person with the name '{element.name}' already exists in the "
+                    f"model."
+                )
         elif isinstance(element, SoftwareSystem):
-            self.add_software_system(software_system=element)
-        else:
+            if any(element.name == s.name for s in self.software_systems):
+                raise ValueError(
+                    f"A software system with the name '{element.name}' already "
+                    f"exists in the model."
+                )
+        elif element.parent is None:
             raise ValueError(
-                f"Cannot add element with the name {element.name} to Model with += as it is not a Person or a SoftwareSystem."
+                f"Element with name {element.name} has no parent.  Please ensure "
+                f"you have added it to the parent element."
             )
+        self._add_element(element)
         return self
-
-    def add_container(self, container: Container) -> Container:
-        """
-        Register a newly constructed container with the model.
-
-        Args:
-            container (Container): `Container` instance to register.
-
-        Returns:
-            Container: The provided container.
-
-        Raises:
-            ValueError: When the container isn't a child of a `SoftwareSystem`
-
-        See Also:
-            Container
-
-        """
-        if container.parent is None:
-            raise ValueError(
-                f"Container with name {container.name} has no parent software system."
-                f"Adding to software system will register with the system's model."
-            )
-
-        self._add_element(container)
-        return container
 
     def add_container_instance(
         self,
@@ -274,20 +247,6 @@ class Model(AbstractBase):
             raise ValueError("A container must be specified.")
         # TODO: implement
         # instance_number =
-
-    def add_component(
-        self,
-        component: Component,
-    ) -> Component:
-        """Register a newly constructed Component with the model."""
-        if component.parent is None:
-            raise ValueError(
-                f"Component with name {component.name} has no parent container.  "
-                f"Adding to container will register with the container's model."
-            )
-
-        self._add_element(component)
-        return component
 
     def add_deployment_node(
         self, deployment_node: Optional[DeploymentNode] = None, **kwargs
@@ -383,16 +342,17 @@ class Model(AbstractBase):
         return self._relationships_by_id.values()
 
     def get_elements(self) -> ValuesView[Element]:
+        """Return an iterator over all elements contained in this model."""
         return self._elements_by_id.values()
 
     def get_software_system_with_id(self, id: str) -> Optional[SoftwareSystem]:
+        """Return the software system with a given ID."""
         result = self.get_element(id)
         if not isinstance(result, SoftwareSystem):
             return None
         return result
 
     def _add_element(self, element: Element) -> None:
-        """"""
         if not element.id:
             element.id = self._id_generator.generate_id()
         elif (
@@ -405,7 +365,6 @@ class Model(AbstractBase):
         self._id_generator.found(element.id)
 
     def _add_relationship(self, relationship: Relationship) -> bool:
-        """"""
         if relationship in self.get_relationships():
             return True
         if not relationship.id:
