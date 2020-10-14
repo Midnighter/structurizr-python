@@ -100,10 +100,12 @@ class SoftwareSystem(StaticStructureElement):
             container.parent = self
         elif container.parent is not self:
             raise ValueError(
-                f"Container with name {container.name} already has parent {container.parent}. Cannot add to {self}."
+                f"Container with name {container.name} already has parent "
+                f"{container.parent}. Cannot add to {self}."
             )
         self.containers.add(container)
-        self.get_model().add_container(container)
+        model = self.get_model()
+        model += container
         return self
 
     def get_container_with_name(self, name: str) -> Container:
