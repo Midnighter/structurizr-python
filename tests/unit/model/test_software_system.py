@@ -30,12 +30,12 @@ class MockModel:
         self.empty_system = SoftwareSystem(name="Sys")
         self.empty_system.set_model(self)
 
-    def add_container(self, container):
+    def __iadd__(self, container):
         """Simulate the model assigning IDs to new elements."""
         if not container.id:
             container.id = "id"
         container.set_model(self)
-        pass
+        return self
 
 
 @pytest.fixture(scope="function")
