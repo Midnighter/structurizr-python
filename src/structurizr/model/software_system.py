@@ -63,7 +63,7 @@ class SoftwareSystem(StaticStructureElement):
     """
 
     def __init__(self, *, location: Location = Location.Unspecified, **kwargs) -> None:
-        """"""
+        """Initialise a new SoftwareSystem."""
         super().__init__(**kwargs)
         self.location = location
         self.containers: Set[Container] = set()
@@ -85,10 +85,10 @@ class SoftwareSystem(StaticStructureElement):
         return container
 
     def __iadd__(self, container: Container) -> "SoftwareSystem":
-        """Add a newly constructed container to this system and register with its model."""
-        # TODO: once we move past python 3.6 change to proper return type via __future__.annotations
+        """Add a new container to this system and register with its model."""
+        # TODO: once we move past python 3.6 change to proper return type via
+        # __future__.annotations
         if container in self.containers:
-            # Nothing to do
             return self
 
         if self.get_container_with_name(container.name):
@@ -104,8 +104,7 @@ class SoftwareSystem(StaticStructureElement):
                 f"{container.parent}. Cannot add to {self}."
             )
         self.containers.add(container)
-        model = self.get_model()
-        model += container
+        self.model.add(container)
         return self
 
     def get_container_with_name(self, name: str) -> Container:
@@ -116,7 +115,7 @@ class SoftwareSystem(StaticStructureElement):
     def hydrate(
         cls, software_system_io: SoftwareSystemIO, model: "Model"
     ) -> "SoftwareSystem":
-        """"""
+        """Create a new SoftwareSystem instance and hydrate it from its IO."""
         software_system = cls(
             **cls.hydrate_arguments(software_system_io),
             location=software_system_io.location,
