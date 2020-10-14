@@ -22,6 +22,11 @@ from structurizr.model import Component, Container, ContainerIO
 class MockModel:
     """Implement a mock model for testing."""
 
+    def __init__(self):
+        """Create an empty container for testing."""
+        self.empty_container = Container(name="Container", description="Description")
+        self.empty_container.set_model(self)
+
     def __iadd__(self, component):
         """Simulate the model assigning IDs to new elements."""
         if not component.id:
@@ -30,15 +35,10 @@ class MockModel:
         return self
 
 
-_model = MockModel()
-
-
 @pytest.fixture(scope="function")
-def empty_container() -> Container:
-    """Provide an empty Container on demand for test cases to use."""
-    container = Container(name="Container", description="Description")
-    container.set_model(_model)
-    return container
+def model_with_container() -> MockModel:
+    """Provide a model with an empty Container on demand for test cases to use."""
+    return MockModel()
 
 
 @pytest.mark.parametrize(
@@ -55,35 +55,43 @@ def test_container_init(attributes):
         assert getattr(container, attr) == expected
 
 
-def test_container_add_component_adds_to_component_list(empty_container: Container):
+def test_container_add_component_adds_to_component_list(
+    model_with_container: MockModel,
+):
     """Verify add_component() adds the new component to Container.components."""
+    empty_container = model_with_container.empty_container
     component = empty_container.add_component(name="Component")
     assert component in empty_container.components
     assert component.id != ""
-    assert component.model is _model
+    assert component.model is model_with_container
     assert component.parent is empty_container
 
 
-def test_container_add_constructed_component(empty_container: Container):
+def test_container_add_constructed_component(model_with_container: MockModel):
     """Verify behaviour when adding a newly constructed Container."""
+    empty_container = model_with_container.empty_container
     component = Component(name="Component")
     empty_container += component
     assert component in empty_container.components
     assert component.id != ""
-    assert component.model is _model
+    assert component.model is model_with_container
     assert component.parent is empty_container
 
 
-def test_container_adding_component_twice_is_ok(empty_container: Container):
+def test_container_adding_component_twice_is_ok(model_with_container: MockModel):
     """Defensive check that adding the same component twice is OK."""
+    empty_container = model_with_container.empty_container
     component = Component(name="Component")
     empty_container += component
     empty_container += component
     assert len(empty_container.components) == 1
 
 
-def test_container_adding_component_with_same_name_fails(empty_container: Container):
+def test_container_adding_component_with_same_name_fails(
+    model_with_container: MockModel,
+):
     """Check that adding a component with the same name as an existing one fails."""
+    empty_container = model_with_container.empty_container
     empty_container.add_component(name="Component")
     with pytest.raises(ValueError, match="Component with name .* already exists"):
         empty_container.add_component(name="Component")
@@ -91,18 +99,19 @@ def test_container_adding_component_with_same_name_fails(empty_container: Contai
         empty_container += Component(name="Component")
 
 
-def test_adding_component_with_existing_parent_fails(empty_container: Container):
+def test_adding_component_with_existing_parent_fails(model_with_container: MockModel):
     """Check that adding a component with a different parent fails."""
+    empty_container = model_with_container.empty_container
     container2 = Container(name="Container 2", description="Description")
     component = empty_container.add_component(name="Component")
     with pytest.raises(ValueError, match="Component with name .* already has parent"):
         container2 += component
 
 
-def test_serialisation_of_child_components():
+def test_serialisation_of_child_components(model_with_container: MockModel):
     """Make sure that components are serialised even though read-only."""
     container = Container(name="Container", description="Description")
-    container.set_model(_model)
+    container.set_model(model_with_container)
     container.add_component(name="Component")
     io = ContainerIO.from_orm(container)
 
