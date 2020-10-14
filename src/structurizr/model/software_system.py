@@ -16,7 +16,7 @@
 """Provide a software system element model."""
 
 
-from typing import TYPE_CHECKING, List, Set
+from typing import TYPE_CHECKING, Iterable, List, Set
 
 from pydantic import Field
 
@@ -66,13 +66,18 @@ class SoftwareSystem(StaticStructureElement):
         """Initialise a new SoftwareSystem."""
         super().__init__(**kwargs)
         self.location = location
-        self.containers: Set[Container] = set()
+        self._containers: Set[Container] = set()
 
         # TODO: canonical_name
         # TODO: parent
 
         self.tags.add(Tags.ELEMENT)
         self.tags.add(Tags.SOFTWARE_SYSTEM)
+
+    @property
+    def containers(self) -> Iterable[Container]:
+        """Return read-only list of child containers."""
+        return list(self._containers)
 
     def add_container(
         self, name: str, description: str, technology: str = "", **kwargs
@@ -88,7 +93,7 @@ class SoftwareSystem(StaticStructureElement):
         """Add a new container to this system and register with its model."""
         # TODO: once we move past python 3.6 change to proper return type via
         # __future__.annotations
-        if container in self.containers:
+        if container in self._containers:
             return self
 
         if self.get_container_with_name(container.name):
@@ -103,13 +108,13 @@ class SoftwareSystem(StaticStructureElement):
                 f"Container with name {container.name} already has parent "
                 f"{container.parent}. Cannot add to {self}."
             )
-        self.containers.add(container)
+        self._containers.add(container)
         self.model.add(container)
         return self
 
     def get_container_with_name(self, name: str) -> Container:
         """Return the container with the given name, or None."""
-        return next((c for c in self.containers if c.name == name), None)
+        return next((c for c in self._containers if c.name == name), None)
 
     @classmethod
     def hydrate(
