@@ -79,7 +79,7 @@ class Container(StaticStructureElement):
     def __init__(
         self,
         *,
-        parent: "SoftwareSystem" = None,
+        parent: Optional["SoftwareSystem"] = None,
         technology: str = "",
         components: Iterable[Component] = (),
         **kwargs,
@@ -105,7 +105,7 @@ class Container(StaticStructureElement):
     @property
     def components(self) -> Iterable[Component]:
         """Return read-only list of child components."""
-        return [c for c in self._components]
+        return list(self._components)
 
     @classmethod
     def hydrate(
@@ -144,7 +144,7 @@ class Container(StaticStructureElement):
 
         if self.get_component_with_name(component.name):
             raise ValueError(
-                f"Component with name {component.name} already exists for {self}."
+                f"Component with name {component.name} already exists in {self}."
             )
 
         if component.parent is None:

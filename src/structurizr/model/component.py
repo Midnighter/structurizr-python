@@ -82,7 +82,7 @@ class Component(StaticStructureElement):
     def __init__(
         self,
         *,
-        parent: "Container" = None,
+        parent: Optional["Container"] = None,
         technology: str = "",
         code_elements: Iterable[CodeElement] = (),
         size: Optional[int] = None,
@@ -109,7 +109,7 @@ class Component(StaticStructureElement):
 
     @classmethod
     def hydrate(cls, component_io: ComponentIO, container: "Container") -> "Component":
-        """"""
+        """Create and hydrate a new `Component` instance from its IO."""
         return cls(
             **cls.hydrate_arguments(component_io),
             parent=container,
