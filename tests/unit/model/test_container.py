@@ -27,12 +27,11 @@ class MockModel:
         self.empty_container = Container(name="Container", description="Description")
         self.empty_container.set_model(self)
 
-    def __iadd__(self, component):
+    def add(self, component):
         """Simulate the model assigning IDs to new elements."""
         if not component.id:
             component.id = "id"
         component.set_model(self)
-        return self
 
 
 @pytest.fixture(scope="function")

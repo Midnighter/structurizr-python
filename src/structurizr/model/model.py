@@ -118,12 +118,12 @@ class Model(AbstractBase):
     @property
     def software_systems(self) -> Set[SoftwareSystem]:
         """Return the software systems in the model."""
-        return set([e for e in self.get_elements() if isinstance(e, SoftwareSystem)])
+        return {e for e in self.get_elements() if isinstance(e, SoftwareSystem)}
 
     @property
     def people(self) -> Set[Person]:
         """Return the people in the model."""
-        return set([e for e in self.get_elements() if isinstance(e, Person)])
+        return {e for e in self.get_elements() if isinstance(e, Person)}
 
     @classmethod
     def hydrate(cls, model_io: ModelIO) -> "Model":
@@ -200,6 +200,11 @@ class Model(AbstractBase):
 
     def __iadd__(self, element: Element) -> "Model":
         """Add a newly constructed element to the model."""
+        self.add(element)
+        return self
+
+    def add(self, element: Element):
+        """Add a newly constructed element to the model."""
         if isinstance(element, Person):
             if any(element.name == p.name for p in self.people):
                 raise ValueError(
@@ -218,7 +223,6 @@ class Model(AbstractBase):
                 f"you have added it to the parent element."
             )
         self._add_element(element)
-        return self
 
     def add_container_instance(
         self,
