@@ -1,14 +1,11 @@
 [build-system]
+build-backend = 'setuptools.build_meta'
 requires = [
   'setuptools>=40.6.0',
+  'versioneer-518',
   'wheel'
 ]
 
 [tool.black]
 line-length = 88
-python-version = ['py37', 'py38']
-exclude = '''
-(
-    _version.py
-)
-'''
+python-version = ['py36']

@@ -5,10 +5,12 @@ History
 Next Release
 ------------
 * Upcoming features and fixes
-* Fixed issue #22: Preserve tag order as in other SDKs
-* Fixed issue #31: Consistency of element relationships
-* Fixed issue #13: Resolve overlap between add methods
 
-0.1.0 (2020-03-26)
+
+0.1.0 (2020-10-15)
 ------------------
-* First release
+* Fix: Resolve overlap between add methods (#13)
+* Fix: Add IDs to the big bank example (#16)
+* Fix: Preserve tag order as in other SDKs (#22)
+* Fix: Consistency of element relationships (#31)
+* Add Python 3.9 to the test suite
