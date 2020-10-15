@@ -21,9 +21,13 @@ from getpass import getuser
 from pathlib import Path
 from socket import getfqdn
 
-from pydantic import UUID4, BaseSettings, DirectoryPath, Field, HttpUrl
 
-from .. import __version__
+try:
+    from importlib.metadata import version
+except ModuleNotFoundError:
+    from importlib_metadata import version
+
+from pydantic import UUID4, BaseSettings, DirectoryPath, Field, HttpUrl
 
 
 __all__ = ("StructurizrClientSettings",)
@@ -44,7 +48,7 @@ hostname = getfqdn()
 if hostname:
     USER = f"{USER}@{hostname}"
 
-AGENT = f"structurizr-python/{__version__}"
+AGENT = f"structurizr-python/{version('structurizr-python')}"
 
 
 class StructurizrClientSettings(BaseSettings):
