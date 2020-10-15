@@ -200,11 +200,6 @@ class Model(AbstractBase):
 
     def __iadd__(self, element: Element) -> "Model":
         """Add a newly constructed element to the model."""
-        self.add(element)
-        return self
-
-    def add(self, element: Element):
-        """Add a newly constructed element to the model."""
         if isinstance(element, Person):
             if any(element.name == p.name for p in self.people):
                 raise ValueError(
@@ -223,6 +218,7 @@ class Model(AbstractBase):
                 f"you have added it to the parent element."
             )
         self._add_element(element)
+        return self
 
     def add_container_instance(
         self,
