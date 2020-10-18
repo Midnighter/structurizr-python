@@ -110,3 +110,28 @@ def test_archive_workspace(client, mocker):
     mocked_open.assert_called_once_with(Path("structurizr-19-time.json.gz"), mode="wt")
     mocked_handle = mocked_open()
     mocked_handle.write.assert_called_once_with('{"mock_key":"mock_value"}')
+
+
+def test_add_headers_authentication(client: StructurizrClient, mocker):
+    """Validate the headers are added correctly, including authentication."""
+    mocker.patch.object(
+        client,
+        "_number_once",
+        return_value="1529225966174"
+    )
+    request = client._client.build_request("GET", client._workspace_url)
+    headers = client._add_headers(request)
+    assert headers['Nonce'] == "1529225966174"
+    assert headers['X-Authorization'] == (
+        '7f4e4edc-f61c-4ff2-97c9-ea4bc2a7c98c:'
+        'ZmJhNTVkMDM2NGEwN2I5YjRhMDgwZWNhMjA0ODIzZD'
+        'kyMTg3YzliMzVhMjBlNmM4ZjAxMDAwOGU4OGJlODEwMQ=='
+    )
+    assert 'Content-MD5' not in headers
+    assert 'Content-Type' not in headers
+
+    # Check the additional headers needed for PUTs
+    request = client._client.build_request("PUT", client._workspace_url)
+    headers = client._add_headers(request, content="Hello", content_type="World")
+    assert headers['Content-MD5'] == 'OGIxYTk5NTNjNDYxMTI5NmE4MjdhYmY4YzQ3ODA0ZDc='
+    assert headers['Content-Type'] == 'World'

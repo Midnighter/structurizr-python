@@ -133,7 +133,7 @@ class StructurizrClient:
 
         """
         request = self._client.build_request("GET", self._workspace_url)
-        request.headers.update(self._add_headers(request.url.full_path))
+        request.headers.update(self._add_headers(request))
         response = self._client.send(request)
         if response.status_code != 200:
             raise StructurizrClientException(
@@ -178,8 +178,7 @@ class StructurizrClient:
         )
         request.headers.update(
             self._add_headers(
-                url_path=request.url.full_path,
-                method="PUT",
+                request,
                 content=workspace_json,
                 content_type=self._application_json,
             )
@@ -202,7 +201,7 @@ class StructurizrClient:
 
         """
         request = self._client.build_request("PUT", self._lock_url, params=self._params)
-        request.headers.update(self._add_headers(request.url.full_path, method="PUT"))
+        request.headers.update(self._add_headers(request))
         response = self._client.send(request)
         logger.debug("%r", response.json())
         response.raise_for_status()
@@ -225,7 +224,7 @@ class StructurizrClient:
             "DELETE", self._lock_url, params=self._params
         )
         request.headers.update(
-            self._add_headers(request.url.full_path, method="DELETE")
+            self._add_headers(request)
         )
         response = self._client.send(request)
         response.raise_for_status()
@@ -238,8 +237,7 @@ class StructurizrClient:
 
     def _add_headers(
         self,
-        url_path: str,
-        method: str = "GET",
+        request: httpx.Request,
         content: str = "",
         content_type: str = "",
     ) -> Dict[str, str]:
@@ -247,8 +245,7 @@ class StructurizrClient:
         Prepare the Structurizr specific headers.
 
         Args:
-            url_path (str): The URL path to the workspace or lock.
-            method (str): One of the HTTP verbs.
+            request (httpx.Request): The request to create headers for.
             content (str): The workspace definition as JSON.
             content_type (str): The content MIME-type (e.g. 'application/json').
 
@@ -256,6 +253,8 @@ class StructurizrClient:
             dict: Items in the dictionary define headers and their values.
 
         """
+        method = request.method
+        url_path = request.url.raw_path.decode('ascii')
         definition_md5 = self._md5(content)
         nonce = self._number_once()
         message_digest = self._message_digest(
