@@ -223,9 +223,7 @@ class StructurizrClient:
         request = self._client.build_request(
             "DELETE", self._lock_url, params=self._params
         )
-        request.headers.update(
-            self._add_headers(request)
-        )
+        request.headers.update(self._add_headers(request))
         response = self._client.send(request)
         response.raise_for_status()
         response = APIResponse.parse_raw(response.text)
@@ -254,7 +252,7 @@ class StructurizrClient:
 
         """
         method = request.method
-        url_path = request.url.raw_path.decode('ascii')
+        url_path = request.url.raw_path.decode("ascii")
         definition_md5 = self._md5(content)
         nonce = self._number_once()
         message_digest = self._message_digest(
