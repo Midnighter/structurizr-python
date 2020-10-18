@@ -4,7 +4,7 @@ History
 
 Next Release
 ------------
-* Upcoming features and fixes
+* Fix: Change to httpx library API (#38)
 
 
 0.1.0 (2020-10-15)
