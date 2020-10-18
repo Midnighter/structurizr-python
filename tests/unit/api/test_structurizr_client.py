@@ -20,10 +20,15 @@ from collections import namedtuple
 from datetime import datetime
 from gzip import GzipFile
 from pathlib import Path
+from typing import List
 
 import pytest
+from httpx import Request, Response
+from pytest_mock import MockerFixture
 
 from structurizr.api.structurizr_client import StructurizrClient
+from structurizr.api.structurizr_client_exception import StructurizrClientException
+from structurizr.workspace import Workspace
 
 
 MockSettings = namedtuple(
@@ -47,7 +52,7 @@ def mock_settings():
 
 
 @pytest.fixture(scope="function")
-def client(mock_settings):
+def client(mock_settings) -> StructurizrClient:
     """Provide a client instance with the mock settings."""
     return StructurizrClient(settings=mock_settings)
 
@@ -131,3 +136,52 @@ def test_add_headers_authentication(client: StructurizrClient, mocker):
     headers = client._add_headers(request, content="Hello", content_type="World")
     assert headers["Content-MD5"] == "OGIxYTk5NTNjNDYxMTI5NmE4MjdhYmY4YzQ3ODA0ZDc="
     assert headers["Content-Type"] == "World"
+
+
+def test_get_workspace_handles_error_responses(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Test that response code other than 200 raise an exception."""
+    mocker.patch.object(client._client, "send", return_value=Response(403))
+    with pytest.raises(
+        StructurizrClientException,
+        match="Failed .* workspace 19.\nResponse 403 - Forbidden",
+    ):
+        client.get_workspace()
+
+
+def test_put_workspace_handles_error_responses(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Test that response code other than 200 raise an exception."""
+    mocker.patch.object(client._client, "send", return_value=Response(403))
+    workspace = Workspace(name="Workspace 1", description="", id=19)
+    with pytest.raises(
+        StructurizrClientException,
+        match="Failed .* workspace 19.\nResponse 403 - Forbidden",
+    ):
+        client.put_workspace(workspace)
+
+
+def test_locking_and_unlocking(client: StructurizrClient, mocker: MockerFixture):
+    """Ensure that using the client in a with block locks and unlocks."""
+    requests: List[Request] = []
+
+    def fake_send(request: Request):
+        nonlocal requests
+        requests.append(request)
+        return Response(
+            200,
+            content='{"success": true, "message": "OK"}'.encode("ascii"),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with client:
+        pass
+
+    assert len(requests) == 2
+    assert requests[0].method == "PUT"
+    assert requests[0].url.path == "/workspace/19/lock"
+    assert requests[1].method == "DELETE"
+    assert requests[1].url.path == "/workspace/19/lock"
