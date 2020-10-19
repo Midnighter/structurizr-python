@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import List
 
 import pytest
-from httpx import Request, Response
+from httpx import URL, Request, Response
 from pytest_mock import MockerFixture
 
 from structurizr.api.structurizr_client import StructurizrClient
@@ -122,10 +122,10 @@ def test_httpx_response_raw_path_behaviour():
 
     As the httpx library is evolving rapidly, this is a defensive test to make sure
     that `Response.raw_path` continues to behave as we need for StructurizrClient, in
-    particular not HTTP-escaping parameters.
+    particular not HTTP-escaping parameters, but still ASCII-encoding the URL.
     """
-    request = Request(method="GET", url="http://someserver:8081/some/path?param=a+b")
-    assert request.url.raw_path.decode("ascii") == "/some/path?param=a+b"
+    url = URL("http://example.com:8080/api/test?q=motörhead")
+    assert url.raw_path.decode("ascii") == "/api/test?q=mot%C3%B6rhead"
 
 
 def test_add_headers_authentication(client: StructurizrClient, mocker):
