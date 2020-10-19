@@ -117,6 +117,17 @@ def test_archive_workspace(client, mocker):
     mocked_handle.write.assert_called_once_with('{"mock_key":"mock_value"}')
 
 
+def test_httpx_response_raw_path_behaviour():
+    """Make sure that `Response.raw_path` continues to do what we need.
+
+    As the httpx library is evolving rapidly, this is a defensive test to make sure
+    that `Response.raw_path` continues to behave as we need for StructurizrClient, in
+    particular not HTTP-escaping parameters.
+    """
+    request = Request(method="GET", url="http://someserver:8081/some/path?param=a+b")
+    assert request.url.raw_path.decode("ascii") == "/some/path?param=a+b"
+
+
 def test_add_headers_authentication(client: StructurizrClient, mocker):
     """Validate the headers are added correctly, including authentication."""
     mocker.patch.object(client, "_number_once", return_value="1529225966174")
