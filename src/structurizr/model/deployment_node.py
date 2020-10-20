@@ -15,50 +15,136 @@
 
 """Provide a deployment node model."""
 
+from typing import TYPE_CHECKING, Iterable, List
 
-from typing import Iterable
+from pydantic import Field
 
 from .deployment_element import DeploymentElement, DeploymentElementIO
 
+
+if TYPE_CHECKING:
+    from .model import Model
 
 __all__ = ("DeploymentNode", "DeploymentNodeIO")
 
 
 class DeploymentNodeIO(DeploymentElementIO):
-    """Represent a deployment node."""
+    """
+    Represent a deployment node.
 
-    parent: "DeploymentNodeIO"
+    Attributes:
+        id: The ID of this deployment node in the model.
+        name: The name of this node.
+        description: A short description of this node.
+        environment (str):
+        tags: A comma separated list of tags associated with this node.
+        children: The deployment nodes that are direct children of this node.
+        properties: A set of arbitrary name-value properties.
+        relationships: The set of relationships from this node to
+                       other elements.
+        url (pydantic.HttpUrl):
+    """
+
+    class Config:
+        """Pydantic configuration for DeploymentNodeIO."""
+
+        # Prevent infinite recursion for `children` - see
+        # https://github.com/samuelcolvin/pydantic/issues/524
+        validate_assignment = "limited"
+
     technology: str = ""
     instances: int = 1
+    children: List["DeploymentNodeIO"] = Field(default=())
+
+
+DeploymentNodeIO.update_forward_refs()
 
 
 class DeploymentNode(DeploymentElement):
-    """Represent a deployment node."""
+    """
+    Represent a deployment node.
+
+    Attributes:
+        id: The ID of this deployment node in the model.
+        name: The name of this node.
+        description: A short description of this node.
+        environment (str):
+        tags: A comma separated list of tags associated with this node.
+        children: The deployment nodes that are direct children of this node.
+        properties: A set of arbitrary name-value properties.
+        relationships: The set of relationships from this node to
+                       other elements.
+        url (pydantic.HttpUrl):
+    """
 
     def __init__(
         self,
         *,
-        parent: "DeploymentNode",
+        parent: "DeploymentNode" = None,
         technology: str = "",
         instances: int = 1,
         children: Iterable["DeploymentNode"] = (),
         container_instances: Iterable["DeploymentNode"] = (),
-        **kwargs
+        **kwargs,
     ) -> None:
         """Initialize a deployment node."""
         super().__init__(**kwargs)
         self.parent = parent
         self.technology = technology
         self.instances = instances
-        self.children = set(children)
-        self.container_instances = set(container_instances)
+        self._children = set(children)
+        self._container_instances = set(container_instances)
+
+    @property
+    def children(self) -> Iterable["DeploymentNode"]:
+        """Return read-only list of child nodes."""
+        return list(self._children)
+
+    def add_deployment_node(self, **kwargs) -> "DeploymentNode":
+        """Add a new child deployment node to this node."""
+        node = DeploymentNode(**kwargs)
+        self += node
+        return node
+
+    def __iadd__(self, node: "DeploymentNode") -> "DeploymentNode":
+        """Add a newly constructed chile deployment node to this node."""
+        if node in self._children:
+            return self
+
+        # if self.get_component_with_name(component.name):
+        #     raise ValueError(
+        #         f"Component with name {component.name} already exists in {self}."
+        #     )
+
+        if node.parent is None:
+            node.parent = self
+        elif node.parent is not self:
+            raise ValueError(
+                f"DeploymentNode with name {node.name} already has parent "
+                f"{node.parent}. Cannot add to {self}."
+            )
+        self._children.add(node)
+        model = self.model
+        model += node
+        return self
 
     @classmethod
-    def hydrate(cls, deployment_node_io: DeploymentNodeIO) -> "DeploymentNode":
+    def hydrate(
+        cls,
+        deployment_node_io: DeploymentNodeIO,
+        model: "Model",
+        parent: "DeploymentNode" = None,
+    ) -> "DeploymentNode":
         """Hydrate a new DeploymentNode instance from its IO."""
-        # TODO (midnighter): Initialization requires `parent`.
-        return cls(
-            # parent=deployment_node_io.parent,
+        node = cls(
+            parent=parent,
             name=deployment_node_io.name,
             description=deployment_node_io.description,
         )
+        model += node
+
+        for child_io in deployment_node_io.children:
+            child_node = DeploymentNode.hydrate(child_io, model, node)
+            node += child_node
+
+        return node
