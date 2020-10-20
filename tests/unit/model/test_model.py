@@ -17,6 +17,7 @@
 import pytest
 
 from structurizr.model import Component, Container, Model, Person, SoftwareSystem
+from structurizr.model.deployment_node import DeploymentNode
 
 
 @pytest.fixture(scope="function")
@@ -76,6 +77,33 @@ def test_model_add_container_must_have_parent(empty_model: Model):
     container = Container(name="c1")
     with pytest.raises(ValueError, match="Element with name .* has no parent"):
         empty_model += container
+
+
+def test_model_add_top_level_deployment_node(empty_model: Model):
+    """Make sure top-level deployment nodes are reflected in Model.deployent_nodes."""
+    node = empty_model.add_deployment_node(name="node1")
+    assert node is not None
+    assert node in empty_model.deployment_nodes
+    assert node in empty_model.get_elements()
+
+
+def test_model_cant_add_two_deployment_nodes_with_same_name(empty_model: Model):
+    """Make sure that deployment nodes (at any level) can't share a name."""
+    node = empty_model.add_deployment_node(name="node1")
+    with pytest.raises(
+        ValueError,
+        match="A deployment node with the name 'node1' already exists in the model.",
+    ):
+        node.add_deployment_node(name="node1")
+
+
+def test_model_add_lower_level_deployment_node(empty_model: Model):
+    """Make sure child deployment nodes are not reflected in Model.deployent_nodes."""
+    node1 = empty_model.add_deployment_node(name="node1")
+    node2 = DeploymentNode(name="node2", parent=node1)
+    empty_model += node2
+    assert node2 not in empty_model.deployment_nodes
+    assert node2 in empty_model.get_elements()
 
 
 def test_model_add_person_with_plusequals(empty_model: Model):
