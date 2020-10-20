@@ -121,11 +121,15 @@ class SoftwareSystem(StaticStructureElement):
     def hydrate(
         cls, software_system_io: SoftwareSystemIO, model: "Model"
     ) -> "SoftwareSystem":
-        """Create a new SoftwareSystem instance and hydrate it from its IO."""
+        """Create a new SoftwareSystem instance and hydrate it from its IO.
+
+        This will also automatically register with the model.
+        """
         software_system = cls(
             **cls.hydrate_arguments(software_system_io),
             location=software_system_io.location,
         )
+        model += software_system
 
         for container_io in software_system_io.containers:
             Container.hydrate(

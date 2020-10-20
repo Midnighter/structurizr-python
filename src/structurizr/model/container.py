@@ -126,7 +126,9 @@ class Container(StaticStructureElement):
         model += container
 
         for component_io in container_io.components:
-            component = Component.hydrate(component_io, container=container)
+            component = Component.hydrate(
+                component_io, container=container, model=model
+            )
             container += component
 
         return container
