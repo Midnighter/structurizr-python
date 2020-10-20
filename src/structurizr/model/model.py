@@ -149,15 +149,13 @@ class Model(AbstractBase):
         )
 
         for person_io in model_io.people:
-            model += Person.hydrate(person_io)
+            Person.hydrate(person_io, model=model)
 
         for software_system_io in model_io.software_systems:
-            model += SoftwareSystem.hydrate(software_system_io, model=model)
+            SoftwareSystem.hydrate(software_system_io, model=model)
 
         for deployment_node_io in model_io.deployment_nodes:
-            DeploymentNode.hydrate(
-                deployment_node_io, model=model
-            )  # Auto-registers with the model
+            DeploymentNode.hydrate(deployment_node_io, model=model)
 
         for element in model.get_elements():
             for relationship in element.relationships:
