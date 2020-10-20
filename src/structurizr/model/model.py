@@ -21,12 +21,11 @@ from typing import Callable, Iterable, List, Optional, Set, ValuesView
 
 from pydantic import Field
 
-from structurizr.model.deployment_node import DeploymentNode
-
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from .container import Container
 from .container_instance import ContainerInstance
+from .deployment_node import DeploymentNode, DeploymentNodeIO
 from .element import Element
 from .enterprise import Enterprise, EnterpriseIO
 from .implied_relationship_strategies import (
@@ -69,12 +68,11 @@ class ModelIO(BaseModel):
         alias="softwareSystems",
         description="The set of software systems belonging to this model.",
     )
-    # TODO:
-    # deployment_nodes: List[DeploymentNodeIO] = Field(
-    #     default=(),
-    #     alias="deploymentNodes",
-    #     description="The set of deployment nodes belonging to this model.",
-    # )
+    deployment_nodes: List[DeploymentNodeIO] = Field(
+        default=(),
+        alias="deploymentNodes",
+        description="The set of top-level deployment nodes belonging to this model.",
+    )
 
 
 class Model(AbstractBase):
@@ -156,9 +154,10 @@ class Model(AbstractBase):
         for software_system_io in model_io.software_systems:
             model += SoftwareSystem.hydrate(software_system_io, model=model)
 
-        # for deployment_node_io in model_io.deployment_nodes:
-        #     deployment_node = DeploymentNode.hydrate(deployment_node_io)
-        #     model.add_deployment_node(deployment_node=deployment_node)
+        for deployment_node_io in model_io.deployment_nodes:
+            DeploymentNode.hydrate(
+                deployment_node_io, model=model
+            )  # Auto-registers with the model
 
         for element in model.get_elements():
             for relationship in element.relationships:
@@ -215,6 +214,8 @@ class Model(AbstractBase):
 
     def __iadd__(self, element: Element) -> "Model":
         """Add a newly constructed element to the model."""
+        if element in self.get_elements():
+            return self
         if isinstance(element, Person):
             if any(element.name == p.name for p in self.people):
                 raise ValueError(
@@ -229,12 +230,12 @@ class Model(AbstractBase):
                 )
         elif isinstance(element, DeploymentNode):
             if any(
-                element.name == d.name and isinstance(d, DeploymentNode)
-                for d in self.get_elements()
+                element.name == d.name and element.environment == d.environment
+                for d in self.deployment_nodes
             ):
                 raise ValueError(
                     f"A deployment node with the name '{element.name}' already "
-                    f"exists in the model."
+                    f"exists in environment '{element.environment}' of the model."
                 )
         elif element.parent is None:
             raise ValueError(

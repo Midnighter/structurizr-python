@@ -17,6 +17,7 @@
 
 
 from abc import ABC
+from typing import Optional
 
 from .element import Element, ElementIO
 
@@ -36,7 +37,7 @@ class DeploymentElementIO(ElementIO, ABC):
 
     """
 
-    environment: str = DEFAULT_DEPLOYMENT_ENVIRONMENT
+    environment: Optional[str] = DEFAULT_DEPLOYMENT_ENVIRONMENT
 
 
 class DeploymentElement(Element, ABC):
@@ -54,3 +55,11 @@ class DeploymentElement(Element, ABC):
         """Initialize a deployment element."""
         super().__init__(**kwargs)
         self.environment = environment
+
+    @classmethod
+    def hydrate_arguments(cls, deployment_element_io: DeploymentElementIO) -> dict:
+        """Build constructor arguments from IO."""
+        return {
+            **super().hydrate_arguments(deployment_element_io),
+            "environment": deployment_element_io.environment,
+        }

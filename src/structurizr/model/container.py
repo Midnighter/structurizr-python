@@ -114,7 +114,10 @@ class Container(StaticStructureElement):
         software_system: "SoftwareSystem",
         model: "Model",
     ) -> "Container":
-        """Hydrate a new Container instance from its IO."""
+        """Hydrate a new Container instance from its IO.
+
+        This will also automatically register with the model.
+        """
         container = cls(
             **cls.hydrate_arguments(container_io),
             parent=software_system,

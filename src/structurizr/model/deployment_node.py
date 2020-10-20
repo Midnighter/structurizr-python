@@ -111,16 +111,17 @@ class DeploymentNode(DeploymentElement):
         if node in self._children:
             return self
 
-        # if self.get_component_with_name(component.name):
-        #     raise ValueError(
-        #         f"Component with name {component.name} already exists in {self}."
-        #     )
+        if any(node.name == child.name for child in self.children):
+            raise ValueError(
+                f"A deployment node with the name '{node.name}' already "
+                f"exists in node '{self.name}'."
+            )
 
         if node.parent is None:
             node.parent = self
         elif node.parent is not self:
             raise ValueError(
-                f"DeploymentNode with name {node.name} already has parent "
+                f"DeploymentNode with name '{node.name}' already has parent "
                 f"{node.parent}. Cannot add to {self}."
             )
         self._children.add(node)
@@ -135,16 +136,18 @@ class DeploymentNode(DeploymentElement):
         model: "Model",
         parent: "DeploymentNode" = None,
     ) -> "DeploymentNode":
-        """Hydrate a new DeploymentNode instance from its IO."""
+        """Hydrate a new DeploymentNode instance from its IO.
+
+        This will also automatically register with the model.
+        """
         node = cls(
             parent=parent,
-            name=deployment_node_io.name,
-            description=deployment_node_io.description,
+            **cls.hydrate_arguments(deployment_node_io),
         )
         model += node
 
         for child_io in deployment_node_io.children:
-            child_node = DeploymentNode.hydrate(child_io, model, node)
+            child_node = DeploymentNode.hydrate(child_io, model=model, parent=node)
             node += child_node
 
         return node
