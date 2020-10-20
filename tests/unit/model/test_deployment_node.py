@@ -66,6 +66,33 @@ def test_deployment_node_adds_to_children(model_with_node):
     assert child in top_node.children
 
 
+def test_deployment_node_adding_same_child_twice_is_ok(model_with_node):
+    """Test adding the same child twice is just ignored."""
+    top_node = model_with_node.empty_node
+    child = top_node.add_deployment_node(name="child")
+    top_node += child
+    assert len(top_node.children) == 1
+
+
+def test_deployment_node_add_child_with_existing_parent(model_with_node: MockModel):
+    """Check that adding a node with an existing parent fails."""
+    top_node = model_with_node.empty_node
+    other_parent = DeploymentNode(name="OtherParent")
+    with pytest.raises(ValueError, match="DeploymentNode .* already has parent."):
+        top_node += DeploymentNode(name="child", parent=other_parent)
+
+
+def test_deployment_node_cant_have_two_children_with_the_same_name(model_with_node):
+    """Make sure you can't have two children with the same name in the same node."""
+    top_node = model_with_node.empty_node
+    top_node.add_deployment_node(name="child")
+    with pytest.raises(
+        ValueError,
+        match="A deployment node with the name 'child' already exists in node 'Empty'.",
+    ):
+        top_node.add_deployment_node(name="child")
+
+
 def test_deployment_node_serialization_of_recursive_nodes(model_with_node):
     """Check that nodes within nodes are handled with (de)serialisation."""
     top_node = model_with_node.empty_node

@@ -88,13 +88,18 @@ def test_model_add_top_level_deployment_node(empty_model: Model):
 
 
 def test_model_cant_add_two_deployment_nodes_with_same_name(empty_model: Model):
-    """Make sure that deployment nodes (at any level) can't share a name."""
-    node = empty_model.add_deployment_node(name="node1")
+    """Make sure that deployment nodes at the top level can't have the same name.
+
+    Unless they're in different environments.
+    """
+    empty_model.add_deployment_node(name="node1", environment="Live")
+    empty_model.add_deployment_node(name="node1", environment="Dev")  # Different env
     with pytest.raises(
         ValueError,
-        match="A deployment node with the name 'node1' already exists in the model.",
+        match="A deployment node with the name 'node1' already "
+        "exists in environment 'Live' of the model.",
     ):
-        node.add_deployment_node(name="node1")
+        empty_model.add_deployment_node(name="node1", environment="Live")
 
 
 def test_model_add_lower_level_deployment_node(empty_model: Model):
