@@ -111,7 +111,6 @@ class Model(AbstractBase):
         """
         super().__init__(**kwargs)
         self.enterprise = enterprise
-        self.deployment_nodes = set(deployment_nodes)
         self.implied_relationship_strategy = implied_relationship_strategy
         # TODO: simply iterate attributes
         self._elements_by_id = {}
@@ -131,6 +130,15 @@ class Model(AbstractBase):
     def people(self) -> Set[Person]:
         """Return the people in the model."""
         return {e for e in self.get_elements() if isinstance(e, Person)}
+
+    @property
+    def deployment_nodes(self) -> Set[DeploymentNode]:
+        """Return the *top level* deployment nodes in the model."""
+        return {
+            e
+            for e in self.get_elements()
+            if isinstance(e, DeploymentNode) and e.parent is None
+        }
 
     @classmethod
     def hydrate(cls, model_io: ModelIO) -> "Model":
@@ -219,6 +227,15 @@ class Model(AbstractBase):
                     f"A software system with the name '{element.name}' already "
                     f"exists in the model."
                 )
+        elif isinstance(element, DeploymentNode):
+            if any(
+                element.name == d.name and isinstance(d, DeploymentNode)
+                for d in self.get_elements()
+            ):
+                raise ValueError(
+                    f"A deployment node with the name '{element.name}' already "
+                    f"exists in the model."
+                )
         elif element.parent is None:
             raise ValueError(
                 f"Element with name {element.name} has no parent.  Please ensure "
@@ -255,20 +272,15 @@ class Model(AbstractBase):
         # TODO: implement
         # instance_number =
 
-    def add_deployment_node(
-        self, deployment_node: Optional[DeploymentNode] = None, **kwargs
-    ) -> DeploymentNode:
+    def add_deployment_node(self, **kwargs) -> DeploymentNode:
         """
         Add a new deployment node to the model.
 
         Args:
-            deployment_node (DeploymentNode, optional): Either provide a
-                `DeploymentNode` instance or
-            **kwargs: Provide keyword arguments for instantiating a `DeploymentNode`
-                (recommended).
+            **kwargs: Provide keyword arguments for instantiating a `DeploymentNode`.
 
         Returns:
-            DeploymentNode: Either the same or a new instance, depending on arguments.
+            DeploymentNode: The newly created DeploymentNode.
 
         Raises:
             ValueError: When a deployment node with the same name already exists.
@@ -277,15 +289,8 @@ class Model(AbstractBase):
             DeploymentNode
 
         """
-        if deployment_node is None:
-            deployment_node = DeploymentNode(**kwargs)
-        if deployment_node.id in {d.id for d in self.deployment_nodes}:
-            ValueError(
-                f"A deployment node with the ID {deployment_node.id} already "
-                f"exists in the model."
-            )
-        self.deployment_nodes.add(deployment_node)
-        self._add_element(deployment_node)
+        deployment_node = DeploymentNode(**kwargs)
+        self += deployment_node
         return deployment_node
 
     def add_relationship(
