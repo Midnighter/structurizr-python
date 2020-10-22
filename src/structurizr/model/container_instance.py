@@ -24,6 +24,7 @@ from .static_structure_element_instance import (
     StaticStructureElementInstance,
     StaticStructureElementInstanceIO,
 )
+from .tags import Tags
 
 
 if TYPE_CHECKING:
@@ -47,6 +48,7 @@ class ContainerInstance(StaticStructureElementInstance):
         """Initialize a container instance."""
         super().__init__(element=container, **kwargs)
         self.container = container
+        self.tags.add(Tags.CONTAINER_INSTANCE)
 
     @property
     def container_id(self) -> str:

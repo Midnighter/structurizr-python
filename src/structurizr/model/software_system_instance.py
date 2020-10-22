@@ -25,6 +25,7 @@ from .static_structure_element_instance import (
     StaticStructureElementInstance,
     StaticStructureElementInstanceIO,
 )
+from .tags import Tags
 
 
 if TYPE_CHECKING:
@@ -47,6 +48,7 @@ class SoftwareSystemInstance(StaticStructureElementInstance):
         """Initialize a software system instance."""
         super().__init__(element=software_system, **kwargs)
         self.software_system = software_system
+        self.tags.add(Tags.SOFTWARE_SYSTEM_INSTANCE)
 
     @property
     def software_system_id(self) -> str:

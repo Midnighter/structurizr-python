@@ -21,6 +21,7 @@ from structurizr.model.software_system_instance import (
     SoftwareSystemInstance,
     SoftwareSystemInstanceIO,
 )
+from structurizr.model.tags import Tags
 
 
 class MockModel:
@@ -74,6 +75,15 @@ def test_software_system_instance_init(attributes):
     instance = SoftwareSystemInstance(**attributes)
     for attr, expected in attributes.items():
         assert getattr(instance, attr) == expected
+
+
+def test_software_system_instance_tags(model_with_system):
+    """Check default tags."""
+    node = SoftwareSystemInstance(
+        software_system=model_with_system.mock_system, instance_id="9"
+    )
+    assert Tags.ELEMENT in node.tags
+    assert Tags.SOFTWARE_SYSTEM_INSTANCE in node.tags
 
 
 def test_software_system_instance_hydration_retrieves_software_system_from_id(
