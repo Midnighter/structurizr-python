@@ -16,49 +16,57 @@
 """Provide a container instance model."""
 
 
-from typing import TYPE_CHECKING, Iterable, List
+from typing import TYPE_CHECKING
 
 from pydantic import Field
 
-from .deployment_element import DeploymentElement, DeploymentElementIO
+from .static_structure_element_instance import (
+    StaticStructureElementInstance,
+    StaticStructureElementInstanceIO,
+)
 
 
 if TYPE_CHECKING:
-    from .container import Container, ContainerIO
-    from .http_health_check import HTTPHealthCheck, HTTPHealthCheckIO
+    from .container import Container
+    from .model import Model
 
 
 __all__ = ("ContainerInstance", "ContainerInstanceIO")
 
 
-DEFAULT_HEALTH_CHECK_INTERVAL_IN_SECONDS = 60
-DEFAULT_HEALTH_CHECK_TIMEOUT_IN_MILLISECONDS = 0
-
-
-class ContainerInstanceIO(DeploymentElementIO):
+class ContainerInstanceIO(StaticStructureElementInstanceIO):
     """Represents a container instance which can be added to a deployment node."""
 
-    container: "ContainerIO"
-    container_id: str
-    instance_id: int
-    health_checks: List["HTTPHealthCheckIO"] = Field(default=(), alias="healthChecks")
+    container_id: str = Field(alias="containerId")
 
 
-class ContainerInstance(DeploymentElement):
+class ContainerInstance(StaticStructureElementInstance):
     """Represents a container instance which can be added to a deployment node."""
 
-    def __init__(
-        self,
-        *,
-        container: "Container",
-        container_id: str,
-        instance_id: int,
-        health_checks: Iterable["HTTPHealthCheck"] = (),
-        **kwargs
-    ) -> None:
+    def __init__(self, *, container: "Container", **kwargs) -> None:
         """Initialize a container instance."""
-        super().__init__(**kwargs)
+        super().__init__(element=container, **kwargs)
         self.container = container
-        self.container_id = container_id
-        self.instance_id = instance_id
-        self.health_checks = set(health_checks)
+
+    @property
+    def container_id(self) -> str:
+        """Return the ID of the container for this instance."""
+        return self.container.id
+
+    @classmethod
+    def hydrate(
+        cls,
+        container_instance_io: ContainerInstanceIO,
+        model: "Model",
+    ) -> "ContainerInstance":
+        """Hydrate a new ContainerInstance instance from its IO.
+
+        This will also automatically register with the model.
+        """
+        container = model.get_element(container_instance_io.container_id)
+        instance = cls(
+            **cls.hydrate_arguments(container_instance_io),
+            container=container,
+        )
+        model += instance
+        return instance

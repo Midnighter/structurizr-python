@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Iterable, List
 
 from pydantic import Field
 
+from .container_instance import ContainerInstance, ContainerInstanceIO
 from .deployment_element import DeploymentElement, DeploymentElementIO
 
 
@@ -55,6 +56,9 @@ class DeploymentNodeIO(DeploymentElementIO):
     technology: str = ""
     instances: int = 1
     children: List["DeploymentNodeIO"] = Field(default=())
+    container_instances: List[ContainerInstanceIO] = Field(
+        default=(), alias="containerInstances"
+    )
 
 
 DeploymentNodeIO.update_forward_refs()
@@ -84,7 +88,7 @@ class DeploymentNode(DeploymentElement):
         technology: str = "",
         instances: int = 1,
         children: Iterable["DeploymentNode"] = (),
-        container_instances: Iterable["DeploymentNode"] = (),
+        container_instances: Iterable[ContainerInstance] = (),
         **kwargs,
     ) -> None:
         """Initialize a deployment node."""
@@ -99,6 +103,11 @@ class DeploymentNode(DeploymentElement):
     def children(self) -> Iterable["DeploymentNode"]:
         """Return read-only list of child nodes."""
         return list(self._children)
+
+    @property
+    def container_instances(self) -> Iterable[ContainerInstance]:
+        """Return read-only list of container instances."""
+        return list(self._container_instances)
 
     def add_deployment_node(self, **kwargs) -> "DeploymentNode":
         """Add a new child deployment node to this node."""
