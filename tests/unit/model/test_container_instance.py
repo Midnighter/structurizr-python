@@ -18,6 +18,7 @@ import pytest
 
 from structurizr.model.container_instance import ContainerInstance, ContainerInstanceIO
 from structurizr.model.http_health_check import HTTPHealthCheck, HTTPHealthCheckIO
+from structurizr.model.tags import Tags
 
 
 class MockModel:
@@ -71,6 +72,15 @@ def test_container_instance_init(attributes):
     instance = ContainerInstance(**attributes)
     for attr, expected in attributes.items():
         assert getattr(instance, attr) == expected
+
+
+def test_container_instance_tags(model_with_container):
+    """Check default tags."""
+    instance = ContainerInstance(
+        container=model_with_container.mock_container, instance_id="11"
+    )
+    assert Tags.ELEMENT in instance.tags
+    assert Tags.CONTAINER_INSTANCE in instance.tags
 
 
 def test_container_instance_hydration_retrieves_container_from_id(model_with_container):
