@@ -21,6 +21,7 @@ from pydantic import Field
 
 from .container_instance import ContainerInstance, ContainerInstanceIO
 from .deployment_element import DeploymentElement, DeploymentElementIO
+from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
 
 
 if TYPE_CHECKING:
@@ -59,6 +60,9 @@ class DeploymentNodeIO(DeploymentElementIO):
     container_instances: List[ContainerInstanceIO] = Field(
         default=(), alias="containerInstances"
     )
+    software_system_instances: List[SoftwareSystemInstanceIO] = Field(
+        default=(), alias="softwareSystemInstances"
+    )
 
 
 DeploymentNodeIO.update_forward_refs()
@@ -89,6 +93,7 @@ class DeploymentNode(DeploymentElement):
         instances: int = 1,
         children: Iterable["DeploymentNode"] = (),
         container_instances: Iterable[ContainerInstance] = (),
+        software_system_instances: Iterable[SoftwareSystemInstance] = (),
         **kwargs,
     ) -> None:
         """Initialize a deployment node."""
@@ -98,6 +103,7 @@ class DeploymentNode(DeploymentElement):
         self.instances = instances
         self._children = set(children)
         self._container_instances = set(container_instances)
+        self._software_system_instances = set(software_system_instances)
 
     @property
     def children(self) -> Iterable["DeploymentNode"]:
@@ -108,6 +114,11 @@ class DeploymentNode(DeploymentElement):
     def container_instances(self) -> Iterable[ContainerInstance]:
         """Return read-only list of container instances."""
         return list(self._container_instances)
+
+    @property
+    def software_system_instances(self) -> Iterable[SoftwareSystemInstance]:
+        """Return read-only list of software system instances."""
+        return list(self._software_system_instances)
 
     def add_deployment_node(self, **kwargs) -> "DeploymentNode":
         """Add a new child deployment node to this node."""
