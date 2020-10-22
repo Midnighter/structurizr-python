@@ -35,6 +35,8 @@ class Tags(AbstractBase):
 
     DEPLOYMENT_NODE = "Deployment Node"
     CONTAINER_INSTANCE = "Container Instance"
+    SOFTWARE_SYSTEM_INSTANCE = "Software System Instance"
+    INFRASTRUCTURE_NODE = "Infrastructure Node"
 
     SYNCHRONOUS = "Synchronous"
     ASYNCHRONOUS = "Asynchronous"
