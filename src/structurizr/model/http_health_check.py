@@ -27,6 +27,10 @@ from ..base_model import BaseModel
 __all__ = ("HTTPHealthCheck", "HTTPHealthCheckIO")
 
 
+DEFAULT_HEALTH_CHECK_INTERVAL_IN_SECONDS = 30
+DEFAULT_HEALTH_CHECK_TIMEOUT_IN_MILLISECONDS = 5000
+
+
 class HTTPHealthCheckIO(BaseModel):
     """
     Describe an HTTP-based health check.
@@ -44,8 +48,8 @@ class HTTPHealthCheckIO(BaseModel):
 
     name: str = ""
     url: HttpUrl = ""
-    interval: int = 30
-    timeout: int = 5_000
+    interval: int = DEFAULT_HEALTH_CHECK_INTERVAL_IN_SECONDS
+    timeout: int = DEFAULT_HEALTH_CHECK_TIMEOUT_IN_MILLISECONDS
     headers: Dict[str, str] = Field({})
 
 
@@ -69,8 +73,8 @@ class HTTPHealthCheck(AbstractBase):
         *,
         name: str = "",
         url: str = "",
-        interval: int = 30,
-        timeout: int = 5_000,
+        interval: int = DEFAULT_HEALTH_CHECK_INTERVAL_IN_SECONDS,
+        timeout: int = DEFAULT_HEALTH_CHECK_TIMEOUT_IN_MILLISECONDS,
         headers: Iterable = (),
         **kwargs,
     ):
@@ -81,3 +85,17 @@ class HTTPHealthCheck(AbstractBase):
         self.interval = interval
         self.timeout = timeout
         self.headers = dict(headers)
+
+    @classmethod
+    def hydrate(
+        cls,
+        io: HTTPHealthCheckIO,
+    ) -> "HTTPHealthCheck":
+        """Hydrate a new HTTPHealthCheck instance from its IO."""
+        return cls(
+            name=io.name,
+            url=io.url,
+            interval=io.interval,
+            timeout=io.timeout,
+            headers=io.headers,
+        )
