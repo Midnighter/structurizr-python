@@ -75,9 +75,7 @@ def test_container_instance_init(attributes):
 
 def test_container_instance_hydration_retrieves_container_from_id(model_with_container):
     """Check that the container instance is retrieved from the model on hydration."""
-    io = ContainerInstanceIO(
-        container_id="19", instance_id=3, environment="Live"
-    )
+    io = ContainerInstanceIO(container_id="19", instance_id=3, environment="Live")
 
     instance = ContainerInstance.hydrate(io, model_with_container)
 
@@ -89,9 +87,7 @@ def test_container_instance_hydration_retrieves_container_from_id(model_with_con
 
 def test_container_instance_name_is_container_name(model_with_container):
     """Ensure container instance takes its name from its container."""
-    io = ContainerInstanceIO(
-        container_id="19", instance_id=3, environment="Live"
-    )
+    io = ContainerInstanceIO(container_id="19", instance_id=3, environment="Live")
 
     instance = ContainerInstance.hydrate(io, model_with_container)
 

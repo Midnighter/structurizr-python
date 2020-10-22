@@ -19,34 +19,21 @@
 from abc import ABC
 from typing import Iterable, List, Optional
 
-from pydantic import Field, HttpUrl
+from pydantic import Field
 
-from .deployment_element import DEFAULT_DEPLOYMENT_ENVIRONMENT, DeploymentElement
+from .deployment_element import DeploymentElement, DeploymentElementIO
 from .http_health_check import HTTPHealthCheck, HTTPHealthCheckIO
-from .model_item import ModelItem, ModelItemIO
-from .relationship import Relationship, RelationshipIO
 from .static_structure_element import StaticStructureElement
 
 
 __all__ = ("StaticStructureElementInstance", "StaticStructureElementInstanceIO")
 
 
-class StaticStructureElementInstanceIO(ModelItemIO, ABC):
-    """
-    Define a superclass for instances of container and software system.
+class StaticStructureElementInstanceIO(DeploymentElementIO, ABC):
+    """Define a superclass for instances of container and software system."""
 
-    Implementation note:
-    In this case, the IO does not reflect the same inheritance hierarchy
-    as the main class.  This is because instances do not have the `name` field
-    and so we cannot extend `ElementIO` which enforces that `name` is populated.
-    See http://github.com/structurizr/json/blob/master/structurizr.yaml.
-    """
+    name: Optional[str] = ""  # Name is not serialisable for instances
 
-    description: str = Field(default="")
-    url: Optional[HttpUrl] = Field(default=None)
-    relationships: List[RelationshipIO] = Field(default=())
-
-    environment: Optional[str] = DEFAULT_DEPLOYMENT_ENVIRONMENT
     instance_id: int = Field(alias="instanceId")
     health_checks: List[HTTPHealthCheckIO] = Field(default=(), alias="healthChecks")
 
@@ -65,7 +52,8 @@ class StaticStructureElementInstance(DeploymentElement, ABC):
         """Initialize a StaticStructureElementInstance."""
         # The name of the instance comes from element it contains - see
         # StaticStructureElementInstance.getName() in the Java API.
-        super().__init__(name=element.name, **kwargs)
+        kwargs["name"] = element.name
+        super().__init__(**kwargs)
         self.instance_id = instance_id
         self.health_checks = set(health_checks)
 
@@ -73,13 +61,8 @@ class StaticStructureElementInstance(DeploymentElement, ABC):
     def hydrate_arguments(cls, instance_io: StaticStructureElementInstanceIO) -> dict:
         """Build constructor arguments from IO."""
 
-        # See note in DeploymentInstanceIO on why we're not using super() here.
         return {
-            **ModelItem.hydrate_arguments(instance_io),
-            "description": instance_io.description,
-            "url": instance_io.url,
-            "relationships": map(Relationship.hydrate, instance_io.relationships),
-            "environment": instance_io.environment,
+            **super().hydrate_arguments(instance_io),
             "instance_id": instance_io.instance_id,
             "health_checks": map(HTTPHealthCheck.hydrate, instance_io.health_checks),
         }
