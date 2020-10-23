@@ -68,8 +68,10 @@ def test_infrastructure_node_tags():
 def test_infrastructure_node_hydration(empty_model):
     """Check hydrating an infrastructure node from its IO."""
     io = InfrastructureNodeIO(name="node1", technology="tech")
+    parent = object()
 
-    node = InfrastructureNode.hydrate(io, empty_model)
+    node = InfrastructureNode.hydrate(io, empty_model, parent=parent)
 
     assert node.name == "node1"
     assert node.technology == "tech"
+    assert node.parent is parent
