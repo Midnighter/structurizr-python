@@ -26,6 +26,7 @@ class MockModel:
         """Initialize the mock, creating an empty node for tests."""
         self.empty_node = DeploymentNode(name="Empty")
         self.empty_node.set_model(self)
+        self.mock_element = MockElement("element")
 
     def __iadd__(self, node):
         """Simulate the model assigning IDs to new elements."""
@@ -33,6 +34,20 @@ class MockModel:
             node.id = "id"
         node.set_model(self)
         return self
+
+    def get_element(self, id: str):
+        """Simulate getting an element by ID."""
+        assert id == self.mock_element.id
+        return self.mock_element
+
+
+class MockElement:
+    """Implement a mock element for testing."""
+
+    def __init__(self, name: str):
+        """Initialise the mock."""
+        self.name = name
+        self.id = name
 
 
 @pytest.fixture(scope="function")
@@ -108,3 +123,44 @@ def test_deployment_node_serialization_of_recursive_nodes(model_with_node):
     assert new_child.name == "child"
     assert new_child.parent is new_top_node
     assert new_child.model is model_with_node
+
+
+def test_deployment_node_add_container(model_with_node):
+    """Test adding a container to a node to create an instance."""
+    node = model_with_node.empty_node
+    container = MockElement("element")
+
+    instance = node.add_container_instance(container, replicate_relationships=False)
+
+    assert instance.container is container
+    assert instance.model is model_with_node
+    assert instance.parent is node
+    assert instance in node.container_instances
+    assert instance.instance_id == 1
+
+
+def test_deployment_node_serialising_container(model_with_node):
+    """Test serialisation and deserialisation includes container instances."""
+    node = model_with_node.empty_node
+    container = model_with_node.mock_element
+    node.add_container_instance(container, replicate_relationships=False)
+
+    io = DeploymentNodeIO.from_orm(node)
+
+    assert len(io.container_instances) == 1
+    assert io.container_instances[0].id == "id"
+
+    node2 = DeploymentNode.hydrate(io, model_with_node)
+
+    assert len(node2.container_instances) == 1
+    instance = node2.container_instances[0]
+    assert instance.instance_id == 1
+    assert instance.container is container
+    assert instance.model is model_with_node
+    assert instance.parent is node2
+
+
+@pytest.mark.xfail(strict=True)
+def test_deployment_node_adding_container_replicating_relationships(model_with_node):
+    """Test replicating relationships when adding a container instance."""
+    raise AssertionError()  # Not implemented yet

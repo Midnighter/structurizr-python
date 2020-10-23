@@ -19,8 +19,10 @@ from typing import TYPE_CHECKING, Iterable, List
 
 from pydantic import Field
 
+from .container import Container
 from .container_instance import ContainerInstance, ContainerInstanceIO
 from .deployment_element import DeploymentElement, DeploymentElementIO
+from .infrastructure_node import InfrastructureNode, InfrastructureNodeIO
 from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
 
 
@@ -63,6 +65,9 @@ class DeploymentNodeIO(DeploymentElementIO):
     software_system_instances: List[SoftwareSystemInstanceIO] = Field(
         default=(), alias="softwareSystemInstances"
     )
+    infrastructure_nodes: List[InfrastructureNodeIO] = Field(
+        default=(), alias="infrastructureNodes"
+    )
 
 
 DeploymentNodeIO.update_forward_refs()
@@ -94,6 +99,7 @@ class DeploymentNode(DeploymentElement):
         children: Iterable["DeploymentNode"] = (),
         container_instances: Iterable[ContainerInstance] = (),
         software_system_instances: Iterable[SoftwareSystemInstance] = (),
+        infrastructure_nodes: Iterable[InfrastructureNode] = (),
         **kwargs,
     ) -> None:
         """Initialize a deployment node."""
@@ -104,6 +110,7 @@ class DeploymentNode(DeploymentElement):
         self._children = set(children)
         self._container_instances = set(container_instances)
         self._software_system_instances = set(software_system_instances)
+        self._infrastructure_nodes = set(infrastructure_nodes)
 
     @property
     def children(self) -> Iterable["DeploymentNode"]:
@@ -120,11 +127,47 @@ class DeploymentNode(DeploymentElement):
         """Return read-only list of software system instances."""
         return list(self._software_system_instances)
 
+    @property
+    def infrastructure_nodes(self) -> Iterable[InfrastructureNode]:
+        """Return read-only list of infrastructure nodes."""
+        return list(self._infrastructure_nodes)
+
     def add_deployment_node(self, **kwargs) -> "DeploymentNode":
         """Add a new child deployment node to this node."""
         node = DeploymentNode(**kwargs)
         self += node
         return node
+
+    def add_container_instance(
+        self, container: Container, *, replicate_relationships: bool
+    ) -> ContainerInstance:
+        """
+        Create a new instance of the given container.
+
+        Args:
+            container(Container): the Container to add an instance of.
+            replicate_relationships: True if relationships should be replicated between
+                                     the element instances in the same deployment
+                                     environment, False otherwise.
+        """
+        instance_id = (
+            max(
+                [
+                    c.instance_id
+                    for c in self.container_instances
+                    if c.container is container
+                ],
+                default=0,
+            )
+            + 1
+        )
+        instance = ContainerInstance(
+            container=container, instance_id=instance_id, parent=self
+        )
+        self._container_instances.add(instance)
+        model = self.model
+        model += instance
+        return instance
 
     def __iadd__(self, node: "DeploymentNode") -> "DeploymentNode":
         """Add a newly constructed chile deployment node to this node."""
@@ -161,13 +204,17 @@ class DeploymentNode(DeploymentElement):
         This will also automatically register with the model.
         """
         node = cls(
-            parent=parent,
             **cls.hydrate_arguments(deployment_node_io),
+            parent=parent,
         )
         model += node
 
         for child_io in deployment_node_io.children:
             child_node = DeploymentNode.hydrate(child_io, model=model, parent=node)
             node += child_node
+
+        for instance_io in deployment_node_io.container_instances:
+            instance = ContainerInstance.hydrate(instance_io, model=model, parent=node)
+            node._container_instances.add(instance)
 
         return node
