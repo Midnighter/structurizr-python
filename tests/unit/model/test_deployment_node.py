@@ -207,3 +207,35 @@ def test_deployment_node_adding_software_system_replicating_relationships(
 ):
     """Test replicating relationships when adding a software system instance."""
     raise AssertionError()  # Not implemented yet
+
+
+def test_deployment_node_add_infrastructure_node(model_with_node):
+    """Test adding an infrastructure node to a deployment node."""
+    node = model_with_node.empty_node
+
+    infra_node = node.add_infrastructure_node("infraNode")
+
+    assert infra_node.name == "infraNode"
+    assert infra_node.model is model_with_node
+    assert infra_node.parent is node
+    assert infra_node in node.infrastructure_nodes
+
+
+def test_deployment_node_serialising_infrastructure_nodes(model_with_node):
+    """Test serialisation and deserialisation includes infrastructure nodes."""
+    node = model_with_node.empty_node
+    node.add_infrastructure_node("infraNode")
+
+    io = DeploymentNodeIO.from_orm(node)
+
+    assert len(io.infrastructure_nodes) == 1
+    assert io.infrastructure_nodes[0].id == "id"
+    assert io.infrastructure_nodes[0].name == "infraNode"
+
+    node2 = DeploymentNode.hydrate(io, model_with_node)
+
+    assert len(node2.infrastructure_nodes) == 1
+    infra_node = node2.infrastructure_nodes[0]
+    assert infra_node.name == "infraNode"
+    assert infra_node.model is model_with_node
+    assert infra_node.parent is node2

@@ -20,6 +20,7 @@ from .tags import Tags
 
 
 if TYPE_CHECKING:
+    from .deployment_node import DeploymentNode
     from .model import Model
 
 
@@ -55,18 +56,21 @@ class InfrastructureNode(DeploymentElement):
         self,
         *,
         technology: str = "",
+        parent: "DeploymentNode" = None,
         **kwargs,
     ):
         """Initialize an infrastructure node model."""
         super().__init__(**kwargs)
         self.technology = technology
         self.tags.add(Tags.INFRASTRUCTURE_NODE)
+        self.parent = parent
 
     @classmethod
     def hydrate(
         cls,
         node_io: InfrastructureNodeIO,
         model: "Model",
+        parent: "DeploymentNode",
     ) -> "InfrastructureNode":
         """Hydrate a new InfrastructureNode instance from its IO.
 
@@ -75,6 +79,7 @@ class InfrastructureNode(DeploymentElement):
         node = cls(
             **cls.hydrate_arguments(node_io),
             technology=node_io.technology,
+            parent=parent,
         )
         model += node
         return node

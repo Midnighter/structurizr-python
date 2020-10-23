@@ -201,6 +201,14 @@ class DeploymentNode(DeploymentElement):
         model += instance
         return instance
 
+    def add_infrastructure_node(self, name: str, **kwargs) -> InfrastructureNode:
+        """Create a new infrastructure node under this node."""
+        infra_node = InfrastructureNode(name=name, parent=self, **kwargs)
+        self._infrastructure_nodes.add(infra_node)
+        model = self.model
+        model += infra_node
+        return infra_node
+
     def __iadd__(self, node: "DeploymentNode") -> "DeploymentNode":
         """Add a newly constructed chile deployment node to this node."""
         if node in self._children:
@@ -254,5 +262,11 @@ class DeploymentNode(DeploymentElement):
                 instance_io, model=model, parent=node
             )
             node._software_system_instances.add(instance)
+
+        for infra_node_io in deployment_node_io.infrastructure_nodes:
+            infra_node = InfrastructureNode.hydrate(
+                infra_node_io, model=model, parent=node
+            )
+            node._infrastructure_nodes.add(infra_node)
 
         return node
