@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Optional
 from .element import Element, ElementIO
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .relationship import Relationship
 
 

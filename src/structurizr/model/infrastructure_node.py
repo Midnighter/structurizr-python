@@ -19,7 +19,7 @@ from .deployment_element import DeploymentElement, DeploymentElementIO
 from .tags import Tags
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .deployment_node import DeploymentNode
     from .model import Model
 

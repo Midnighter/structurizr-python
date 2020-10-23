@@ -25,7 +25,7 @@ from .model_item import ModelItem, ModelItemIO
 from .tags import Tags
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .element import Element
 
 __all__ = ("Relationship", "RelationshipIO")

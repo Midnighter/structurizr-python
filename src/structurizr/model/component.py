@@ -25,7 +25,7 @@ from .static_structure_element import StaticStructureElement, StaticStructureEle
 from .tags import Tags
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .container import Container
     from .model import Model
 

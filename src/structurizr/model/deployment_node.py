@@ -27,7 +27,7 @@ from .software_system import SoftwareSystem
 from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .model import Model
 
 __all__ = ("DeploymentNode", "DeploymentNodeIO")
