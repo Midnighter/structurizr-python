@@ -80,7 +80,7 @@ class SoftwareSystem(StaticStructureElement):
         return list(self._containers)
 
     def add_container(
-        self, name: str, description: str, technology: str = "", **kwargs
+        self, name: str, description: str = "", technology: str = "", **kwargs
     ) -> Container:
         """Construct a new `Container` and add to this system and its model."""
         container = Container(
