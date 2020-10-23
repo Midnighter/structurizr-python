@@ -130,7 +130,7 @@ def test_deployment_node_add_container(model_with_node):
     node = model_with_node.empty_node
     container = MockElement("element")
 
-    instance = node.add_container_instance(container, replicate_relationships=False)
+    instance = node.add_container(container, replicate_relationships=False)
 
     assert instance.container is container
     assert instance.model is model_with_node
@@ -143,7 +143,7 @@ def test_deployment_node_serialising_container(model_with_node):
     """Test serialisation and deserialisation includes container instances."""
     node = model_with_node.empty_node
     container = model_with_node.mock_element
-    node.add_container_instance(container, replicate_relationships=False)
+    node.add_container(container, replicate_relationships=False)
 
     io = DeploymentNodeIO.from_orm(node)
 
@@ -171,7 +171,7 @@ def test_deployment_node_add_software_system(model_with_node):
     node = model_with_node.empty_node
     system = MockElement("element")
 
-    instance = node.add_software_system_instance(system, replicate_relationships=False)
+    instance = node.add_software_system(system, replicate_relationships=False)
 
     assert instance.software_system is system
     assert instance.model is model_with_node
@@ -184,7 +184,7 @@ def test_deployment_node_serialising_software_system(model_with_node):
     """Test serialisation and deserialisation includes container instances."""
     node = model_with_node.empty_node
     system = model_with_node.mock_element
-    node.add_software_system_instance(system, replicate_relationships=False)
+    node.add_software_system(system, replicate_relationships=False)
 
     io = DeploymentNodeIO.from_orm(node)
 

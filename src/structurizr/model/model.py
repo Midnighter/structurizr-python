@@ -271,12 +271,21 @@ class Model(AbstractBase):
         # TODO: implement
         # instance_number =
 
-    def add_deployment_node(self, **kwargs) -> DeploymentNode:
+    def add_deployment_node(
+        self,
+        name: str,
+        description: str = "",
+        technology: str = "",
+        **kwargs,
+    ) -> DeploymentNode:
         """
         Add a new deployment node to the model.
 
         Args:
-            **kwargs: Provide keyword arguments for instantiating a `DeploymentNode`.
+            name(str): Name of the deployment node
+            description(str): Optional description
+            technology(str): Optional technologies
+            **kwargs: additional keyword arguments for instantiating a `DeploymentNode`.
 
         Returns:
             DeploymentNode: The newly created DeploymentNode.
@@ -288,7 +297,9 @@ class Model(AbstractBase):
             DeploymentNode
 
         """
-        deployment_node = DeploymentNode(**kwargs)
+        deployment_node = DeploymentNode(
+            name=name, description=description, technology=technology, **kwargs
+        )
         self += deployment_node
         return deployment_node
 

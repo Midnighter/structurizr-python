@@ -244,117 +244,120 @@ def create_big_bank_workspace():
     # TODO:!
     # model.AddImplicitRelationships()
 
-    # # deployment nodes and container instances
-    # developer_laptop = model.add_deployment_node(
-    #     environment="Development",
-    #     name="Developer Laptop",
-    #     description="A developer laptop.",
-    #     technology="Microsoft Windows 10 or Apple macOS",
-    # )
-    # apache_tomcat = developer_laptop.add_deployment_node(
-    #     name="Docker - Web Server",
-    #     description="A Docker container.",
-    #     technology="Docker",
-    # ).add_deployment_node(
-    #     name="Apache Tomcat",
-    #     description="An open source Java EE web server.",
-    #     technology="Apache Tomcat 8.x",
-    #     instances=1,
-    #     properties={"Xmx": "512M", "Xms": "1024M", "Java Version": "8"},
-    # )
-    # apache_tomcat.add_container(webApplication)
-    # apache_tomcat.Add(apiApplication)
+    # deployment nodes and container instances
+    developer_laptop = model.add_deployment_node(
+        environment="Development",
+        name="Developer Laptop",
+        description="A developer laptop.",
+        technology="Microsoft Windows 10 or Apple macOS",
+    )
+    apache_tomcat = developer_laptop.add_deployment_node(
+        name="Docker - Web Server",
+        description="A Docker container.",
+        technology="Docker",
+    ).add_deployment_node(
+        name="Apache Tomcat",
+        description="An open source Java EE web server.",
+        technology="Apache Tomcat 8.x",
+        instances=1,
+        properties={"Xmx": "512M", "Xms": "1024M", "Java Version": "8"},
+    )
+    apache_tomcat.add_container(web_application)
+    apache_tomcat.add_container(api_application)
 
-    # developer_laptop.add_deployment_node(
-    #     "Docker - Database Server", "A Docker container.", "Docker"
-    # ).add_deployment_node(
-    #     "Database Server", "A development database.", "Oracle 12c"
-    # ).Add(
-    #     database
-    # )
+    developer_laptop.add_deployment_node(
+        "Docker - Database Server", "A Docker container.", "Docker"
+    ).add_deployment_node(
+        "Database Server", "A development database.", "Oracle 12c"
+    ).add_container(
+        database
+    )
 
-    # developer_laptop.add_deployment_node(
-    #     "Web Browser", "", "Chrome, Firefox, Safari, or Edge"
-    # ).Add(single_page_application)
+    developer_laptop.add_deployment_node(
+        "Web Browser", "", "Chrome, Firefox, Safari, or Edge"
+    ).add_container(single_page_application)
 
-    # customer_mobile_device = model.add_deployment_node(
-    #     "Live", "Customer's mobile device", "", "Apple iOS or Android"
-    # )
-    # customer_mobile_device.Add(mobile_app)
+    customer_mobile_device = model.add_deployment_node(
+        "Customer's mobile device", "", "Apple iOS or Android", environment="Live"
+    )
+    customer_mobile_device.add_container(mobile_app)
 
-    # customer_computer = model.add_deployment_node(
-    #     "Live", "Customer's computer", "", "Microsoft Windows or Apple macOS"
-    # )
-    # customer_computer.add_deployment_node(
-    #     "Web Browser", "", "Chrome, Firefox, Safari, or Edge"
-    # ).Add(single_page_application)
+    customer_computer = model.add_deployment_node(
+        "Customer's computer",
+        "",
+        "Microsoft Windows or Apple macOS",
+        environment="Live",
+    )
+    customer_computer.add_deployment_node(
+        "Web Browser", "", "Chrome, Firefox, Safari, or Edge"
+    ).add_container(single_page_application)
 
-    # bigBankDataCenter = model.add_deployment_node(
-    #     "Live", "Big Bank plc", "", "Big Bank plc data center"
-    # )
+    bigBankDataCenter = model.add_deployment_node(
+        "Big Bank plc", "", "Big Bank plc data center", environment="Live"
+    )
 
-    # liveWebServer = bigBankDataCenter.add_deployment_node(
-    #     "bigbank-web***",
-    #     "A web server residing in the web server farm, accessed via F5 BIG-IP LTMs.",
-    #     "Ubuntu 16.04 LTS",
-    #     4,
-    #     DictionaryUtils.Create("Location=London and Reading"),
-    # )
-    # liveWebServer.add_deployment_node(
-    #     "Apache Tomcat",
-    #     "An open source Java EE web server.",
-    #     "Apache Tomcat 8.x",
-    #     1,
-    #     DictionaryUtils.Create("Xmx=512M", "Xms=1024M", "Java Version=8"),
-    # ).Add(webApplication)
+    liveWebServer = bigBankDataCenter.add_deployment_node(
+        "bigbank-web***",
+        "A web server residing in the web server farm, accessed via F5 BIG-IP LTMs.",
+        "Ubuntu 16.04 LTS",
+        instances=4,
+        properties={"Location": "London and Reading"},
+    )
+    liveWebServer.add_deployment_node(
+        "Apache Tomcat",
+        "An open source Java EE web server.",
+        "Apache Tomcat 8.x",
+        instances=1,
+        properties={"Xmx": "512M", "Xms": "1024M", "Java Version": "8"},
+    ).add_container(web_application)
 
-    # liveApiServer = bigBankDataCenter.add_deployment_node(
-    #     "bigbank-api***",
-    #     "A web server residing in the web server farm, accessed via F5 BIG-IP LTMs.",
-    #     "Ubuntu 16.04 LTS",
-    #     8,
-    #     DictionaryUtils.Create("Location=London and Reading"),
-    # )
-    # liveApiServer.add_deployment_node(
-    #     "Apache Tomcat",
-    #     "An open source Java EE web server.",
-    #     "Apache Tomcat 8.x",
-    #     1,
-    #     DictionaryUtils.Create("Xmx=512M", "Xms=1024M", "Java Version=8"),
-    # ).Add(apiApplication)
+    liveApiServer = bigBankDataCenter.add_deployment_node(
+        "bigbank-api***",
+        "A web server residing in the web server farm, accessed via F5 BIG-IP LTMs.",
+        "Ubuntu 16.04 LTS",
+        instances=8,
+        properties={"Location": "London and Reading"},
+    )
+    liveApiServer.add_deployment_node(
+        "Apache Tomcat",
+        "An open source Java EE web server.",
+        "Apache Tomcat 8.x",
+        instances=1,
+        properties={"Xmx": "512M", "Xms": "1024M", "Java Version": "8"},
+    ).add_container(api_application)
 
-    # primaryDatabaseServer = bigBankDataCenter.add_deployment_node(
-    #     "bigbank-db01",
-    #     "The primary database server.",
-    #     "Ubuntu 16.04 LTS",
-    #     1,
-    #     DictionaryUtils.Create("Location=London"),
-    # ).add_deployment_node(
-    #     "Oracle - Primary", "The primary, live database server.", "Oracle 12c"
-    # )
-    # primaryDatabaseServer.Add(database)
+    primaryDatabaseServer = bigBankDataCenter.add_deployment_node(
+        "bigbank-db01",
+        "The primary database server.",
+        "Ubuntu 16.04 LTS",
+        instances=1,
+        properties={"Location": "London"},
+    ).add_deployment_node(
+        "Oracle - Primary", "The primary, live database server.", "Oracle 12c"
+    )
+    primaryDatabaseServer.add_container(database)
 
-    # bigBankdb02 = bigBankDataCenter.add_deployment_node(
-    #     "bigbank-db02",
-    #     "The secondary database server.",
-    #     "Ubuntu 16.04 LTS",
-    #     1,
-    #     DictionaryUtils.Create("Location=Reading"),
-    # )
-    # bigBankdb02.tags.add(FailoverTag)
-    # secondaryDatabaseServer = bigBankdb02.add_deployment_node(
-    #     "Oracle - Secondary",
-    #     "A secondary, standby database server, used for failover purposes only.",
-    #     "Oracle 12c",
-    # )
-    # secondaryDatabaseServer.tags.add(FailoverTag)
-    # secondaryDatabase = secondaryDatabaseServer.Add(database)
+    bigBankdb02 = bigBankDataCenter.add_deployment_node(
+        "bigbank-db02",
+        "The secondary database server.",
+        "Ubuntu 16.04 LTS",
+        instances=1,
+        properties={"Location": "Reading"},
+    )
+    bigBankdb02.tags.add(failover_tag)
+    secondaryDatabaseServer = bigBankdb02.add_deployment_node(
+        "Oracle - Secondary",
+        "A secondary, standby database server, used for failover purposes only.",
+        "Oracle 12c",
+    )
+    secondaryDatabaseServer.tags.add(failover_tag)
+    secondaryDatabase = secondaryDatabaseServer.add_container(database)
 
-    # # model.Relationships.Where(r=>r.Destination.Equals(secondaryDatabase)).ToList().ForEach(r=>r.tags.add(FailoverTag))
+    # # model.Relationships.Where(r=>r.Destination.Equals(secondaryDatabase)).ToList().ForEach(r=>r.tags.add(failover_tag))
     # dataReplicationRelationship = primaryDatabaseServer.uses(
     #     secondaryDatabaseServer, "Replicates data to", ""
     # )
-    # secondaryDatabase.tags.add(FailoverTag)
+    # secondaryDatabase.tags.add(failover_tag)
 
     # views/diagrams
     system_landscape_view = views.create_system_landscape_view(

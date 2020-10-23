@@ -82,7 +82,7 @@ class DeploymentNode(DeploymentElement):
         id: The ID of this deployment node in the model.
         name: The name of this node.
         description: A short description of this node.
-        environment (str):
+        environment (str): The environment this node lives in.
         tags: A comma separated list of tags associated with this node.
         children: The deployment nodes that are direct children of this node.
         properties: A set of arbitrary name-value properties.
@@ -133,17 +133,29 @@ class DeploymentNode(DeploymentElement):
         """Return read-only list of infrastructure nodes."""
         return list(self._infrastructure_nodes)
 
-    def add_deployment_node(self, **kwargs) -> "DeploymentNode":
-        """Add a new child deployment node to this node."""
-        node = DeploymentNode(**kwargs)
+    def add_deployment_node(
+        self, name: str, description: str = "", technology: str = "", **kwargs
+    ) -> "DeploymentNode":
+        """
+        Add a new child deployment node to this node.
+
+        Args:
+            name(str): Name of the deployment node
+            description(str): Optional description
+            technology(str): Optional technologies
+            **kwargs: additional keyword arguments for instantiating a `DeploymentNode`
+        """
+        node = DeploymentNode(
+            name=name, description=description, technology=technology, **kwargs
+        )
         self += node
         return node
 
-    def add_container_instance(
-        self, container: Container, *, replicate_relationships: bool
+    def add_container(
+        self, container: Container, *, replicate_relationships: bool = True
     ) -> ContainerInstance:
         """
-        Create a new instance of the given container.
+        Create a new instance of a container in this deployment node.
 
         Args:
             container(Container): the Container to add an instance of.
@@ -170,11 +182,11 @@ class DeploymentNode(DeploymentElement):
         model += instance
         return instance
 
-    def add_software_system_instance(
-        self, software_system: SoftwareSystem, *, replicate_relationships: bool
+    def add_software_system(
+        self, software_system: SoftwareSystem, *, replicate_relationships: bool = True
     ) -> SoftwareSystemInstance:
         """
-        Create a new instance of the given software system.
+        Create a new instance of a software system in this deployment node.
 
         Args:
             software_system(SoftwareSystem): the SoftwareSystem to add an instance of.
