@@ -94,7 +94,7 @@ def test_software_system_instance_hydration_retrieves_software_system_from_id(
         software_system_id="19", instance_id=3, environment="Live"
     )
 
-    instance = SoftwareSystemInstance.hydrate(io, model_with_system)
+    instance = SoftwareSystemInstance.hydrate(io, model_with_system, parent=None)
 
     assert instance.instance_id == 3
     assert instance.environment == "Live"
@@ -108,7 +108,7 @@ def test_software_system_instance_name_is_software_system_name(model_with_system
         software_system_id="19", instance_id=3, environment="Live"
     )
 
-    instance = SoftwareSystemInstance.hydrate(io, model_with_system)
+    instance = SoftwareSystemInstance.hydrate(io, model_with_system, parent=None)
 
     assert instance.name == "Mock System"
 
@@ -123,7 +123,7 @@ def test_software_system_instance_hyrdates_http_health_checks(model_with_system)
         health_checks=[health_check_io],
     )
 
-    instance = SoftwareSystemInstance.hydrate(io, model_with_system)
+    instance = SoftwareSystemInstance.hydrate(io, model_with_system, parent=None)
 
     assert len(instance.health_checks) == 1
     assert list(instance.health_checks)[0].name == "name"

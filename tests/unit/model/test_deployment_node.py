@@ -164,3 +164,46 @@ def test_deployment_node_serialising_container(model_with_node):
 def test_deployment_node_adding_container_replicating_relationships(model_with_node):
     """Test replicating relationships when adding a container instance."""
     raise AssertionError()  # Not implemented yet
+
+
+def test_deployment_node_add_software_system(model_with_node):
+    """Test adding a software system to a node to create an instance."""
+    node = model_with_node.empty_node
+    system = MockElement("element")
+
+    instance = node.add_software_system_instance(system, replicate_relationships=False)
+
+    assert instance.software_system is system
+    assert instance.model is model_with_node
+    assert instance.parent is node
+    assert instance in node.software_system_instances
+    assert instance.instance_id == 1
+
+
+def test_deployment_node_serialising_software_system(model_with_node):
+    """Test serialisation and deserialisation includes container instances."""
+    node = model_with_node.empty_node
+    system = model_with_node.mock_element
+    node.add_software_system_instance(system, replicate_relationships=False)
+
+    io = DeploymentNodeIO.from_orm(node)
+
+    assert len(io.software_system_instances) == 1
+    assert io.software_system_instances[0].id == "id"
+
+    node2 = DeploymentNode.hydrate(io, model_with_node)
+
+    assert len(node2.software_system_instances) == 1
+    instance = node2.software_system_instances[0]
+    assert instance.instance_id == 1
+    assert instance.software_system is system
+    assert instance.model is model_with_node
+    assert instance.parent is node2
+
+
+@pytest.mark.xfail(strict=True)
+def test_deployment_node_adding_software_system_replicating_relationships(
+    model_with_node,
+):
+    """Test replicating relationships when adding a software system instance."""
+    raise AssertionError()  # Not implemented yet

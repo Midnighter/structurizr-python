@@ -23,6 +23,7 @@ from .container import Container
 from .container_instance import ContainerInstance, ContainerInstanceIO
 from .deployment_element import DeploymentElement, DeploymentElementIO
 from .infrastructure_node import InfrastructureNode, InfrastructureNodeIO
+from .software_system import SoftwareSystem
 from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
 
 
@@ -169,6 +170,37 @@ class DeploymentNode(DeploymentElement):
         model += instance
         return instance
 
+    def add_software_system_instance(
+        self, software_system: SoftwareSystem, *, replicate_relationships: bool
+    ) -> SoftwareSystemInstance:
+        """
+        Create a new instance of the given software system.
+
+        Args:
+            software_system(SoftwareSystem): the SoftwareSystem to add an instance of.
+            replicate_relationships: True if relationships should be replicated between
+                                     the element instances in the same deployment
+                                     environment, False otherwise.
+        """
+        instance_id = (
+            max(
+                [
+                    s.instance_id
+                    for s in self.software_system_instances
+                    if s.software_system is software_system
+                ],
+                default=0,
+            )
+            + 1
+        )
+        instance = SoftwareSystemInstance(
+            software_system=software_system, instance_id=instance_id, parent=self
+        )
+        self._software_system_instances.add(instance)
+        model = self.model
+        model += instance
+        return instance
+
     def __iadd__(self, node: "DeploymentNode") -> "DeploymentNode":
         """Add a newly constructed chile deployment node to this node."""
         if node in self._children:
@@ -216,5 +248,11 @@ class DeploymentNode(DeploymentElement):
         for instance_io in deployment_node_io.container_instances:
             instance = ContainerInstance.hydrate(instance_io, model=model, parent=node)
             node._container_instances.add(instance)
+
+        for instance_io in deployment_node_io.software_system_instances:
+            instance = SoftwareSystemInstance.hydrate(
+                instance_io, model=model, parent=node
+            )
+            node._software_system_instances.add(instance)
 
         return node
