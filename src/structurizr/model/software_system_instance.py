@@ -29,6 +29,7 @@ from .tags import Tags
 
 
 if TYPE_CHECKING:
+    from .deployment_node import DeploymentNode
     from .model import Model
 
 
@@ -60,6 +61,7 @@ class SoftwareSystemInstance(StaticStructureElementInstance):
         cls,
         system_instance_io: SoftwareSystemInstanceIO,
         model: "Model",
+        parent: "DeploymentNode",
     ) -> "SoftwareSystemInstance":
         """Hydrate a new SoftwareSystemInstance instance from its IO.
 
@@ -69,6 +71,7 @@ class SoftwareSystemInstance(StaticStructureElementInstance):
         instance = cls(
             **cls.hydrate_arguments(system_instance_io),
             software_system=system,
+            parent=parent,
         )
         model += instance
         return instance
