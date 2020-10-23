@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import Field
 
+from .container import Container
 from .static_structure_element_instance import (
     StaticStructureElementInstance,
     StaticStructureElementInstanceIO,
@@ -28,7 +29,6 @@ from .tags import Tags
 
 
 if TYPE_CHECKING:
-    from .container import Container
     from .deployment_node import DeploymentNode
     from .model import Model
 
@@ -45,11 +45,15 @@ class ContainerInstanceIO(StaticStructureElementInstanceIO):
 class ContainerInstance(StaticStructureElementInstance):
     """Represents a container instance which can be added to a deployment node."""
 
-    def __init__(self, *, container: "Container", **kwargs) -> None:
+    def __init__(self, *, container: Container, **kwargs) -> None:
         """Initialize a container instance."""
         super().__init__(element=container, **kwargs)
-        self.container = container
         self.tags.add(Tags.CONTAINER_INSTANCE)
+
+    @property
+    def container(self) -> Container:
+        """Return the container for this instance."""
+        return self.element
 
     @property
     def container_id(self) -> str:

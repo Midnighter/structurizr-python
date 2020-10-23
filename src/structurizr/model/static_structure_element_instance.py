@@ -55,6 +55,7 @@ class StaticStructureElementInstance(DeploymentElement, ABC):
         # StaticStructureElementInstance.getName() in the Java API.
         kwargs["name"] = element.name
         super().__init__(**kwargs)
+        self.element = element
         self.instance_id = instance_id
         self.health_checks = set(health_checks)
         self.parent = parent

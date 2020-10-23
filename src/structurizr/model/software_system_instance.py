@@ -48,8 +48,12 @@ class SoftwareSystemInstance(StaticStructureElementInstance):
     def __init__(self, *, software_system: SoftwareSystem, **kwargs) -> None:
         """Initialize a software system instance."""
         super().__init__(element=software_system, **kwargs)
-        self.software_system = software_system
         self.tags.add(Tags.SOFTWARE_SYSTEM_INSTANCE)
+
+    @property
+    def software_system(self) -> SoftwareSystem:
+        """Return the software system for this instance."""
+        return self.element
 
     @property
     def software_system_id(self) -> str:
