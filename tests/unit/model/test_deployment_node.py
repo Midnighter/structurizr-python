@@ -24,7 +24,7 @@ class MockModel:
 
     def __init__(self):
         """Initialize the mock, creating an empty node for tests."""
-        self.empty_node = DeploymentNode(name="Empty")
+        self.empty_node = DeploymentNode(name="Empty", environment="Live")
         self.empty_node.set_model(self)
         self.mock_element = MockElement("element")
 
@@ -133,6 +133,7 @@ def test_deployment_node_add_container(model_with_node):
     instance = node.add_container(container, replicate_relationships=False)
 
     assert instance.container is container
+    assert instance.environment == "Live"
     assert instance.model is model_with_node
     assert instance.parent is node
     assert instance in node.container_instances
@@ -160,12 +161,6 @@ def test_deployment_node_serialising_container(model_with_node):
     assert instance.parent is node2
 
 
-@pytest.mark.xfail(strict=True)
-def test_deployment_node_adding_container_replicating_relationships(model_with_node):
-    """Test replicating relationships when adding a container instance."""
-    raise AssertionError()  # Not implemented yet
-
-
 def test_deployment_node_add_software_system(model_with_node):
     """Test adding a software system to a node to create an instance."""
     node = model_with_node.empty_node
@@ -174,6 +169,7 @@ def test_deployment_node_add_software_system(model_with_node):
     instance = node.add_software_system(system, replicate_relationships=False)
 
     assert instance.software_system is system
+    assert instance.environment == "Live"
     assert instance.model is model_with_node
     assert instance.parent is node
     assert instance in node.software_system_instances
@@ -199,14 +195,6 @@ def test_deployment_node_serialising_software_system(model_with_node):
     assert instance.software_system is system
     assert instance.model is model_with_node
     assert instance.parent is node2
-
-
-@pytest.mark.xfail(strict=True)
-def test_deployment_node_adding_software_system_replicating_relationships(
-    model_with_node,
-):
-    """Test replicating relationships when adding a software system instance."""
-    raise AssertionError()  # Not implemented yet
 
 
 def test_deployment_node_add_infrastructure_node(model_with_node):
