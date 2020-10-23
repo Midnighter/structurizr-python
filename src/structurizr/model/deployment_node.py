@@ -175,11 +175,16 @@ class DeploymentNode(DeploymentElement):
             + 1
         )
         instance = ContainerInstance(
-            container=container, instance_id=instance_id, parent=self
+            container=container,
+            instance_id=instance_id,
+            environment=self.environment,
+            parent=self,
         )
         self._container_instances.add(instance)
         model = self.model
         model += instance
+        if replicate_relationships:
+            instance.replicate_element_relationships()
         return instance
 
     def add_software_system(
@@ -206,11 +211,16 @@ class DeploymentNode(DeploymentElement):
             + 1
         )
         instance = SoftwareSystemInstance(
-            software_system=software_system, instance_id=instance_id, parent=self
+            software_system=software_system,
+            instance_id=instance_id,
+            environment=self.environment,
+            parent=self,
         )
         self._software_system_instances.add(instance)
         model = self.model
         model += instance
+        if replicate_relationships:
+            instance.replicate_element_relationships()
         return instance
 
     def add_infrastructure_node(self, name: str, **kwargs) -> InfrastructureNode:

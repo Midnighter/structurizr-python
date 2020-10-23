@@ -17,7 +17,7 @@
 
 
 from abc import ABC
-from typing import Iterable, List, Optional
+from typing import TYPE_CHECKING, Iterable, List, Optional, Set
 
 from pydantic import Field
 
@@ -25,6 +25,9 @@ from .deployment_element import DeploymentElement, DeploymentElementIO
 from .http_health_check import HTTPHealthCheck, HTTPHealthCheckIO
 from .static_structure_element import StaticStructureElement
 
+
+if TYPE_CHECKING:
+    from .deployment_node import DeploymentNode
 
 __all__ = ("StaticStructureElementInstance", "StaticStructureElementInstanceIO")
 
@@ -59,6 +62,44 @@ class StaticStructureElementInstance(DeploymentElement, ABC):
         self.instance_id = instance_id
         self.health_checks = set(health_checks)
         self.parent = parent
+
+    def replicate_element_relationships(self):
+        """
+        Replicate relationships from the element of this instance.
+
+        This looks at the relationships to and from the element of this instance and
+        sets up the equivalent relationships between the corresponding instances in
+        the same environment.
+        """
+        # Find all the element instances in the same deployment environment
+        element_instances: Set[StaticStructureElementInstance] = {
+            e
+            for e in self.model.get_elements()
+            if isinstance(e, StaticStructureElementInstance)
+            and e.environment == self.environment
+        }
+
+        for other_element_instance in element_instances:
+            other_element = other_element_instance.element
+
+            for relationship in self.element.relationships:
+                if relationship.destination is other_element:
+                    self.add_relationship(
+                        destination=other_element_instance,
+                        description=relationship.description,
+                        technology=relationship.technology,
+                        interaction_style=relationship.interaction_style,
+                        linked_relationship_id=relationship.id,
+                    ).tags.clear()
+            for relationship in other_element.relationships:
+                if relationship.destination is self.element:
+                    other_element_instance.add_relationship(
+                        destination=self,
+                        description=relationship.description,
+                        technology=relationship.technology,
+                        interaction_style=relationship.interaction_style,
+                        linked_relationship_id=relationship.id,
+                    ).tags.clear()
 
     @classmethod
     def hydrate_arguments(cls, instance_io: StaticStructureElementInstanceIO) -> dict:
