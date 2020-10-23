@@ -26,7 +26,7 @@ from .http_health_check import HTTPHealthCheck, HTTPHealthCheckIO
 from .static_structure_element import StaticStructureElement
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .deployment_node import DeploymentNode
 
 __all__ = ("StaticStructureElementInstance", "StaticStructureElementInstanceIO")

@@ -28,7 +28,7 @@ from .static_structure_element_instance import (
 from .tags import Tags
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .deployment_node import DeploymentNode
     from .model import Model
 
