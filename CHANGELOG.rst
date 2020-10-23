@@ -4,8 +4,9 @@ History
 
 Next Release
 ------------
-* Feat: Add implied relationships to entities (#42)
-* Feat: Add ``dump()``, ``dumps()`` and ``loads()`` methods to ``Workspace`` (#48)
+* Fix: Add implied relationships to entities (#42)
+* Fix: Add ``dump()``, ``dumps()`` and ``loads()`` methods to ``Workspace`` (#48)
+* Fix: Add support for DeploymentNodes, ContainerInstances, SoftwareSystemInstances and InfrastructureNodes (#37)
 
 0.1.1 (2020-10-19)
 ------------------
