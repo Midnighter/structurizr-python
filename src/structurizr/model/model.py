@@ -23,8 +23,6 @@ from pydantic import Field
 
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
-from .container import Container
-from .container_instance import ContainerInstance
 from .deployment_node import DeploymentNode, DeploymentNodeIO
 from .element import Element
 from .enterprise import Enterprise, EnterpriseIO
@@ -188,7 +186,7 @@ class Model(AbstractBase):
         self += person
         return person
 
-    def add_software_system(self, **kwargs) -> SoftwareSystem:
+    def add_software_system(self, name: str, **kwargs) -> SoftwareSystem:
         """
         Add a new software system to the model.
 
@@ -206,7 +204,7 @@ class Model(AbstractBase):
             SoftwareSystem
 
         """
-        software_system = SoftwareSystem(**kwargs)
+        software_system = SoftwareSystem(name=name, **kwargs)
         self += software_system
         return software_system
 
@@ -242,34 +240,6 @@ class Model(AbstractBase):
             )
         self._add_element(element)
         return self
-
-    def add_container_instance(
-        self,
-        deployment_node: DeploymentNode,
-        container: Container,
-        replicate_container_relationships: bool,
-    ) -> ContainerInstance:
-        """
-        Add a new container instance to the model.
-
-        Args:
-            deployment_node (DeploymentNode, optional): `DeploymentNode` instance
-            container (Container, optional): `Container` instance
-
-        Returns:
-            ContainerInstance: A container instance.
-
-        Raises:
-            ValueError: When a container with the same name already exists.
-
-        See Also:
-            ContainerInstance
-
-        """
-        if container is None:
-            raise ValueError("A container must be specified.")
-        # TODO: implement
-        # instance_number =
 
     def add_deployment_node(
         self,
