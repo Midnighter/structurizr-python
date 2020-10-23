@@ -87,7 +87,7 @@ def test_container_instance_hydration_retrieves_container_from_id(model_with_con
     """Check that the container instance is retrieved from the model on hydration."""
     io = ContainerInstanceIO(container_id="19", instance_id=3, environment="Live")
 
-    instance = ContainerInstance.hydrate(io, model_with_container)
+    instance = ContainerInstance.hydrate(io, model_with_container, parent=None)
 
     assert instance.instance_id == 3
     assert instance.environment == "Live"
@@ -99,7 +99,7 @@ def test_container_instance_name_is_container_name(model_with_container):
     """Ensure container instance takes its name from its container."""
     io = ContainerInstanceIO(container_id="19", instance_id=3, environment="Live")
 
-    instance = ContainerInstance.hydrate(io, model_with_container)
+    instance = ContainerInstance.hydrate(io, model_with_container, parent=None)
 
     assert instance.name == "Mock Container"
 
@@ -114,7 +114,7 @@ def test_container_instance_hyrdates_http_health_checks(model_with_container):
         health_checks=[health_check_io],
     )
 
-    instance = ContainerInstance.hydrate(io, model_with_container)
+    instance = ContainerInstance.hydrate(io, model_with_container, parent=None)
 
     assert len(instance.health_checks) == 1
     assert list(instance.health_checks)[0].name == "name"

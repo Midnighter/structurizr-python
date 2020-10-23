@@ -47,6 +47,7 @@ class StaticStructureElementInstance(DeploymentElement, ABC):
         element: StaticStructureElement,
         instance_id: int,
         health_checks: Iterable["HTTPHealthCheck"] = (),
+        parent: "DeploymentNode" = None,
         **kwargs
     ) -> None:
         """Initialize a StaticStructureElementInstance."""
@@ -56,6 +57,7 @@ class StaticStructureElementInstance(DeploymentElement, ABC):
         super().__init__(**kwargs)
         self.instance_id = instance_id
         self.health_checks = set(health_checks)
+        self.parent = parent
 
     @classmethod
     def hydrate_arguments(cls, instance_io: StaticStructureElementInstanceIO) -> dict:

@@ -29,6 +29,7 @@ from .tags import Tags
 
 if TYPE_CHECKING:
     from .container import Container
+    from .deployment_node import DeploymentNode
     from .model import Model
 
 
@@ -60,6 +61,7 @@ class ContainerInstance(StaticStructureElementInstance):
         cls,
         container_instance_io: ContainerInstanceIO,
         model: "Model",
+        parent: "DeploymentNode",
     ) -> "ContainerInstance":
         """Hydrate a new ContainerInstance instance from its IO.
 
@@ -69,6 +71,7 @@ class ContainerInstance(StaticStructureElementInstance):
         instance = cls(
             **cls.hydrate_arguments(container_instance_io),
             container=container,
+            parent=parent,
         )
         model += instance
         return instance
