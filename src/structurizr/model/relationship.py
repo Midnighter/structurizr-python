@@ -94,6 +94,7 @@ class Relationship(ModelItem):
         self._destination_id = destination_id
         self.description = description
         self.technology = technology
+        self.interaction_style = interaction_style
         self.linked_relationship_id = linked_relationship_id
 
         self.tags.add(Tags.RELATIONSHIP)
