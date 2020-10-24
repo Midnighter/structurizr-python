@@ -132,7 +132,7 @@ class SoftwareSystem(StaticStructureElement):
         model += software_system
 
         for container_io in software_system_io.containers:
-            Container.hydrate(
+            software_system += Container.hydrate(
                 container_io,
                 software_system=software_system,
                 model=model,
