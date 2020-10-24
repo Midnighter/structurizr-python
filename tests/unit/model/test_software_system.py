@@ -19,7 +19,7 @@
 import pytest
 
 from structurizr.model.container import Container
-from structurizr.model.software_system import SoftwareSystem
+from structurizr.model.software_system import SoftwareSystem, SoftwareSystemIO
 
 
 class MockModel:
@@ -135,3 +135,18 @@ def test_software_system_get_container_with_name(model_with_system: MockModel):
     container = empty_system.add_container(name="Test", description="Description")
     assert empty_system.get_container_with_name("Test") is container
     assert empty_system.get_container_with_name("FooBar") is None
+
+
+def test_software_system_serialisation(model_with_system: MockModel):
+    """Test systems are deserialised correctly."""
+    empty_system = model_with_system.empty_system
+    empty_system.add_container(name="Test", description="Description")
+
+    system_io = SoftwareSystemIO.from_orm(empty_system)
+
+    new_system = SoftwareSystem.hydrate(system_io, model_with_system)
+    assert new_system.name == "Sys"
+    assert len(new_system.containers) == 1
+    container = next(iter(new_system.containers))
+    assert container.name == "Test"
+    assert container.parent is new_system
