@@ -30,7 +30,7 @@ class ConcreteElement(Element):
 class MockModel:
     """Implement a mock model for reference testing."""
 
-    def add_relationship(self, relationship):
+    def add_relationship(self, relationship, create_implied_relationships):
         """Provide mock implementation."""
         return relationship
 
