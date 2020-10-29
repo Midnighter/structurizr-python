@@ -117,6 +117,15 @@ class Relationship(ModelItem):
 
         return self._destination_id
 
+    @property
+    def interaction_style(self) -> str:
+        """Return the interaction style of the relationship based on its tags."""
+        return (
+            InteractionStyle.Synchronous
+            if Tags.SYNCHRONOUS in self.tags
+            else InteractionStyle.Asynchronous
+        )
+
     @classmethod
     def hydrate(cls, relationship_io: RelationshipIO) -> "Relationship":
         """"""

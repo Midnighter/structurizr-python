@@ -17,7 +17,7 @@
 
 
 import logging
-from typing import Iterable, List, Optional, Set, ValuesView
+from typing import Callable, Iterable, List, Optional, Set, ValuesView
 
 from pydantic import Field
 
@@ -85,7 +85,9 @@ class Model(AbstractBase):
             to this model.
         deployment_nodes (set of DeploymentNode): The set of deployment nodes belonging
             to this model.
-
+        implied_relationship_strategy: Function used to create implied relationships.
+            By default (or if set to `None`), no implied relationships will be created.
+            See `implied_relationship_strategies.py` for more details.
     """
 
     def __init__(
@@ -94,6 +96,7 @@ class Model(AbstractBase):
         people: Optional[Iterable[Person]] = (),
         software_systems: Iterable[SoftwareSystem] = (),
         deployment_nodes: Iterable[DeploymentNode] = (),
+        implied_relationship_strategy: Optional[Callable[[Relationship], None]] = None,
         **kwargs,
     ) -> None:
         """
@@ -106,6 +109,7 @@ class Model(AbstractBase):
         super().__init__(**kwargs)
         self.enterprise = enterprise
         self.deployment_nodes = set(deployment_nodes)
+        self.implied_relationship_strategy = implied_relationship_strategy
         # TODO: simply iterate attributes
         self._elements_by_id = {}
         self._relationships_by_id = {}
@@ -151,7 +155,7 @@ class Model(AbstractBase):
                 relationship.destination = model.get_element(
                     relationship.destination_id
                 )
-                model.add_relationship(relationship)
+                model.add_relationship(relationship, create_implied_relationships=False)
 
         return model
 
@@ -282,7 +286,11 @@ class Model(AbstractBase):
         return deployment_node
 
     def add_relationship(
-        self, relationship: Relationship = None, **kwargs
+        self,
+        relationship: Relationship = None,
+        *,
+        create_implied_relationships: bool = True,
+        **kwargs,
     ) -> Optional[Relationship]:
         """
         Add a relationship to the model.
@@ -292,6 +300,9 @@ class Model(AbstractBase):
                 `Relationship` instance or
             **kwargs: Provide keyword arguments for instantiating a `Relationship`
                 (recommended).
+            create_implied_relationships (bool, optional): If `True` (default) then use
+                the `implied_relationship_strategy` to create relationships implied by
+                this one.  See `implied_relationship_strategies.py` for details.
 
         Returns:
             Relationship: Either the same or a new instance, depending on arguments.
@@ -306,7 +317,7 @@ class Model(AbstractBase):
         if relationship is None:
             relationship = Relationship(**kwargs)
         # Check
-        if self._add_relationship(relationship):
+        if self._add_relationship(relationship, create_implied_relationships):
             return relationship
         else:
             return
@@ -364,7 +375,9 @@ class Model(AbstractBase):
         element.set_model(self)
         self._id_generator.found(element.id)
 
-    def _add_relationship(self, relationship: Relationship) -> bool:
+    def _add_relationship(
+        self, relationship: Relationship, create_implied_relationships: bool
+    ) -> bool:
         if relationship in self.get_relationships():
             return True
         if not relationship.id:
@@ -379,8 +392,16 @@ class Model(AbstractBase):
                 f"{relationship} has the same ID as "
                 f"{self._relationships_by_id[relationship.id]}."
             )
-        relationship.source.add_relationship(relationship)
+        relationship.source.add_relationship(
+            relationship, create_implied_relationships=False
+        )
         self._add_relationship_to_internal_structures(relationship)
+
+        if (
+            create_implied_relationships
+            and self.implied_relationship_strategy is not None
+        ):
+            self.implied_relationship_strategy(relationship)
         return True
 
     def _add_relationship_to_internal_structures(self, relationship: Relationship):
