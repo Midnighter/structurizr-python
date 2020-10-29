@@ -76,13 +76,15 @@ def create_implied_relationships_unless_same_exists(relationship: Relationship):
 
 
 def _implied_relationship_is_allowed(source: Element, destination: Element):
-    return source not in _get_ancestors(
-        destination
-    ) and destination not in _get_ancestors(source)
+    if source is destination:
+        return False
+    elif source in _get_ancestors(destination) or destination in _get_ancestors(source):
+        return False
+    return True
 
 
 def _get_ancestors(element: Element) -> List[Element]:
-    """Get the ancestors of an element."""
+    """Get the ancestors of an element, including itself."""
     result = []
     current = element
     while current is not None:
