@@ -29,6 +29,9 @@ from .container import Container
 from .container_instance import ContainerInstance
 from .element import Element
 from .enterprise import Enterprise, EnterpriseIO
+from .implied_relationship_strategies import (
+    ignore_implied_relationship_strategy as ignore_implied,
+)
 from .person import Person, PersonIO
 from .relationship import Relationship
 from .sequential_integer_id_generator import SequentialIntegerIDGenerator
@@ -96,7 +99,7 @@ class Model(AbstractBase):
         people: Optional[Iterable[Person]] = (),
         software_systems: Iterable[SoftwareSystem] = (),
         deployment_nodes: Iterable[DeploymentNode] = (),
-        implied_relationship_strategy: Optional[Callable[[Relationship], None]] = None,
+        implied_relationship_strategy: Callable[[Relationship], None] = ignore_implied,
         **kwargs,
     ) -> None:
         """
@@ -397,10 +400,7 @@ class Model(AbstractBase):
         )
         self._add_relationship_to_internal_structures(relationship)
 
-        if (
-            create_implied_relationships
-            and self.implied_relationship_strategy is not None
-        ):
+        if create_implied_relationships:
             self.implied_relationship_strategy(relationship)
         return True
 

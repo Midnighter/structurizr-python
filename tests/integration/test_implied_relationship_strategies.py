@@ -26,22 +26,10 @@ from structurizr.model.implied_relationship_strategies import (
 )
 
 
-def test_by_default_model_doesnt_create_implied_relationships():
+def test_by_default_model_ignores_implied_relationships():
     """Check if not set on Model, no implied relationships are added."""
     model = Model()
-    assert model.implied_relationship_strategy is None
-
-    system1 = model.add_software_system(name="system1")
-    container1 = system1.add_container(name="container1", description="test")
-    system2 = model.add_software_system(name="system2")
-    container2 = system2.add_container(name="container2", description="test")
-
-    rel = container1.uses(container2, "Uses")
-
-    assert len(list(container1.get_relationships())) == 1
-    assert len(list(system1.get_relationships())) == 0
-    assert set(container1.get_relationships()) == {rel}
-    assert set(system1.get_relationships()) == set()
+    assert model.implied_relationship_strategy is ignore
 
 
 def test_ignore_implied_relationship_strategy():
