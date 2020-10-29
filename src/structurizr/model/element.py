@@ -100,7 +100,11 @@ class Element(ModelRefMixin, ModelItem, ABC):
         )
 
     def add_relationship(
-        self, relationship: Optional[Relationship] = None, **kwargs
+        self,
+        relationship: Optional[Relationship] = None,
+        *,
+        create_implied_relationships: bool = True,
+        **kwargs,
     ) -> Relationship:
         """Add a new relationship from this element to another.
 
@@ -119,7 +123,10 @@ class Element(ModelRefMixin, ModelItem, ABC):
                 f"Cannot add relationship {relationship} to element {self} that is not its source."
             )
         self.relationships.add(relationship)
-        self.get_model().add_relationship(relationship)
+        self.get_model().add_relationship(
+            relationship,
+            create_implied_relationships=create_implied_relationships
+        )
         return relationship
 
     @classmethod
