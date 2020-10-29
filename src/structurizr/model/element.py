@@ -123,7 +123,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
                 f"Cannot add relationship {relationship} to element {self} that is not its source."
             )
         self.relationships.add(relationship)
-        self.get_model().add_relationship(
+        self.model.add_relationship(
             relationship, create_implied_relationships=create_implied_relationships
         )
         return relationship

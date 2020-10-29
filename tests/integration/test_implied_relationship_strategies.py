@@ -18,7 +18,7 @@ from structurizr.model import InteractionStyle, Model
 from structurizr.model.implied_relationship_strategies import (
     create_implied_relationships_unless_any_exist,
     create_implied_relationships_unless_same_exists,
-    default_implied_relationship_strategy,
+    ignore_implied_relationship_strategy,
 )
 
 
@@ -40,9 +40,9 @@ def test_by_default_model_doesnt_create_implied_relationships():
     assert set(system1.get_relationships()) == set()
 
 
-def test_default_implied_relationship_strategy():
+def test_ignore_implied_relationship_strategy():
     """Check that by default no implied relationships are added."""
-    model = Model(implied_relationship_strategy=default_implied_relationship_strategy)
+    model = Model(implied_relationship_strategy=ignore_implied_relationship_strategy)
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
     system2 = model.add_software_system(name="system2")
@@ -95,6 +95,7 @@ def test_create_implied_relationships_unless_same_exists():
     model.implied_relationship_strategy = (
         create_implied_relationships_unless_same_exists
     )
+
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
     system2 = model.add_software_system(name="system2")
@@ -133,8 +134,7 @@ def test_suppressing_implied_relationships():
 )
 def test_self_references_are_not_implied(strategy):
     """Ensure references from an element to itself don't get implied to parents."""
-    model = Model()
-    model.implied_relationship_strategy = strategy
+    model = Model(implied_relationship_strategy=strategy)
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
 

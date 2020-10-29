@@ -30,7 +30,7 @@ from .relationship import Relationship
 from .software_system import SoftwareSystem
 
 
-def default_implied_relationship_strategy(relationship: Relationship):
+def ignore_implied_relationship_strategy(relationship: Relationship):
     """Don't create any implied relationships."""
     pass
 
