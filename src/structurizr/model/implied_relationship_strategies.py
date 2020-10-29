@@ -56,7 +56,7 @@ def create_implied_relationships_unless_any_exist(relationship: Relationship):
 
 def create_implied_relationships_unless_same_exists(relationship: Relationship):
     """
-    Create implied relationships unless there is a existing one with the same description.
+    Create implied relationships unless there is one with the same description.
 
     This strategy creates implied relationships between all valid combinations of the
     parent elements, unless any relationship already exists between them which has the
