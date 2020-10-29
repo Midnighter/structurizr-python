@@ -16,9 +16,13 @@ import pytest
 
 from structurizr.model import InteractionStyle, Model
 from structurizr.model.implied_relationship_strategies import (
-    create_implied_relationships_unless_any_exist,
-    create_implied_relationships_unless_same_exists,
-    ignore_implied_relationship_strategy,
+    create_implied_relationships_unless_any_exist as create_unless_any_exist,
+)
+from structurizr.model.implied_relationship_strategies import (
+    create_implied_relationships_unless_same_exists as create_unless_same_exists,
+)
+from structurizr.model.implied_relationship_strategies import (
+    ignore_implied_relationship_strategy as ignore,
 )
 
 
@@ -42,7 +46,7 @@ def test_by_default_model_doesnt_create_implied_relationships():
 
 def test_ignore_implied_relationship_strategy():
     """Check that by default no implied relationships are added."""
-    model = Model(implied_relationship_strategy=ignore_implied_relationship_strategy)
+    model = Model(implied_relationship_strategy=ignore)
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
     system2 = model.add_software_system(name="system2")
@@ -58,8 +62,7 @@ def test_ignore_implied_relationship_strategy():
 
 def test_create_implied_relationships_unless_any_exist():
     """Check logic of create_implied_relationships_unless_any_exist."""
-    model = Model()
-    model.implied_relationship_strategy = create_implied_relationships_unless_any_exist
+    model = Model(implied_relationship_strategy=create_unless_any_exist)
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
     component1 = container1.add_component(name="component1", description="test")
@@ -91,10 +94,7 @@ def test_create_implied_relationships_unless_any_exist():
 
 def test_create_implied_relationships_unless_same_exists():
     """Check logic of create_implied_relationships_unless_same_exists."""
-    model = Model()
-    model.implied_relationship_strategy = (
-        create_implied_relationships_unless_same_exists
-    )
+    model = Model(implied_relationship_strategy=create_unless_same_exists)
 
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
@@ -110,8 +110,7 @@ def test_create_implied_relationships_unless_same_exists():
 
 def test_suppressing_implied_relationships():
     """Ensure you can explicitly suppress the current strategy."""
-    model = Model()
-    model.implied_relationship_strategy = create_implied_relationships_unless_any_exist
+    model = Model(implied_relationship_strategy=create_unless_any_exist)
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
     system2 = model.add_software_system(name="system2")
@@ -128,8 +127,8 @@ def test_suppressing_implied_relationships():
 @pytest.mark.parametrize(
     "strategy",
     [
-        create_implied_relationships_unless_any_exist,
-        create_implied_relationships_unless_same_exists,
+        create_unless_any_exist,
+        create_unless_same_exists,
     ],
 )
 def test_self_references_are_not_implied(strategy):
@@ -146,8 +145,7 @@ def test_self_references_are_not_implied(strategy):
 
 def test_cloning_to_implied_relationship_copies_attributes_across():
     """Make sure that attributes carry over to implied relationships."""
-    model = Model()
-    model.implied_relationship_strategy = create_implied_relationships_unless_any_exist
+    model = Model(implied_relationship_strategy=create_unless_any_exist)
     system1 = model.add_software_system(name="system1")
     container1 = system1.add_container(name="container1", description="test")
     system2 = model.add_software_system(name="system2")
