@@ -12,6 +12,8 @@
 
 """Test the various strategies for adding implied relationships."""
 
+import pytest
+
 from structurizr.model import InteractionStyle, Model
 from structurizr.model.implied_relationship_strategies import (
     create_implied_relationships_unless_any_exist,
@@ -120,6 +122,26 @@ def test_suppressing_implied_relationships():
     assert len(list(system1.get_relationships())) == 0
     assert set(container1.get_relationships()) == {rel}
     assert set(system1.get_relationships()) == set()
+
+
+@pytest.mark.parametrize(
+    "strategy",
+    [
+        create_implied_relationships_unless_any_exist,
+        create_implied_relationships_unless_same_exists,
+    ],
+)
+def test_self_references_are_not_implied(strategy):
+    """Ensure references from an element to itself don't get implied to parents."""
+    model = Model()
+    model.implied_relationship_strategy = strategy
+    system1 = model.add_software_system(name="system1")
+    container1 = system1.add_container(name="container1", description="test")
+
+    container1.uses(container1, "Uses")
+
+    assert len(list(container1.get_relationships())) == 1
+    assert len(list(system1.get_relationships())) == 0
 
 
 def test_cloning_to_implied_relationship_copies_attributes_across():
