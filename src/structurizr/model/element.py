@@ -124,8 +124,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
             )
         self.relationships.add(relationship)
         self.get_model().add_relationship(
-            relationship,
-            create_implied_relationships=create_implied_relationships
+            relationship, create_implied_relationships=create_implied_relationships
         )
         return relationship
 
