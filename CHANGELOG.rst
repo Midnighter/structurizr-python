@@ -4,6 +4,7 @@ History
 
 Next Release
 ------------
+* Feat: Add implied relationships to entities (#42)
 
 0.1.1 (2020-10-19)
 ------------------
