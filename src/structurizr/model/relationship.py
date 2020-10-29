@@ -105,6 +105,7 @@ class Relationship(ModelItem):
 
     @property
     def source_id(self) -> str:
+        """Return the ID of the source element of this relationship."""
         if self.source is not None:
             return self.source.id
 
@@ -112,6 +113,7 @@ class Relationship(ModelItem):
 
     @property
     def destination_id(self) -> str:
+        """Return the ID of the destination element of this relationship."""
         if self.destination is not None:
             return self.destination.id
 
@@ -128,7 +130,7 @@ class Relationship(ModelItem):
 
     @classmethod
     def hydrate(cls, relationship_io: RelationshipIO) -> "Relationship":
-        """"""
+        """Hydrate a new instance of Relationship from its IO."""
         return cls(
             id=relationship_io.id,
             tags=relationship_io.tags,
