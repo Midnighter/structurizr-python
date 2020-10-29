@@ -81,15 +81,13 @@ def _implied_relationship_is_allowed(source: Element, destination: Element):
     ) and destination not in _get_ancestors(source)
 
 
-def _get_ancestors(element: Element, include_self=True) -> List[Element]:
+def _get_ancestors(element: Element) -> List[Element]:
     """Get the ancestors of an element."""
     result = []
     current = element
     while current is not None:
         result.append(current)
         current = None if isinstance(current, SoftwareSystem) else current.parent
-    if not include_self:
-        result.remove(element)
     return result
 
 
