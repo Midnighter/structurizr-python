@@ -32,12 +32,7 @@ __all__ = ("Configuration", "ConfigurationIO")
 
 
 class ConfigurationIO(BaseModel):
-    """
-    Represent a configuration instance.
-
-    Attributes:
-
-    """
+    """Represent a configuration instance."""
 
     branding: Optional[BrandingIO]
     styles: Optional[StylesIO]
@@ -52,12 +47,7 @@ class ConfigurationIO(BaseModel):
 
 
 class Configuration(AbstractBase):
-    """
-    Configure how information in a workspace is rendered.
-
-    Attributes:
-
-    """
+    """Configure how information in a workspace is rendered."""
 
     def __init__(
         self,
@@ -83,7 +73,7 @@ class Configuration(AbstractBase):
 
     @classmethod
     def hydrate(cls, configuration_io: ConfigurationIO) -> "Configuration":
-        """"""
+        """Hydrate new Configuration instance from its IO."""
         return cls(
             # TODO:
             # branding=Branding.hydrate(configuration_io.branding),

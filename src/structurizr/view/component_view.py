@@ -75,7 +75,7 @@ class ComponentView(StaticView):
         component_view_io: ComponentViewIO,
         container: Container,
     ) -> "ComponentView":
-        """"""
+        """Hydrate a new ComponentView instance from its IO."""
         return cls(
             **cls.hydrate_arguments(component_view_io),
             container=container,
@@ -86,6 +86,7 @@ class ComponentView(StaticView):
 
     @property
     def name(self):
+        """Return the (computed) name of this view."""
         return f"{self.software_system.name} - {self.container.name} - Components"
 
     def add(
@@ -103,6 +104,7 @@ class ComponentView(StaticView):
         return self._add_element(element, add_relationships=True)
 
     def remove(self, element):
+        """Remove an individual element from this view."""
         self._remove_element(element)
 
     def add_all_elements(self) -> None:
@@ -113,14 +115,17 @@ class ComponentView(StaticView):
         self.add_all_components()
 
     def add_all_containers(self) -> None:
+        """Add all other containers in the software system to this view."""
         for container in self.software_system.containers:
             self.add(container)
 
     def add_all_components(self) -> None:
+        """Add all components in the container to this view."""
         for component in self.container.components:
             self.add(component)
 
     def add_nearest_neighbours(self, element: Element, _=None) -> None:
+        """Add neighbouring people, software systems, containers and components."""
         super().add_nearest_neighbours(element, SoftwareSystem)
         super().add_nearest_neighbours(element, Person)
         super().add_nearest_neighbours(element, Container)

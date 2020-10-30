@@ -27,24 +27,14 @@ __all__ = ("Branding", "BrandingIO")
 
 
 class BrandingIO(BaseModel):
-    """
-    Represent an instance of a corporate branding.
-
-    Attributes:
-
-    """
+    """Represent an instance of a corporate branding."""
 
     logo: Optional[str]
     font: Optional[FontIO]
 
 
 class Branding(AbstractBase):
-    """
-    Represent a corporate branding.
-
-    Attributes:
-
-    """
+    """Represent a corporate branding."""
 
     def __init__(
         self, *, logo: Optional[str] = None, font: Optional[Font] = None, **kwargs
