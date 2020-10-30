@@ -195,7 +195,7 @@ class Workspace(AbstractBase):
 
     @classmethod
     def load(cls, filename: Union[str, Path]) -> "Workspace":
-        """"""
+        """Load a workspace from a JSON file (which may optionally be zipped)."""
         filename = Path(filename)
         try:
             with gzip.open(filename, "rt") as handle:
@@ -209,7 +209,7 @@ class Workspace(AbstractBase):
 
     @classmethod
     def hydrate(cls, workspace_io: WorkspaceIO) -> "Workspace":
-        """"""
+        """Create a new instance of Workspace from its IO."""
         model = Model.hydrate(workspace_io.model)
         views = ViewSet.hydrate(views=workspace_io.views, model=model)
 
