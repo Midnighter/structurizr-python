@@ -94,7 +94,6 @@ class Relationship(ModelItem):
         self._destination_id = destination_id
         self.description = description
         self.technology = technology
-        self.interaction_style = interaction_style
         self.linked_relationship_id = linked_relationship_id
 
         self.tags.add(Tags.RELATIONSHIP)
@@ -124,9 +123,9 @@ class Relationship(ModelItem):
     def interaction_style(self) -> str:
         """Return the interaction style of the relationship based on its tags."""
         return (
-            InteractionStyle.Synchronous
-            if Tags.SYNCHRONOUS in self.tags
-            else InteractionStyle.Asynchronous
+            InteractionStyle.Asynchronous
+            if Tags.ASYNCHRONOUS in self.tags
+            else InteractionStyle.Synchronous
         )
 
     @classmethod
