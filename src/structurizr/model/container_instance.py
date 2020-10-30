@@ -36,12 +36,7 @@ DEFAULT_HEALTH_CHECK_TIMEOUT_IN_MILLISECONDS = 0
 
 
 class ContainerInstanceIO(DeploymentElementIO):
-    """
-    Represents a container instance which can be added to a deployment node.
-
-    Attributes:
-
-    """
+    """Represents a container instance which can be added to a deployment node."""
 
     container: "ContainerIO"
     container_id: str
@@ -50,12 +45,7 @@ class ContainerInstanceIO(DeploymentElementIO):
 
 
 class ContainerInstance(DeploymentElement):
-    """
-    Represents a container instance which can be added to a deployment node.
-
-    Attributes:
-
-    """
+    """Represents a container instance which can be added to a deployment node."""
 
     def __init__(
         self,

@@ -17,7 +17,7 @@
 
 
 from abc import ABC
-from typing import Dict, Iterable, List, Set, Union
+from typing import Dict, Iterable, List, Union
 
 from ordered_set import OrderedSet
 from pydantic import Field, validator
@@ -49,12 +49,13 @@ class ModelItemIO(BaseModel, ABC):
 
     @validator("tags", pre=True)
     def split_tags(cls, tags: Union[str, Iterable[str]]) -> List[str]:
+        """Convert comma-separated tag list into list if needed."""
         if isinstance(tags, str):
             return tags.split(",")
         return list(tags)
 
     def dict(self, **kwargs) -> dict:
-        """"""
+        """Map this IO into a dictionary suitable for serialisation."""
         obj = super().dict(**kwargs)
         if "tags" in obj:
             obj["tags"] = ",".join(obj["tags"])
@@ -82,7 +83,7 @@ class ModelItem(AbstractBase, ABC):
         perspectives: Iterable[Perspective] = (),
         **kwargs,
     ):
-        """"""
+        """Initialise a ModelItem instance."""
         super().__init__(**kwargs)
         self.id = id
         self.tags = OrderedSet(tags)
@@ -90,10 +91,12 @@ class ModelItem(AbstractBase, ABC):
         self.perspectives = set(perspectives)
 
     def __repr__(self) -> str:
+        """Return repr(self)."""
         return f"{type(self).__name__}(id={self.id})"
 
     @classmethod
     def hydrate_arguments(cls, model_item_io: ModelItemIO) -> dict:
+        """Hydrate an ModelItemIO into the constructor arguments for ModelItem."""
         return {
             "id": model_item_io.id,
             "tags": model_item_io.tags,

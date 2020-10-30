@@ -53,5 +53,5 @@ class Enterprise(AbstractBase):
 
     @classmethod
     def hydrate(cls, enterprise_io: EnterpriseIO) -> "Enterprise":
-        """"""
+        """Hydrate a new Enterprise instance from its IO."""
         return cls(name=enterprise_io.name)

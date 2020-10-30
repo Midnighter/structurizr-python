@@ -72,7 +72,8 @@ class Element(ModelRefMixin, ModelItem, ABC):
         self.name = name
         self.description = description
         self.url = url
-        # Note: relationships should always match get_efferent_relationships() - i.e. outbound relationships only
+        # Note: relationships should always match get_efferent_relationships() - i.e.
+        # outbound relationships only
         self.relationships: Iterable[Relationship] = set(relationships)
 
         self.tags.add(Tags.ELEMENT)
@@ -108,9 +109,10 @@ class Element(ModelRefMixin, ModelItem, ABC):
     ) -> Relationship:
         """Add a new relationship from this element to another.
 
-        This can be used either to add a `Relationship` instance that has already been constructed,
-        or by passing the arguments (e.g. description, destination) with which to construct a new
-        one.  The relationship will automatically be registered with the element's model.
+        This can be used either to add a `Relationship` instance that has already been
+        constructed, or by passing the arguments (e.g. description, destination) with
+        which to construct a new one.  The relationship will automatically be
+        registered with the element's model.
         """
         if relationship is None:
             relationship = Relationship(**kwargs)
@@ -120,7 +122,8 @@ class Element(ModelRefMixin, ModelItem, ABC):
             relationship.source = self
         elif relationship.source is not self:
             raise ValueError(
-                f"Cannot add relationship {relationship} to element {self} that is not its source."
+                f"Cannot add relationship {relationship} to element {self} that is "
+                f"not its source."
             )
         self.relationships.add(relationship)
         self.model.add_relationship(
@@ -130,6 +133,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
 
     @classmethod
     def hydrate_arguments(cls, element_io: ElementIO) -> dict:
+        """Hydrate an ElementIO into the constructor arguments for Element."""
         return {
             **super().hydrate_arguments(element_io),
             "name": element_io.name,
