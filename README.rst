@@ -56,6 +56,17 @@ It's as simple as:
 
     pip install --pre structurizr-python
 
+Usage
+=======
+
+(TODO, just so we have a starting PR)
+
+.. code-block:: console
+
+   # code here for GETing an existing workspace
+
+
+
 Copyright
 =========
 
