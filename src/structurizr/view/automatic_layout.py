@@ -27,12 +27,7 @@ __all__ = ("AutomaticLayout", "AutomaticLayoutIO")
 
 
 class AutomaticLayoutIO(BaseModel):
-    """
-    Define a wrapper for automatic layout configuration.
-
-    Attributes:
-
-    """
+    """Define a wrapper for automatic layout configuration."""
 
     rank_direction: RankDirection = Field(..., alias="rankDirection")
     rank_separation: int = Field(..., alias="rankSeparation")
@@ -42,12 +37,7 @@ class AutomaticLayoutIO(BaseModel):
 
 
 class AutomaticLayout(AbstractBase):
-    """
-    Define a wrapper for automatic layout configuration.
-
-    Attributes:
-
-    """
+    """Define a wrapper for automatic layout configuration."""
 
     def __init__(
         self,
@@ -69,6 +59,7 @@ class AutomaticLayout(AbstractBase):
 
     @classmethod
     def hydrate(cls, automatic_layout_io: AutomaticLayoutIO) -> "AutomaticLayout":
+        """Hydrate a new AutomaticLayout instance from its IO."""
         return cls(
             rank_direction=automatic_layout_io.rank_direction,
             rank_separation=automatic_layout_io.rank_separation,

@@ -67,7 +67,7 @@ class ContainerView(StaticView):
         container_view_io: ContainerViewIO,
         software_system: SoftwareSystem,
     ) -> "ContainerView":
-        """"""
+        """Hydrate a new ContainerView instance from its IO."""
         return cls(
             **cls.hydrate_arguments(container_view_io),
             software_system=software_system,
@@ -99,10 +99,12 @@ class ContainerView(StaticView):
         self.add_all_containers()
 
     def add_all_containers(self) -> None:
+        """Add all containers within the software system in scope to this view."""
         for container in self.software_system.containers:
             self.add(container)
 
     def add_nearest_neighbours(self, element: Element, _=None) -> None:
+        """Add all people, software systems and containers that neighbor an element."""
         super().add_nearest_neighbours(element, SoftwareSystem)
         super().add_nearest_neighbours(element, Person)
         super().add_nearest_neighbours(element, Container)

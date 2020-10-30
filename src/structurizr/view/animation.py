@@ -68,6 +68,7 @@ class Animation(AbstractBase):
 
     @classmethod
     def hydrate(cls, animation_io: AnimationIO) -> "Animation":
+        """Hydrate a new Animation instance from its IO."""
         return cls(
             order=animation_io.order,
             elements=animation_io.elements,
