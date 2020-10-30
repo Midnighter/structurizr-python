@@ -25,12 +25,7 @@ __all__ = ("DeploymentNode", "DeploymentNodeIO")
 
 
 class DeploymentNodeIO(DeploymentElementIO):
-    """
-    Represent a deployment node.
-
-    Attributes:
-
-    """
+    """Represent a deployment node."""
 
     parent: "DeploymentNodeIO"
     technology: str = ""
@@ -38,12 +33,7 @@ class DeploymentNodeIO(DeploymentElementIO):
 
 
 class DeploymentNode(DeploymentElement):
-    """
-    Represent a deployment node.
-
-    Attributes:
-
-    """
+    """Represent a deployment node."""
 
     def __init__(
         self,
@@ -65,7 +55,7 @@ class DeploymentNode(DeploymentElement):
 
     @classmethod
     def hydrate(cls, deployment_node_io: DeploymentNodeIO) -> "DeploymentNode":
-        """"""
+        """Hydrate a new DeploymentNode instance from its IO."""
         # TODO (midnighter): Initialization requires `parent`.
         return cls(
             # parent=deployment_node_io.parent,

@@ -71,4 +71,5 @@ class Perspective(AbstractBase):
 
     @classmethod
     def hydrate(cls, perspective_io: PerspectiveIO) -> "Perspective":
+        """Hydrate a new Perspective instance from its IO."""
         return cls(name=perspective_io.name, description=perspective_io.description)

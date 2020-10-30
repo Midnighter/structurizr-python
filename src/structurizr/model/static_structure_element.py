@@ -57,6 +57,7 @@ class StaticStructureElement(Element, ABC):
         technology: str = "",
         **kwargs,
     ) -> Optional["Relationship"]:
+        """Add a unidirectional "uses" style relationship to another element."""
         return self.get_model().add_relationship(
             source=self,
             destination=destination,
@@ -72,6 +73,7 @@ class StaticStructureElement(Element, ABC):
         technology: str = "",
         **kwargs,
     ) -> Optional["Relationship"]:
+        """Add a unidirectional relationship to another element."""
         return self.uses(
             destination=destination,
             description=description,
