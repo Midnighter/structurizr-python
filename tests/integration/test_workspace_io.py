@@ -32,6 +32,7 @@ VALIDATIONS = Path(__file__).parent / "data" / "workspace_validation"
 
 
 def pytest_generate_tests(metafunc) -> None:
+    """Generate test parameters for invalid workspace tests."""
     if "invalid_workspace" in metafunc.fixturenames:
         files = sorted(Path("data", "workspace_validation").glob("*.json"))
         ids = [p.name for p in files]
@@ -46,6 +47,12 @@ def pytest_generate_tests(metafunc) -> None:
 
 
 def test_invalid_workspace(invalid_workspace):
+    """
+    Test that invalid workspaces raise ValidationError.
+
+    Note that the parameterisation of this test, including that it raises a vaalidation
+    error is controlled through `pytest_generate_tests`.
+    """
     WorkspaceIO.parse_file(invalid_workspace)
 
 
