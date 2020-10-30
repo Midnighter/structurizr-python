@@ -24,6 +24,7 @@ from structurizr.api.structurizr_client_settings import StructurizrClientSetting
 
 @pytest.fixture(scope="module")
 def archive_location(tmp_path_factory):
+    """Return a temporary path to use in tests."""
     location = tmp_path_factory.mktemp("structurizr")
     return str(location)
 

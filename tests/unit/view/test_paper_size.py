@@ -75,10 +75,12 @@ Dimensions = namedtuple("Dimensions", "value, size, orientation, width, height")
     ],
 )
 def expected(request):
+    """Return expected dimensions to use in test cases."""
     return Dimensions(*request.param)
 
 
 def test_from_value(expected: Dimensions):
+    """Test getting a PaperSize by value for each size."""
     paper = PaperSize(expected.value)
     assert paper.name == expected.value
     assert paper.value == expected.value
@@ -89,6 +91,7 @@ def test_from_value(expected: Dimensions):
 
 
 def test_from_getitem(expected: Dimensions):
+    """Test getting a PaperSize with getitem for each size."""
     paper = PaperSize[expected.value]
     assert paper.name == expected.value
     assert paper.value == expected.value
@@ -99,6 +102,7 @@ def test_from_getitem(expected: Dimensions):
 
 
 def test_from_attribute(expected: Dimensions):
+    """Test getting a PaperSize as attribute of enum for each size."""
     paper = getattr(PaperSize, expected.value)
     assert paper.name == expected.value
     assert paper.value == expected.value
