@@ -72,13 +72,13 @@ def test_replication_adds_relationships_in_the_same_environment(empty_model: Mod
     live_deployment_node.add_container(container3)
     live_deployment_node.add_software_system(system4)
 
+    # Note that because the tags are cleared the interaction style won't be replicated
     assert len(container_instance1.relationships) == 1
     relationship = next(iter(container_instance1.relationships))
     assert relationship.source is container_instance1
     assert relationship.destination is container_instance2
     assert relationship.description == "Uses 1"
     assert relationship.technology == "Technology 1"
-    assert relationship.interaction_style == InteractionStyle.Synchronous
     assert relationship.tags == set()
 
     assert len(container_instance2.relationships) == 1
@@ -87,7 +87,6 @@ def test_replication_adds_relationships_in_the_same_environment(empty_model: Mod
     assert relationship.destination is container_instance3
     assert relationship.description == "Uses 2"
     assert relationship.technology == "Technology 2"
-    assert relationship.interaction_style == InteractionStyle.Asynchronous
     assert relationship.tags == set()
 
     assert len(container_instance3.relationships) == 1
@@ -96,7 +95,6 @@ def test_replication_adds_relationships_in_the_same_environment(empty_model: Mod
     assert relationship.destination is system_instance
     assert relationship.description == "Uses"
     assert relationship.technology == ""
-    assert relationship.interaction_style == InteractionStyle.Synchronous
     assert relationship.tags == set()
 
 

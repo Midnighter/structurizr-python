@@ -15,10 +15,11 @@
 
 """Ensure the expected behaviour of relationships."""
 
-
 import pytest
 
+from structurizr.model.interaction_style import InteractionStyle
 from structurizr.model.relationship import Relationship
+from structurizr.model.tags import Tags
 
 
 @pytest.mark.parametrize(
@@ -30,3 +31,16 @@ def test_relationship_init(attributes):
     relationship = Relationship(**attributes)
     for attr, expected in attributes.items():
         assert getattr(relationship, attr) == expected
+
+
+def test_relationship_interaction_style():
+    """Test that interaction style is consistent with tags."""
+    relationship = Relationship(interaction_style=InteractionStyle.Synchronous)
+    assert Tags.SYNCHRONOUS in relationship.tags
+    assert Tags.ASYNCHRONOUS not in relationship.tags
+    assert relationship.interaction_style == InteractionStyle.Synchronous
+
+    relationship = Relationship(interaction_style=InteractionStyle.Asynchronous)
+    assert Tags.SYNCHRONOUS not in relationship.tags
+    assert Tags.ASYNCHRONOUS in relationship.tags
+    assert relationship.interaction_style == InteractionStyle.Asynchronous
