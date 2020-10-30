@@ -37,6 +37,7 @@ if not (
 
 @pytest.fixture(scope="module")
 def archive_location(tmp_path_factory):
+    """Provide a path for archive files for test cases."""
     location = tmp_path_factory.mktemp("structurizr")
     return str(location)
 
@@ -53,6 +54,7 @@ def settings(archive_location):
 
 
 def test_empty_workspace_without_encryption(settings):
+    """Test basic upload and download of an empty workspace."""
     workspace = Workspace(
         id=settings.workspace_id,
         name="e2e-tests - without encryption",
@@ -66,6 +68,7 @@ def test_empty_workspace_without_encryption(settings):
 
 
 def test_interact_with_workspace_without_encryption(settings):
+    """Test basic upload and download of a populated workspace."""
     # Set up a toy workspace.
     workspace = Workspace(
         id=settings.workspace_id,
@@ -100,6 +103,7 @@ def test_interact_with_workspace_without_encryption(settings):
 
 
 def test_lock_workspace(settings):
+    """Check locking a workspace."""
     client = StructurizrClient(settings=settings)
     client.unlock_workspace()
     assert client.lock_workspace()
@@ -107,6 +111,7 @@ def test_lock_workspace(settings):
 
 
 def test_unlock_workspace(settings):
+    """Check unlocking a workspace."""
     client = StructurizrClient(settings=settings)
     client.lock_workspace()
     assert client.unlock_workspace()
