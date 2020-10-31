@@ -63,6 +63,7 @@ class StaticView(View, ABC):
 
     @classmethod
     def hydrate_arguments(cls, static_view_io: StaticViewIO) -> Dict:
+        """Hydrate a StaticViewIO into the constructor arguments for StaticView."""
         return {
             **super().hydrate_arguments(static_view_io),
             "animations": map(Animation.hydrate, static_view_io.animations),

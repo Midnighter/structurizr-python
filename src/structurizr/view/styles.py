@@ -30,24 +30,14 @@ __all__ = ("Styles", "StylesIO")
 
 
 class StylesIO(BaseModel):
-    """
-    Represent a collection of styles.
-
-    Attributes:
-
-    """
+    """Represent a collection of styles."""
 
     elements: List[ElementStyleIO] = Field(default=())
     relationships: List[RelationshipStyleIO] = Field(default=())
 
 
 class Styles(AbstractBase):
-    """
-    Represent a collection of styles.
-
-    Attributes:
-
-    """
+    """Represent a collection of styles."""
 
     def __init__(
         self,
@@ -62,7 +52,7 @@ class Styles(AbstractBase):
         self.relationships = list(relationships)
 
     def add(self, style: Union[ElementStyle, RelationshipStyle]) -> None:
-        """"""
+        """Add a new ElementStyle or RelationshipStyle."""
         if isinstance(style, ElementStyle):
             self.elements.append(style)
         elif isinstance(style, RelationshipStyle):
@@ -73,24 +63,32 @@ class Styles(AbstractBase):
             )
 
     def add_element_style(self, **kwargs) -> None:
-        """"""
+        """
+        Add a new element style.
+
+        See `ElementStyle` for arguments.
+        """
         self.elements.append(ElementStyle(**kwargs))
 
     def clear_element_styles(self) -> None:
-        """"""
+        """Remove all element styles."""
         self.elements.clear()
 
     def add_relationship_style(self, **kwargs) -> None:
-        """"""
+        """
+        Add a new relationship style.
+
+        See `RelationshipStyle` for arguments.
+        """
         self.relationships.append(RelationshipStyle(**kwargs))
 
     def clear_relationships_styles(self) -> None:
-        """"""
+        """Remove all relationship styles."""
         self.relationships.clear()
 
     @classmethod
     def hydrate(cls, styles_io: StylesIO) -> "Styles":
-        """"""
+        """Hydrate a new Styles instance from its IO."""
         return cls(
             elements=map(ElementStyle.hydrate, styles_io.elements),
             relationships=map(RelationshipStyle.hydrate, styles_io.relationships),

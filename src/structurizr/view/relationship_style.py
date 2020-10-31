@@ -30,12 +30,7 @@ __all__ = ("RelationshipStyle", "RelationshipStyleIO")
 
 
 class RelationshipStyleIO(BaseModel):
-    """
-    Represent a relationship's style.
-
-    Attributes:
-
-    """
+    """Represent a relationship's style."""
 
     tag: str
     thickness: Optional[int]
@@ -49,12 +44,7 @@ class RelationshipStyleIO(BaseModel):
 
 
 class RelationshipStyle(AbstractBase):
-    """
-    Define an relationship's style.
-
-    Attributes:
-
-    """
+    """Define an relationship's style."""
 
     START_OF_LINE = 0
     END_OF_LINE = 100
@@ -87,7 +77,7 @@ class RelationshipStyle(AbstractBase):
 
     @classmethod
     def hydrate(cls, relationship_style_io: RelationshipStyleIO) -> "RelationshipStyle":
-        """"""
+        """Hydrate a new RelationshipStyle instance from its IO."""
         return cls(
             tag=relationship_style_io.tag,
             thickness=relationship_style_io.thickness,
