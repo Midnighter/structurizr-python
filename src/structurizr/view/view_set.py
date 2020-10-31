@@ -159,7 +159,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
                 `SystemLandscapeView` instance or
             **kwargs: Provide keyword arguments for instantiating a
                 `SystemLandscapeView` (recommended).
-        """        # TODO:
+        """
+        # TODO:
         # assertThatTheViewKeyIsSpecifiedAndUnique(key);
         if system_landscape_view is None:
             system_landscape_view = SystemLandscapeView(
