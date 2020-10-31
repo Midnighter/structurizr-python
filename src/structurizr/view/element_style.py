@@ -31,12 +31,7 @@ __all__ = ("ElementStyle", "ElementStyleIO")
 
 
 class ElementStyleIO(BaseModel):
-    """
-    Represent an element's style.
-
-    Attributes:
-
-    """
+    """Represent an element's style."""
 
     tag: str
     width: Optional[int]
@@ -54,12 +49,7 @@ class ElementStyleIO(BaseModel):
 
 
 class ElementStyle(AbstractBase):
-    """
-    Represent an element's style.
-
-    Attributes:
-
-    """
+    """Represent an element's style."""
 
     DEFAULT_WIDTH = 450
     DEFAULT_HEIGHT = 300
@@ -99,11 +89,12 @@ class ElementStyle(AbstractBase):
         self.description = description
 
     def __repr__(self) -> str:
+        """Return repr(self)."""
         return f"{type(self).__name__}(tag={self.tag})"
 
     @classmethod
     def hydrate(cls, element_style_io: ElementStyleIO) -> "ElementStyle":
-        """"""
+        """Hydrate a new ElementStyle instance from its IO."""
         return cls(
             tag=element_style_io.tag,
             width=element_style_io.width,
