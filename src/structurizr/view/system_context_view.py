@@ -63,6 +63,7 @@ class SystemContextView(StaticView):
         self.add_all_people()
 
     def add_nearest_neighbours(self, element: Element):
+        """Add all softare systems and people directly connected to the element."""
         super().add_nearest_neighbours(element, SoftwareSystem)
         super().add_nearest_neighbours(element, Person)
 
@@ -72,7 +73,7 @@ class SystemContextView(StaticView):
         system_context_view_io: SystemContextViewIO,
         software_system: SoftwareSystem,
     ) -> "SystemContextView":
-        """"""
+        """Hydrate a new SystemContextView instance from its IO."""
         return cls(
             **cls.hydrate_arguments(system_context_view_io),
             software_system=software_system,

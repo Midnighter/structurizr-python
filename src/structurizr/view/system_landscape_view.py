@@ -74,7 +74,7 @@ class SystemLandscapeView(ModelRefMixin, StaticView):
         system_landscape_view_io: SystemLandscapeViewIO,
         model: Model,
     ) -> "SystemLandscapeView":
-        """"""
+        """Hydrate a new SystemLandscapeView instance from its IO."""
         return cls(
             **cls.hydrate_arguments(system_landscape_view_io),
             model=model,

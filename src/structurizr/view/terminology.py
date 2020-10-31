@@ -28,12 +28,7 @@ __all__ = ("Terminology", "TerminologyIO")
 
 
 class TerminologyIO(BaseModel):
-    """
-    Represent an instance of an element in a view.
-
-    Attributes:
-
-    """
+    """Represent a way for the terminology on diagrams, etc. to be modified."""
 
     enterprise: Optional[str]
     person: Optional[str]
@@ -46,12 +41,7 @@ class TerminologyIO(BaseModel):
 
 
 class Terminology(AbstractBase):
-    """
-    Provide a way for the terminology on diagrams, etc. to be modified.
-
-    Attributes:
-
-    """
+    """Provide a way for the terminology on diagrams, etc. to be modified."""
 
     def __init__(
         self,

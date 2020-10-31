@@ -34,12 +34,7 @@ END_OF_LINE = 100
 
 
 class RelationshipViewIO(BaseModel):
-    """
-    Represent an instance of a relationship in a view.
-
-    Attributes:
-
-    """
+    """Represent an instance of a relationship in a view."""
 
     id: Optional[str]
     order: Optional[str]
@@ -51,12 +46,7 @@ class RelationshipViewIO(BaseModel):
 
 
 class RelationshipView(AbstractBase):
-    """
-    Represent an instance of a relationship in a view.
-
-    Attributes:
-
-    """
+    """Represent an instance of a relationship in a view."""
 
     def __init__(
         self,
@@ -81,6 +71,7 @@ class RelationshipView(AbstractBase):
         self.position = position
 
     def __repr__(self) -> str:
+        """Return repr(self)."""
         return (
             f"{type(self).__name__}("
             f"id={self.id}, "
@@ -91,7 +82,7 @@ class RelationshipView(AbstractBase):
 
     @classmethod
     def hydrate(cls, relationship_view_io: RelationshipViewIO) -> "RelationshipView":
-        """"""
+        """Hydrate a new RelationshipView instance from its IO."""
         return cls(
             id=relationship_view_io.id,
             description=relationship_view_io.description,
@@ -102,6 +93,7 @@ class RelationshipView(AbstractBase):
         )
 
     def copy_layout_information_from(self, source: "RelationshipView") -> None:
+        """Copy the layout information from another RelationshipView."""
         self.vertices = source.vertices
         self.routing = source.routing
         self.position = source.position
