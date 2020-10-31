@@ -27,12 +27,7 @@ __all__ = ("ElementView", "ElementViewIO")
 
 
 class ElementViewIO(BaseModel):
-    """
-    Represent an instance of an element in a view.
-
-    Attributes:
-
-    """
+    """Represent an instance of an element in a view."""
 
     id: Optional[str]
     x: Optional[int]
@@ -40,12 +35,7 @@ class ElementViewIO(BaseModel):
 
 
 class ElementView(AbstractBase):
-    """
-    Represent an instance of an element in a view.
-
-    Attributes:
-
-    """
+    """Represent an instance of an element in a view."""
 
     def __init__(
         self,
@@ -64,13 +54,15 @@ class ElementView(AbstractBase):
         self.y = y
 
     def __repr__(self) -> str:
+        """Return repr(self)."""
         return f"{type(self).__name__}(id={self.id})"
 
     @classmethod
     def hydrate(cls, element_view_io: ElementViewIO) -> "ElementView":
-        """"""
+        """Hydrate a new ElementView instance from its IO."""
         return cls(id=element_view_io.id, x=element_view_io.x, y=element_view_io.y)
 
     def copy_layout_information_from(self, source: "ElementView") -> None:
+        """Copy the layout information from another view."""
         self.x = source.x
         self.y = source.y

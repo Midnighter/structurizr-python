@@ -28,24 +28,14 @@ __all__ = ("Font", "FontIO")
 
 
 class FontIO(BaseModel):
-    """
-    Represent an instance of a font.
-
-    Attributes:
-
-    """
+    """Represent an instance of a font."""
 
     name: str
     url: Optional[HttpUrl] = None
 
 
 class Font(AbstractBase):
-    """
-    Represent a font.
-
-    Attributes:
-
-    """
+    """Represent a font."""
 
     def __init__(self, *, name: str, url: Optional[str] = None, **kwargs) -> None:
         """Initialize a font."""
