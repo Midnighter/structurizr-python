@@ -24,7 +24,7 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ViewSetRefMixin
-from ..model import Element, SoftwareSystem
+from ..model import Element, Model, SoftwareSystem
 from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
 from .element_view import ElementView, ElementViewIO
 from .paper_size import PaperSize
@@ -39,9 +39,6 @@ class ViewIO(BaseModel, ABC):
     Define an abstract base class for all views.
 
     Views include static views, dynamic views and deployment views.
-
-    Attributes:
-
     """
 
     key: str
@@ -102,10 +99,12 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         self.layout_merge_strategy = layout_merge_strategy
 
     def __repr__(self) -> str:
+        """Return repr(self)."""
         return f"{type(self).__name__}(key={self.key})"
 
     @classmethod
     def hydrate_arguments(cls, view_io: ViewIO) -> Dict:
+        """Hydrate a ViewIO into the constructor arguments for View."""
         return {
             # TODO: should we add this here? probably not: "software_system"
             "key": view_io.key,
@@ -122,7 +121,8 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         }
 
     @property
-    def model(self):
+    def model(self) -> Model:
+        """Return the `Model` for this view."""
         return self.software_system.get_model()
 
     def _add_element(self, element: Element, add_relationships: bool) -> None:
@@ -188,6 +188,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 self.relationship_views.add(RelationshipView(relationship=relationship))
 
     def copy_layout_information_from(self, source: "View") -> None:
+        """Copy the layout information from another view, including child views."""
         if not self.paper_size:
             self.paper_size = source.paper_size
 
@@ -210,6 +211,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
     def find_element_view(
         self, source_element_view: ElementView
     ) -> Optional[ElementView]:
+        """Find a child element view corresponding to the given source view."""
         for element_view in self.element_views:
             if element_view.element.id == source_element_view.element.id:
                 return element_view
@@ -218,6 +220,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
     def find_relationship_view(
         self, source_relationship_view: RelationshipView
     ) -> Optional[RelationshipView]:
+        """Find a child element view corresponding to the given relationship view."""
         for relationship_view in self.relationship_views:
             if (
                 relationship_view.relationship.id

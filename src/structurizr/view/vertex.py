@@ -26,24 +26,14 @@ __all__ = ("Vertex", "VertexIO")
 
 
 class VertexIO(BaseModel):
-    """
-    Define a wrapper for a vertex.
-
-    Attributes:
-
-    """
+    """Define a wrapper for a vertex."""
 
     x: Optional[int] = Field(default=None)
     y: Optional[int] = Field(default=None)
 
 
 class Vertex(AbstractBase):
-    """
-    Define a wrapper for a vertex.
-
-    Attributes:
-
-    """
+    """Define a wrapper for a vertex."""
 
     def __init__(self, *, x: int, y: int, **kwargs) -> None:
         """Initialize an automatic layout."""
@@ -53,4 +43,5 @@ class Vertex(AbstractBase):
 
     @classmethod
     def hydrate(cls, vertex_io: VertexIO) -> "Vertex":
+        """Hydrate a new Vertex instance from its IO."""
         return cls(x=vertex_io.x, y=vertex_io.y)
