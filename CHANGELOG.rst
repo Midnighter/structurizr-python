@@ -5,6 +5,7 @@ History
 Next Release
 ------------
 * Feat: Add implied relationships to entities (#42)
+* Feat: Add ``dump()``, ``dumps()`` and ``loads()`` methods to ``Workspace`` (#48)
 
 0.1.1 (2020-10-19)
 ------------------
