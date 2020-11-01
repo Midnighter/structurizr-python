@@ -195,17 +195,53 @@ class Workspace(AbstractBase):
 
     @classmethod
     def load(cls, filename: Union[str, Path]) -> "Workspace":
-        """Load a workspace from a JSON file (which may optionally be zipped)."""
+        """Load a workspace from a file (which may optionally be gzipped)."""
         filename = Path(filename)
         try:
             with gzip.open(filename, "rt") as handle:
-                ws_io = WorkspaceIO.parse_raw(handle.read())
+                return cls.loads(handle.read())
         except FileNotFoundError as error:
             raise error
         except OSError:
             with filename.open() as handle:
-                ws_io = WorkspaceIO.parse_raw(handle.read())
+                return cls.loads(handle.read())
+
+    @classmethod
+    def loads(cls, json_string: str) -> "Workspace":
+        """Load a workspace from a JSON string."""
+        ws_io = WorkspaceIO.parse_raw(json_string)
         return cls.hydrate(ws_io)
+
+    def dump(
+        self,
+        filename: Union[str, Path],
+        *,
+        zip: bool = False,
+        indent: Optional[int] = None,
+        **kwargs
+    ):
+        """
+        Save a workspace to a file, optionally zipped.
+
+        Arguments:
+            filename (str/Path): filename to write to.
+            zip (bool): if true then contents will be zipped with GZip.
+            indent (int): if specified then pretty-print the JSON with given indent.
+            kwargs: other arguments to pass through to `json.dumps()`.
+        """
+        filename = Path(filename)
+        with gzip.open(filename, "wt") if zip else open(filename, "wt") as handle:
+            handle.write(self.dumps(indent=indent, **kwargs))
+
+    def dumps(self, indent: Optional[int] = None, **kwargs):
+        """
+        Export a workspace as a JSON string.
+
+        Args:
+            indent (int): if specified then pretty-print the JSON with given indent.
+            kwargs: other arguments to pass through to `json.dumps()`.
+        """
+        return WorkspaceIO.from_orm(self).json(indent=indent, **kwargs)
 
     @classmethod
     def hydrate(cls, workspace_io: WorkspaceIO) -> "Workspace":

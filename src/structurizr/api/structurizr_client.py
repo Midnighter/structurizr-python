@@ -142,7 +142,7 @@ class StructurizrClient:
             )
         logger.debug(response.text)
         self._archive_workspace(response.text)
-        return Workspace.hydrate(WorkspaceIO.parse_raw(response.text))
+        return Workspace.loads(response.text)
 
     def put_workspace(self, workspace: Workspace) -> None:
         """
