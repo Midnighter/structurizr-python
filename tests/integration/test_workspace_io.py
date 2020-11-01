@@ -85,3 +85,55 @@ def test_serialize_workspace(example, filename, monkeypatch):
     # TODO (Midnighter): This should be equivalent to the above. Why is it not?
     #  Is `.json` not using the same default arguments as `.dict`?
     # assert actual.dict() == expected.dict()
+
+
+def test_save_and_load_workspace_to_string(monkeypatch):
+    """Test saving as a JSON string and reloading."""
+    monkeypatch.syspath_prepend(EXAMPLES)
+    example = import_module("getting_started")
+    workspace = example.main()
+
+    json_string: str = workspace.dumps(indent=2)
+    workspace2 = Workspace.loads(json_string)
+
+    expected = WorkspaceIO.from_orm(workspace)
+    actual = WorkspaceIO.from_orm(workspace2)
+    assert json.loads(actual.json()) == json.loads(expected.json())
+
+
+def test_save_and_load_workspace_to_file(monkeypatch, tmp_path: Path):
+    """Test saving as a JSON file and reloading."""
+    monkeypatch.syspath_prepend(EXAMPLES)
+    example = import_module("getting_started")
+    workspace = example.main()
+
+    filepath = tmp_path / "test_workspace.json"
+
+    workspace.dump(filepath, indent=2)
+    workspace2 = Workspace.load(filepath)
+
+    expected = WorkspaceIO.from_orm(workspace)
+    actual = WorkspaceIO.from_orm(workspace2)
+    assert json.loads(actual.json()) == json.loads(expected.json())
+
+
+def test_save_and_load_workspace_to_zipped_file(monkeypatch, tmp_path: Path):
+    """Test saving as a zipped JSON file and reloading."""
+    monkeypatch.syspath_prepend(EXAMPLES)
+    example = import_module("getting_started")
+    workspace = example.main()
+
+    filepath = tmp_path / "test_workspace.json.gz"
+
+    workspace.dump(filepath, zip=True)
+    workspace2 = Workspace.load(filepath)
+
+    expected = WorkspaceIO.from_orm(workspace)
+    actual = WorkspaceIO.from_orm(workspace2)
+    assert json.loads(actual.json()) == json.loads(expected.json())
+
+
+def test_load_unknown_file_raises_file_not_found():
+    """Test that attempting to load a non-existent file raises FileNotFound."""
+    with pytest.raises(FileNotFoundError):
+        Workspace.load("foobar.json")
