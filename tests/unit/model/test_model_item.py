@@ -52,14 +52,15 @@ def test_handling_of_bogus_init_params():
     See https://github.com/Midnighter/structurizr-python/issues/50.
     """
     with pytest.raises(
-        TypeError, match=r"ConcreteModelItem.__init__\(\) got an unexpected "
-                         r"keyword argument 'foo'"
+        TypeError,
+        match=r"ConcreteModelItem.__init__\(\) got an unexpected "
+        r"keyword argument 'foo'",
     ):
         ConcreteModelItem(foo=7)
     with pytest.raises(
         TypeError,
         match=r"ConcreteModelItem.__init__\(\) got unexpected keyword "
-              r"arguments 'foo', 'bar'",
+        r"arguments 'foo', 'bar'",
     ):
         ConcreteModelItem(foo=7, bar=17)
 
