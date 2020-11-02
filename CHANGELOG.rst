@@ -5,6 +5,7 @@ History
 Next Release
 ------------
 * Feat: Add implied relationships to entities (#42)
+* Fix: Better error on bad ModelItem constructor argument (#50)
 
 0.1.1 (2020-10-19)
 ------------------
