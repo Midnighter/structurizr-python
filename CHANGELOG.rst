@@ -4,6 +4,7 @@ History
 
 Next Release
 ------------
+* Fix: Better error on bad ModelItem constructor argument (#50)
 
 0.2.1 (2020-11-27)
 ------------------
