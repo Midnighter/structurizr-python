@@ -38,9 +38,9 @@ jobs:
     - name: Test black
       run: tox -e black
       if: matrix.python-version == '3.6'
-#    - name: Test flake8
-#      run: tox -e flake8
-#      if: matrix.python-version == '3.6'
+    - name: Test flake8
+      run: tox -e flake8
+      if: matrix.python-version == '3.6'
 #    - name: Test docs
 #      run: tox -e docs
 #      if: matrix.python-version == '3.6'
