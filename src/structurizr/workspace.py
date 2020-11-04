@@ -196,7 +196,7 @@ class Workspace(AbstractBase):
 
     @classmethod
     def load(cls, filename: Union[str, Path]) -> "Workspace":
-        """Load a workspace from a file (which may optionally be gzipped)."""
+        """Load a workspace from a JSON file (which may optionally be gzipped)."""
         filename = Path(filename)
         try:
             with gzip.open(filename, "rt") as handle:
@@ -217,20 +217,25 @@ class Workspace(AbstractBase):
         self,
         filename: Union[str, Path],
         *,
-        zip: bool = False,
+        zip: Optional[bool] = None,
         indent: Optional[int] = None,
         **kwargs
     ):
         """
-        Save a workspace to a file, optionally zipped.
+        Save a workspace as JSON to a file, optionally gzipped.
+
+        By default, filenames ending with `.gz` will be zipped and anything else won't,
+        however this can be overridden by explicitly passing the `zip` argument.
 
         Arguments:
-            filename (str/Path): filename to write to.
-            zip (bool): if true then contents will be zipped with GZip.
-            indent (int): if specified then pretty-print the JSON with given indent.
+            filename: filename to write to.
+            zip: if specified then controls whether the contents are gzipped.
+            indent: if specified then pretty-print the JSON with given indent.
             kwargs: other arguments to pass through to `json.dumps()`.
         """
         filename = Path(filename)
+        if zip is None:
+            zip = str(filename).endswith(".gz")
         with gzip.open(filename, "wt") if zip else filename.open("wt") as handle:
             handle.write(self.dumps(indent=indent, **kwargs))
 
