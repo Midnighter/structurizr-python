@@ -136,12 +136,28 @@ def test_save_and_load_workspace_to_gzipped_file(monkeypatch, tmp_path: Path):
 
     filepath = tmp_path / "test_workspace.json.gz"
 
-    workspace.dump(filepath, zip=True)
+    workspace.dump(filepath)
     workspace2 = Workspace.load(filepath)
 
     expected = WorkspaceIO.from_orm(workspace)
     actual = WorkspaceIO.from_orm(workspace2)
     assert json.loads(actual.json()) == json.loads(expected.json())
+
+
+def test_workspace_overridding_zip_flag(monkeypatch, tmp_path: Path):
+    """Test that default zipping can be overridden explicitly."""
+    monkeypatch.syspath_prepend(EXAMPLES)
+    example = import_module("getting_started")
+    workspace = example.main()
+
+    filepath = tmp_path / "test_workspace.json.gz"
+
+    workspace.dump(filepath, zip=False)
+    contents = filepath.read_text()
+    assert "My software system" in contents
+
+    # Make sure can be loaded even though its not zipped and ends with .gz
+    Workspace.load(filepath)
 
 
 def test_load_unknown_file_raises_file_not_found():
