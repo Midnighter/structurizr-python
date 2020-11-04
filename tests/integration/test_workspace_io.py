@@ -104,7 +104,7 @@ def test_save_and_load_workspace_to_string(monkeypatch):
 def test_load_workspace_from_bytes(monkeypatch):
     """Test loading from bytes rather than string."""
     path = DEFINITIONS / "GettingStarted.json"
-    with open(path, mode='rb') as file:
+    with open(path, mode="rb") as file:
         binary_content = file.read()
 
     workspace = Workspace.loads(binary_content)

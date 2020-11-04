@@ -231,7 +231,7 @@ class Workspace(AbstractBase):
             kwargs: other arguments to pass through to `json.dumps()`.
         """
         filename = Path(filename)
-        with gzip.open(filename, "wt") if zip else open(filename, "wt") as handle:
+        with gzip.open(filename, "wt") if zip else filename.open("wt") as handle:
             handle.write(self.dumps(indent=indent, **kwargs))
 
     def dumps(self, indent: Optional[int] = None, **kwargs):
