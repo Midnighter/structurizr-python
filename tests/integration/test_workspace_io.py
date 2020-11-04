@@ -101,6 +101,17 @@ def test_save_and_load_workspace_to_string(monkeypatch):
     assert json.loads(actual.json()) == json.loads(expected.json())
 
 
+def test_load_workspace_from_bytes(monkeypatch):
+    """Test loading from bytes rather than string."""
+    path = DEFINITIONS / "GettingStarted.json"
+    with open(path, mode='rb') as file:
+        binary_content = file.read()
+
+    workspace = Workspace.loads(binary_content)
+
+    assert workspace.model.software_systems != set()
+
+
 def test_save_and_load_workspace_to_file(monkeypatch, tmp_path: Path):
     """Test saving as a JSON file and reloading."""
     monkeypatch.syspath_prepend(EXAMPLES)
@@ -117,7 +128,7 @@ def test_save_and_load_workspace_to_file(monkeypatch, tmp_path: Path):
     assert json.loads(actual.json()) == json.loads(expected.json())
 
 
-def test_save_and_load_workspace_to_zipped_file(monkeypatch, tmp_path: Path):
+def test_save_and_load_workspace_to_gzipped_file(monkeypatch, tmp_path: Path):
     """Test saving as a zipped JSON file and reloading."""
     monkeypatch.syspath_prepend(EXAMPLES)
     example = import_module("getting_started")
