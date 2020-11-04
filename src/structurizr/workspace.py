@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from pydantic import Field
+from pydantic.types import StrBytes
 
 from .abstract_base import AbstractBase
 from .base_model import BaseModel
@@ -207,9 +208,9 @@ class Workspace(AbstractBase):
                 return cls.loads(handle.read())
 
     @classmethod
-    def loads(cls, json_string: str) -> "Workspace":
-        """Load a workspace from a JSON string."""
-        ws_io = WorkspaceIO.parse_raw(json_string)
+    def loads(cls, json: StrBytes) -> "Workspace":
+        """Load a workspace from a JSON string or bytes."""
+        ws_io = WorkspaceIO.parse_raw(json)
         return cls.hydrate(ws_io)
 
     def dump(
