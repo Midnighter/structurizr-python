@@ -18,6 +18,7 @@ import pytest
 
 from structurizr.model import Container, SoftwareSystem
 from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
+from structurizr.model.infrastructure_node import InfrastructureNode
 
 
 class MockModel:
@@ -153,6 +154,7 @@ def test_deployment_node_add_with_iadd(model_with_node: MockModel):
     container = Container(name="container")
     system += container
     child_node = DeploymentNode(name="child")
+    infra_node = InfrastructureNode(name="infra")
 
     node += child_node
     assert child_node in node.children
@@ -162,6 +164,9 @@ def test_deployment_node_add_with_iadd(model_with_node: MockModel):
 
     child_node += container
     assert child_node.container_instances[0].container is container
+
+    child_node += infra_node
+    assert infra_node in child_node.infrastructure_nodes
 
 
 def test_deployment_node_serialising_container(model_with_node):
