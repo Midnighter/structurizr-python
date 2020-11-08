@@ -226,22 +226,29 @@ class DeploymentNode(DeploymentElement):
     def add_infrastructure_node(self, name: str, **kwargs) -> InfrastructureNode:
         """Create a new infrastructure node under this node."""
         infra_node = InfrastructureNode(name=name, parent=self, **kwargs)
-        self._infrastructure_nodes.add(infra_node)
-        model = self.model
-        model += infra_node
+        self._add_infrastructure_node(infra_node)
         return infra_node
 
     def __iadd__(
-        self, child: Union["DeploymentNode", Container, SoftwareSystem]
+        self,
+        child: Union[Container, "DeploymentNode", InfrastructureNode, SoftwareSystem],
     ) -> "DeploymentNode":
-        """Add a sub-node, container or system to this node."""
+        """Add a sub-node, container, system or infra node to this node."""
         if isinstance(child, SoftwareSystem):
             self.add_software_system(child)
         elif isinstance(child, Container):
             self.add_container(child)
+        elif isinstance(child, InfrastructureNode):
+            self._add_infrastructure_node(child)
         else:
             self._add_child_deployment_node(child)
         return self
+
+    def _add_infrastructure_node(self, infra_node: InfrastructureNode):
+        """Add a new infrastructure node."""
+        self._infrastructure_nodes.add(infra_node)
+        model = self.model
+        model += infra_node
 
     def _add_child_deployment_node(self, node: "DeploymentNode"):
         """Add a newly constructed child deployment node to this node."""
