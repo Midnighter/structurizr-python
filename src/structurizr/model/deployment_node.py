@@ -15,7 +15,7 @@
 
 """Provide a deployment node model."""
 
-from typing import TYPE_CHECKING, Iterable, List
+from typing import TYPE_CHECKING, Iterable, List, Union
 
 from pydantic import Field
 
@@ -148,7 +148,7 @@ class DeploymentNode(DeploymentElement):
         node = DeploymentNode(
             name=name, description=description, technology=technology, **kwargs
         )
-        self += node
+        self._add_child_deployment_node(node)
         return node
 
     def add_container(
@@ -231,8 +231,20 @@ class DeploymentNode(DeploymentElement):
         model += infra_node
         return infra_node
 
-    def __iadd__(self, node: "DeploymentNode") -> "DeploymentNode":
-        """Add a newly constructed chile deployment node to this node."""
+    def __iadd__(
+        self, child: Union["DeploymentNode", Container, SoftwareSystem]
+    ) -> "DeploymentNode":
+        """Add a sub-node, container or system to this node."""
+        if isinstance(child, SoftwareSystem):
+            self.add_software_system(child)
+        elif isinstance(child, Container):
+            self.add_container(child)
+        else:
+            self._add_child_deployment_node(child)
+        return self
+
+    def _add_child_deployment_node(self, node: "DeploymentNode"):
+        """Add a newly constructed child deployment node to this node."""
         if node in self._children:
             return self
 
@@ -252,7 +264,6 @@ class DeploymentNode(DeploymentElement):
         self._children.add(node)
         model = self.model
         model += node
-        return self
 
     @classmethod
     def hydrate(
