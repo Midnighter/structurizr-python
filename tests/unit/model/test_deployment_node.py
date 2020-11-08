@@ -16,6 +16,7 @@
 
 import pytest
 
+from structurizr.model import Container, SoftwareSystem
 from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
 
 
@@ -39,6 +40,10 @@ class MockModel:
         """Simulate getting an element by ID."""
         assert id == self.mock_element.id
         return self.mock_element
+
+    def get_elements(self):
+        """Simulate get_elements."""
+        return []
 
 
 class MockElement:
@@ -138,6 +143,25 @@ def test_deployment_node_add_container(model_with_node):
     assert instance.parent is node
     assert instance in node.container_instances
     assert instance.instance_id == 1
+
+
+def test_deployment_node_add_with_iadd(model_with_node: MockModel):
+    """Test adding things to a node using += rather than add_container."""
+    node = model_with_node.empty_node
+    system = SoftwareSystem(name="system")
+    model_with_node += system
+    container = Container(name="container")
+    system += container
+    child_node = DeploymentNode(name="child")
+
+    node += child_node
+    assert child_node in node.children
+
+    node += system
+    assert node.software_system_instances[0].software_system is system
+
+    child_node += container
+    assert child_node.container_instances[0].container is container
 
 
 def test_deployment_node_serialising_container(model_with_node):
