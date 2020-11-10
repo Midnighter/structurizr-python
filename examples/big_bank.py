@@ -130,14 +130,14 @@ def create_big_bank_workspace():
         customer_service_staff, "Asks questions to", technology="Telephone"
     )
 
-    backOfficeStaff = model.add_person(
+    back_office_staff = model.add_person(
         location=Location.Internal,
         name="Back Office Staff",
         description="Administration and support staff within the bank.",
         id="backoffice",
     )
-    backOfficeStaff.tags.add(bank_staff_tag)
-    backOfficeStaff.uses(mainframe_banking_system, "Uses")
+    back_office_staff.tags.add(bank_staff_tag)
+    back_office_staff.uses(mainframe_banking_system, "Uses")
 
     # containers
     single_page_application = internet_banking_system.add_container(
@@ -292,18 +292,18 @@ def create_big_bank_workspace():
         "Web Browser", "", "Chrome, Firefox, Safari, or Edge"
     ).add_container(single_page_application)
 
-    bigBankDataCenter = model.add_deployment_node(
+    big_bank_data_center = model.add_deployment_node(
         "Big Bank plc", "", "Big Bank plc data center", environment="Live"
     )
 
-    liveWebServer = bigBankDataCenter.add_deployment_node(
+    live_web_server = big_bank_data_center.add_deployment_node(
         "bigbank-web***",
         "A web server residing in the web server farm, accessed via F5 BIG-IP LTMs.",
         "Ubuntu 16.04 LTS",
         instances=4,
         properties={"Location": "London and Reading"},
     )
-    liveWebServer.add_deployment_node(
+    live_web_server.add_deployment_node(
         "Apache Tomcat",
         "An open source Java EE web server.",
         "Apache Tomcat 8.x",
@@ -311,14 +311,14 @@ def create_big_bank_workspace():
         properties={"Xmx": "512M", "Xms": "1024M", "Java Version": "8"},
     ).add_container(web_application)
 
-    liveApiServer = bigBankDataCenter.add_deployment_node(
+    live_api_server = big_bank_data_center.add_deployment_node(
         "bigbank-api***",
         "A web server residing in the web server farm, accessed via F5 BIG-IP LTMs.",
         "Ubuntu 16.04 LTS",
         instances=8,
         properties={"Location": "London and Reading"},
     )
-    liveApiServer.add_deployment_node(
+    live_api_server.add_deployment_node(
         "Apache Tomcat",
         "An open source Java EE web server.",
         "Apache Tomcat 8.x",
@@ -326,7 +326,7 @@ def create_big_bank_workspace():
         properties={"Xmx": "512M", "Xms": "1024M", "Java Version": "8"},
     ).add_container(api_application)
 
-    primaryDatabaseServer = bigBankDataCenter.add_deployment_node(
+    primary_database_server = big_bank_data_center.add_deployment_node(
         "bigbank-db01",
         "The primary database server.",
         "Ubuntu 16.04 LTS",
@@ -335,29 +335,29 @@ def create_big_bank_workspace():
     ).add_deployment_node(
         "Oracle - Primary", "The primary, live database server.", "Oracle 12c"
     )
-    primaryDatabaseServer.add_container(database)
+    primary_database_server.add_container(database)
 
-    bigBankdb02 = bigBankDataCenter.add_deployment_node(
+    big_bank_db_02 = big_bank_data_center.add_deployment_node(
         "bigbank-db02",
         "The secondary database server.",
         "Ubuntu 16.04 LTS",
         instances=1,
         properties={"Location": "Reading"},
     )
-    bigBankdb02.tags.add(failover_tag)
-    secondaryDatabaseServer = bigBankdb02.add_deployment_node(
+    big_bank_db_02.tags.add(failover_tag)
+    secondary_database_server = big_bank_db_02.add_deployment_node(
         "Oracle - Secondary",
         "A secondary, standby database server, used for failover purposes only.",
         "Oracle 12c",
     )
-    secondaryDatabaseServer.tags.add(failover_tag)
-    secondaryDatabase = secondaryDatabaseServer.add_container(database)
+    secondary_database_server.tags.add(failover_tag)
+    secondary_database = secondary_database_server.add_container(database)
 
-    # # model.Relationships.Where(r=>r.Destination.Equals(secondaryDatabase)).ToList().ForEach(r=>r.tags.add(failover_tag))
-    # dataReplicationRelationship = primaryDatabaseServer.uses(
-    #     secondaryDatabaseServer, "Replicates data to", ""
+    # # model.Relationships.Where(r=>r.Destination.Equals(secondary_database)).ToList().ForEach(r=>r.tags.add(failover_tag))
+    # dataReplicationRelationship = primary_database_server.uses(
+    #     secondary_database_server, "Replicates data to", ""
     # )
-    # secondaryDatabase.tags.add(failover_tag)
+    # secondary_database.tags.add(failover_tag)
 
     # views/diagrams
     system_landscape_view = views.create_system_landscape_view(
@@ -402,7 +402,7 @@ def create_big_bank_workspace():
 
     # systemLandscapeView.AddAnimation(internet_banking_system, customer, mainframe_banking_system, emailSystem)
     # systemLandscapeView.AddAnimation(atm)
-    # systemLandscapeView.AddAnimation(customerServiceStaff, backOfficeStaff)
+    # systemLandscapeView.AddAnimation(customerServiceStaff, back_office_staff)
 
     # systemContextView.AddAnimation(internet_banking_system)
     # systemContextView.AddAnimation(customer)
@@ -435,7 +435,7 @@ def create_big_bank_workspace():
 
     # DeploymentView liveDeploymentView = views.CreateDeploymentView(internet_banking_system, "LiveDeployment", "An example live deployment scenario for the Internet Banking System.")
     # liveDeploymentView.Environment = "Live"
-    # liveDeploymentView.Add(bigBankDataCenter)
+    # liveDeploymentView.Add(big_bank_data_center)
     # liveDeploymentView.Add(customerMobileDevice)
     # liveDeploymentView.Add(customerComputer)
     # liveDeploymentView.Add(dataReplicationRelationship)
