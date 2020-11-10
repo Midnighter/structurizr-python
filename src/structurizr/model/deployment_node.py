@@ -15,7 +15,7 @@
 
 """Provide a deployment node model."""
 
-from typing import TYPE_CHECKING, Iterable, List, Union
+from typing import TYPE_CHECKING, Iterable, List, Optional, Union
 
 from pydantic import Field
 
@@ -94,7 +94,7 @@ class DeploymentNode(DeploymentElement):
     def __init__(
         self,
         *,
-        parent: "DeploymentNode" = None,
+        parent: Optional["DeploymentNode"] = None,
         technology: str = "",
         instances: int = 1,
         children: Iterable["DeploymentNode"] = (),
