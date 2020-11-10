@@ -120,20 +120,26 @@ class Model(AbstractBase):
     @property
     def software_systems(self) -> Set[SoftwareSystem]:
         """Return the software systems in the model."""
-        return {e for e in self.get_elements() if isinstance(e, SoftwareSystem)}
+        return {
+            element
+            for element in self.get_elements()
+            if isinstance(element, SoftwareSystem)
+        }
 
     @property
     def people(self) -> Set[Person]:
         """Return the people in the model."""
-        return {e for e in self.get_elements() if isinstance(e, Person)}
+        return {
+            element for element in self.get_elements() if isinstance(element, Person)
+        }
 
     @property
     def deployment_nodes(self) -> Set[DeploymentNode]:
         """Return the *top level* deployment nodes in the model."""
         return {
-            e
-            for e in self.get_elements()
-            if isinstance(e, DeploymentNode) and e.parent is None
+            element
+            for element in self.get_elements()
+            if isinstance(element, DeploymentNode) and element.parent is None
         }
 
     @classmethod
