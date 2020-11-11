@@ -280,8 +280,9 @@ class DeploymentNode(DeploymentElement):
                 f"{node.parent}. Cannot add to {self}."
             )
         self._children.add(node)
-        model = self.model
-        model += node
+        if self.is_in_model:
+            model = self.model
+            model += node
 
     @classmethod
     def hydrate(
@@ -290,15 +291,11 @@ class DeploymentNode(DeploymentElement):
         model: "Model",
         parent: "DeploymentNode" = None,
     ) -> "DeploymentNode":
-        """Hydrate a new DeploymentNode instance from its IO.
-
-        This will also automatically register with the model.
-        """
+        """Hydrate a new DeploymentNode instance from its IO."""
         node = cls(
             **cls.hydrate_arguments(deployment_node_io),
             parent=parent,
         )
-        model += node
 
         for child_io in deployment_node_io.children:
             child_node = DeploymentNode.hydrate(child_io, model=model, parent=node)
@@ -315,9 +312,7 @@ class DeploymentNode(DeploymentElement):
             node._software_system_instances.add(instance)
 
         for infra_node_io in deployment_node_io.infrastructure_nodes:
-            infra_node = InfrastructureNode.hydrate(
-                infra_node_io, model=model, parent=node
-            )
+            infra_node = InfrastructureNode.hydrate(infra_node_io, parent=node)
             node._infrastructure_nodes.add(infra_node)
 
         return node

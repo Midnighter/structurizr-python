@@ -153,7 +153,7 @@ def test_software_system_serialisation(model_with_system: MockModel):
 
     system_io = SoftwareSystemIO.from_orm(empty_system)
 
-    new_system = SoftwareSystem.hydrate(system_io, model_with_system)
+    new_system = SoftwareSystem.hydrate(system_io)
     assert new_system.name == "Sys"
     assert len(new_system.containers) == 1
     container = next(iter(new_system.containers))

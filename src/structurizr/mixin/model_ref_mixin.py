@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 from weakref import ref
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..model import Model
 
 
@@ -39,6 +39,11 @@ class ModelRefMixin:
     def model(self) -> "Model":
         """Return the referenced model."""
         return self.get_model()
+
+    @property
+    def is_in_model(self) -> bool:
+        """Return whether a model has been set."""
+        return self._model() is not None
 
     def get_model(self) -> "Model":
         """

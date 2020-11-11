@@ -27,7 +27,6 @@ from .tags import Tags
 
 if TYPE_CHECKING:  # pragma: no cover
     from .container import Container
-    from .model import Model
 
 
 __all__ = ("Component", "ComponentIO")
@@ -109,9 +108,7 @@ class Component(StaticStructureElement):
         self.tags.add(Tags.COMPONENT)
 
     @classmethod
-    def hydrate(
-        cls, component_io: ComponentIO, container: "Container", model: "Model"
-    ) -> "Component":
+    def hydrate(cls, component_io: ComponentIO, container: "Container") -> "Component":
         """Create and hydrate a new `Component` instance from its IO.
 
         This will also automatically register with the model.
@@ -123,5 +120,4 @@ class Component(StaticStructureElement):
             # TODO: code_elements=map(CodeElement.hydrate, component_io.components),
             size=component_io.size,
         )
-        model += component
         return component

@@ -128,7 +128,6 @@ def test_deployment_node_serialization_of_recursive_nodes(model_with_node):
     new_child = new_top_node.children[0]
     assert new_child.name == "child"
     assert new_child.parent is new_top_node
-    assert new_child.model is model_with_node
 
 
 def test_deployment_node_add_container(model_with_node):
@@ -190,7 +189,6 @@ def test_deployment_node_serialising_container(model_with_node):
     instance = node2.container_instances[0]
     assert instance.instance_id == 1
     assert instance.container is container
-    assert instance.model is model_with_node
     assert instance.parent is node2
 
 
@@ -226,7 +224,6 @@ def test_deployment_node_serialising_software_system(model_with_node):
     instance = node2.software_system_instances[0]
     assert instance.instance_id == 1
     assert instance.software_system is system
-    assert instance.model is model_with_node
     assert instance.parent is node2
 
 
@@ -258,5 +255,4 @@ def test_deployment_node_serialising_infrastructure_nodes(model_with_node):
     assert len(node2.infrastructure_nodes) == 1
     infra_node = node2.infrastructure_nodes[0]
     assert infra_node.name == "infraNode"
-    assert infra_node.model is model_with_node
     assert infra_node.parent is node2

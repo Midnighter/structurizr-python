@@ -153,13 +153,13 @@ class Model(AbstractBase):
         )
 
         for person_io in model_io.people:
-            Person.hydrate(person_io, model=model)
+            model += Person.hydrate(person_io)
 
         for software_system_io in model_io.software_systems:
-            SoftwareSystem.hydrate(software_system_io, model=model)
+            model += SoftwareSystem.hydrate(software_system_io)
 
         for deployment_node_io in model_io.deployment_nodes:
-            DeploymentNode.hydrate(deployment_node_io, model=model)
+            model += DeploymentNode.hydrate(deployment_node_io, model=model)
 
         for element in model.get_elements():
             for relationship in element.relationships:
@@ -368,6 +368,8 @@ class Model(AbstractBase):
         self._elements_by_id[element.id] = element
         element.set_model(self)
         self._id_generator.found(element.id)
+        for child in element.child_elements:
+            self += child
 
     def _add_relationship(
         self, relationship: Relationship, create_implied_relationships: bool

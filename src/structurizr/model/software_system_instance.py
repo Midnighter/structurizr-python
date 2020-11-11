@@ -67,15 +67,11 @@ class SoftwareSystemInstance(StaticStructureElementInstance):
         model: "Model",
         parent: "DeploymentNode",
     ) -> "SoftwareSystemInstance":
-        """Hydrate a new SoftwareSystemInstance instance from its IO.
-
-        This will also automatically register with the model.
-        """
+        """Hydrate a new SoftwareSystemInstance instance from its IO."""
         system = model.get_element(system_instance_io.software_system_id)
         instance = cls(
             **cls.hydrate_arguments(system_instance_io),
             software_system=system,
             parent=parent,
         )
-        model += instance
         return instance

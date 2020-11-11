@@ -155,3 +155,13 @@ def test_model_cannot_add_two_software_systems_with_same_name(empty_model: Model
         match="A software system with the name 'Bob' already exists in the model.",
     ):
         empty_model.add_software_system(name="Bob")
+
+
+def test_model_automatically_adds_child_elements(empty_model: Model):
+    """Check that adding a parent element to the model also adds its children."""
+    system = SoftwareSystem(name="System")
+    container = system.add_container(name="Container")
+
+    assert not container.is_in_model
+    empty_model += system
+    assert container.is_in_model

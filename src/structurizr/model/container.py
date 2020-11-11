@@ -25,7 +25,6 @@ from .tags import Tags
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .model import Model
     from .software_system import SoftwareSystem
 
 
@@ -117,23 +116,16 @@ class Container(StaticStructureElement):
         cls,
         container_io: ContainerIO,
         software_system: "SoftwareSystem",
-        model: "Model",
     ) -> "Container":
-        """Hydrate a new Container instance from its IO.
-
-        This will also automatically register with the model.
-        """
+        """Hydrate a new Container instance from its IO."""
         container = cls(
             **cls.hydrate_arguments(container_io),
             parent=software_system,
             technology=container_io.technology,
         )
-        model += container
 
         for component_io in container_io.components:
-            component = Component.hydrate(
-                component_io, container=container, model=model
-            )
+            component = Component.hydrate(component_io, container=container)
             container += component
 
         return container
@@ -164,8 +156,9 @@ class Container(StaticStructureElement):
                 f"{component.parent}. Cannot add to {self}."
             )
         self._components.add(component)
-        model = self.model
-        model += component
+        if self.is_in_model:
+            model = self.model
+            model += component
         return self
 
     def get_component_with_name(self, name: str) -> Component:
