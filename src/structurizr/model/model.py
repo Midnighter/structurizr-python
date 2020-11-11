@@ -310,11 +310,8 @@ class Model(AbstractBase):
         """
         if relationship is None:
             relationship = Relationship(**kwargs)
-        # Check
-        if self._add_relationship(relationship, create_implied_relationships):
-            return relationship
-        else:
-            return
+        self._add_relationship(relationship, create_implied_relationships)
+        return relationship
 
     def get_element(self, id: str) -> Optional[Element]:
         """
@@ -373,9 +370,9 @@ class Model(AbstractBase):
 
     def _add_relationship(
         self, relationship: Relationship, create_implied_relationships: bool
-    ) -> bool:
+    ):
         if relationship in self.get_relationships():
-            return True
+            return
         if not relationship.id:
             relationship.id = self._id_generator.generate_id()
         elif relationship.id in self._elements_by_id:
@@ -395,7 +392,6 @@ class Model(AbstractBase):
 
         if create_implied_relationships:
             self.implied_relationship_strategy(relationship)
-        return True
 
     def _add_relationship_to_internal_structures(self, relationship: Relationship):
         self._relationships_by_id[relationship.id] = relationship
