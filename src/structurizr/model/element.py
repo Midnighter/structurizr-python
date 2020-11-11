@@ -82,6 +82,14 @@ class Element(ModelRefMixin, ModelItem, ABC):
         """Return a string representation of this instance."""
         return f"{type(self).__name__}(id={self.id}, name={self.name})"
 
+    @property
+    def child_elements(self) -> Iterable["Element"]:
+        """Return the elements that are children of this one.
+
+        Subclasses should override this to provide their specific children.
+        """
+        return []
+
     def get_relationships(self) -> Iterator[Relationship]:
         """Return a Iterator over all relationships involving this element."""
         return (

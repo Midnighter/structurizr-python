@@ -79,6 +79,11 @@ class SoftwareSystem(StaticStructureElement):
         """Return read-only list of child containers."""
         return list(self._containers)
 
+    @property
+    def child_elements(self) -> Iterable[Container]:
+        """Return child elements (from `Element.children`)."""
+        return self.containers
+
     def add_container(
         self, name: str, description: str = "", technology: str = "", **kwargs
     ) -> Container:
