@@ -16,7 +16,7 @@
 """Provide a person model."""
 
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from pydantic import Field
 
@@ -25,9 +25,6 @@ from .relationship import Relationship
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
 
-
-if TYPE_CHECKING:  # pragma: no cover
-    from .model import Model
 
 __all__ = ("PersonIO", "Person")
 
@@ -63,16 +60,12 @@ class Person(StaticStructureElement):
         self.tags.add(Tags.PERSON)
 
     @classmethod
-    def hydrate(cls, person_io: PersonIO, model: "Model") -> "Person":
-        """Create a new person and hydrate from its IO.
-
-        This will also automatically register with the model.
-        """
+    def hydrate(cls, person_io: PersonIO) -> "Person":
+        """Create a new person and hydrate from its IO."""
         person = cls(
             **cls.hydrate_arguments(person_io),
             location=person_io.location,
         )
-        model += person
         return person
 
     def interacts_with(

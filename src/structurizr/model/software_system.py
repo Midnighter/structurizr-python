@@ -16,7 +16,7 @@
 """Provide a software system element model."""
 
 
-from typing import TYPE_CHECKING, Iterable, List, Set
+from typing import Iterable, List, Set
 
 from pydantic import Field
 
@@ -24,10 +24,6 @@ from .container import Container, ContainerIO
 from .location import Location
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
-
-
-if TYPE_CHECKING:  # pragma: no cover
-    from .model import Model
 
 
 __all__ = ("SoftwareSystem", "SoftwareSystemIO")
@@ -114,8 +110,9 @@ class SoftwareSystem(StaticStructureElement):
                 f"{container.parent}. Cannot add to {self}."
             )
         self._containers.add(container)
-        model = self.model
-        model += container
+        if self.is_in_model:
+            model = self.model
+            model += container
         return self
 
     def get_container_with_name(self, name: str) -> Container:
@@ -123,24 +120,17 @@ class SoftwareSystem(StaticStructureElement):
         return next((c for c in self._containers if c.name == name), None)
 
     @classmethod
-    def hydrate(
-        cls, software_system_io: SoftwareSystemIO, model: "Model"
-    ) -> "SoftwareSystem":
-        """Create a new SoftwareSystem instance and hydrate it from its IO.
-
-        This will also automatically register with the model.
-        """
+    def hydrate(cls, software_system_io: SoftwareSystemIO) -> "SoftwareSystem":
+        """Create a new SoftwareSystem instance and hydrate it from its IO."""
         software_system = cls(
             **cls.hydrate_arguments(software_system_io),
             location=software_system_io.location,
         )
-        model += software_system
 
         for container_io in software_system_io.containers:
             software_system += Container.hydrate(
                 container_io,
                 software_system=software_system,
-                model=model,
             )
 
         return software_system

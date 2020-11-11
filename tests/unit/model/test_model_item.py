@@ -76,5 +76,5 @@ def test_tag_order_is_preserved_to_and_from_io(empty_model: Model):
     element_io = SoftwareSystemIO.from_orm(element)
     assert element_io.tags == ["Element", "Software System", "tag3", "tag2", "tag1"]
     assert element_io.dict()["tags"] == "Element,Software System,tag3,tag2,tag1"
-    element2 = SoftwareSystem.hydrate(element_io, Model())
+    element2 = SoftwareSystem.hydrate(element_io)
     assert list(element2.tags) == ["Element", "Software System", "tag3", "tag2", "tag1"]

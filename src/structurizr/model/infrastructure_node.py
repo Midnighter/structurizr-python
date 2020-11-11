@@ -21,7 +21,6 @@ from .tags import Tags
 
 if TYPE_CHECKING:  # pragma: no cover
     from .deployment_node import DeploymentNode
-    from .model import Model
 
 
 __all__ = ("InfrastructureNode", "InfrastructureNodeIO")
@@ -69,17 +68,12 @@ class InfrastructureNode(DeploymentElement):
     def hydrate(
         cls,
         node_io: InfrastructureNodeIO,
-        model: "Model",
         parent: "DeploymentNode",
     ) -> "InfrastructureNode":
-        """Hydrate a new InfrastructureNode instance from its IO.
-
-        This will also automatically register with the model.
-        """
+        """Hydrate a new InfrastructureNode instance from its IO."""
         node = cls(
             **cls.hydrate_arguments(node_io),
             technology=node_io.technology,
             parent=parent,
         )
-        model += node
         return node
