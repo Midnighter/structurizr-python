@@ -157,6 +157,23 @@ def test_model_cannot_add_two_software_systems_with_same_name(empty_model: Model
         empty_model.add_software_system(name="Bob")
 
 
+def test_model_get_software_system_bad_id(empty_model: Model):
+    """Test that trying to get a system by a non-system ID returns None."""
+    system = empty_model.add_software_system(name="System")
+    container = system.add_container(name="Container")
+
+    assert empty_model.get_software_system_with_id(container.id) is None
+
+
+def test_model_add_element_with_existing_id_raises_error(empty_model: Model):
+    """Test you can't add an element with the same ID as an existing one."""
+    system1 = empty_model.add_software_system(name="System")
+    system2 = SoftwareSystem(name="System2", id=system1.id)
+
+    with pytest.raises(ValueError, match="The element .* has an existing ID"):
+        empty_model += system2
+
+
 def test_model_automatically_adds_child_elements(empty_model: Model):
     """Check that adding a parent element to the model also adds its children."""
     system = SoftwareSystem(name="System")
