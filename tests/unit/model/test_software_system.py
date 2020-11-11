@@ -84,6 +84,15 @@ def test_software_system_add_container_adds_to_container_list(
     assert container.parent is empty_system
 
 
+def test_software_system_child_elements_property(
+    model_with_system: MockModel,
+):
+    """Ensure that children propery returns containers."""
+    empty_system = model_with_system.empty_system
+    container = empty_system.add_container(name="Container", description="Description")
+    assert container in empty_system.child_elements
+
+
 def test_software_system_add_constructed_container(model_with_system: MockModel):
     """Verify behaviour when adding a newly constructed Container."""
     empty_system = model_with_system.empty_system

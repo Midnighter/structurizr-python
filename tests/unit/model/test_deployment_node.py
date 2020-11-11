@@ -158,15 +158,19 @@ def test_deployment_node_add_with_iadd(model_with_node: MockModel):
 
     node += child_node
     assert child_node in node.children
+    assert child_node in node.child_elements
 
     node += system
     assert node.software_system_instances[0].software_system is system
+    assert node.software_system_instances[0] in node.child_elements
 
     child_node += container
     assert child_node.container_instances[0].container is container
+    assert child_node.container_instances[0] in child_node.child_elements
 
     child_node += infra_node
     assert infra_node in child_node.infrastructure_nodes
+    assert child_node.infrastructure_nodes[0] in child_node.child_elements
 
 
 def test_deployment_node_serialising_container(model_with_node):

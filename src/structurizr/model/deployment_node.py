@@ -22,6 +22,7 @@ from pydantic import Field
 from .container import Container
 from .container_instance import ContainerInstance, ContainerInstanceIO
 from .deployment_element import DeploymentElement, DeploymentElementIO
+from .element import Element
 from .infrastructure_node import InfrastructureNode, InfrastructureNodeIO
 from .software_system import SoftwareSystem
 from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
@@ -117,6 +118,16 @@ class DeploymentNode(DeploymentElement):
     def children(self) -> Iterable["DeploymentNode"]:
         """Return read-only list of child nodes."""
         return list(self._children)
+
+    @property
+    def child_elements(self) -> Iterable[Element]:
+        """Return child elements (from `Element.children`)."""
+        return (
+            self.children
+            + self.container_instances
+            + self.software_system_instances
+            + self.infrastructure_nodes
+        )
 
     @property
     def container_instances(self) -> Iterable[ContainerInstance]:

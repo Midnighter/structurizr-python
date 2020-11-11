@@ -107,6 +107,11 @@ class Container(StaticStructureElement):
         """Return read-only list of child components."""
         return list(self._components)
 
+    @property
+    def child_elements(self) -> Iterable[Component]:
+        """Return child elements (from `Element.children`)."""
+        return self.components
+
     @classmethod
     def hydrate(
         cls,

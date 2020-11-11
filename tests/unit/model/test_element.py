@@ -57,6 +57,12 @@ def test_model_reference():
     assert element.get_model() is model
 
 
+def test_element_child_elements_default():
+    """Ensure that by default, element has no children."""
+    element = ConcreteElement(name="Element")
+    assert element.child_elements == []
+
+
 def test_element_can_only_add_relationship_to_source():
     """Make sure that nothing adds a relationship to the wrong element."""
     element1 = ConcreteElement(name="elt1")

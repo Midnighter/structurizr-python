@@ -67,6 +67,13 @@ def test_container_add_component_adds_to_component_list(
     assert component.parent is empty_container
 
 
+def test_container_child_elements_property(model_with_container: MockModel):
+    """Verify children property works."""
+    empty_container = model_with_container.empty_container
+    component = empty_container.add_component(name="Component")
+    assert component in empty_container.child_elements
+
+
 def test_container_add_constructed_component(model_with_container: MockModel):
     """Verify behaviour when adding a newly constructed Container."""
     empty_container = model_with_container.empty_container
