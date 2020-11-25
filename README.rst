@@ -54,7 +54,7 @@ It's as simple as:
 
 .. code-block:: console
 
-    pip install --pre structurizr-python
+    pip install structurizr-python
 
 Copyright
 =========
