@@ -2,9 +2,10 @@ site_name: Structurizr-Python
 site_description: A Python client package for the Structurizr cloud service and on-premises installation.
 site_author: Moritz E. Beber
 
-nav:
-  - Home: index.md
-  - Architecture Descision Records: adr
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
 
 theme:
   name: material
@@ -17,23 +18,25 @@ theme:
     - navigation.instant
   icon:
     repo: fontawesome/brands/github
+
 plugins:
   - search:
       prebuild_index: true
+  - awesome-pages
 
 extra:
   social:
     - icon: fontawesome/brands/slack
-      link: 'https://join.slack.com/t/structurizr/shared_invite/enQtMzkyMjY1NzMwNTkzLTcyOGI1MTZmNDQwMDQ5YmZlMThiYmU1ZTM2ZWZiMzYwMjVhNmM0OWIwNjFlZTM1YmY3YzU0ZDY2MTA1YTk5Mjg'
+      link: https://join.slack.com/t/structurizr/shared_invite/enQtMzkyMjY1NzMwNTkzLTcyOGI1MTZmNDQwMDQ5YmZlMThiYmU1ZTM2ZWZiMzYwMjVhNmM0OWIwNjFlZTM1YmY3YzU0ZDY2MTA1YTk5Mjg
       name: Join the Structurizr Slack
     - icon: fontawesome/brands/github
-      link: 'https://github.com/Midnighter'
+      link: https://github.com/Midnighter
       name: Moritz on GitHub
     - icon: fontawesome/brands/twitter
-      link: 'https://twitter.com/me_beber'
+      link: https://twitter.com/me_beber
       name: Moritz on Twitter
     - icon: fontawesome/brands/linkedin
-      link: 'https://www.linkedin.com/in/moritz-beber-b597a55a/'
+      link: https://www.linkedin.com/in/moritz-beber-b597a55a/
       name: Moritz on LinkedIn
 
 copyright: Copyright &copy 2020, Moritz E. Beber.
