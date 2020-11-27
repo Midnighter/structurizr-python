@@ -22,7 +22,7 @@ Structurizr for Python
    :target: https://github.com/Midnighter/structurizr-python/workflows/CI-CD
    :alt: GitHub Actions
 
-.. image:: https://codecov.io/gh/Midnighter/structurizr-python/branch/stable/graph/badge.svg
+.. image:: https://codecov.io/gh/Midnighter/structurizr-python/branch/devel/graph/badge.svg
    :target: https://codecov.io/gh/Midnighter/structurizr-python
    :alt: Codecov
 
