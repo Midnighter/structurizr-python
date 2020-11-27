@@ -20,6 +20,7 @@ from typing import Optional
 
 from pydantic import Field
 
+from ..mixin.childless_mixin import ChildlessMixin
 from .location import Location
 from .relationship import Relationship
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
@@ -43,7 +44,7 @@ class PersonIO(StaticStructureElementIO):
     )
 
 
-class Person(StaticStructureElement):
+class Person(ChildlessMixin, StaticStructureElement):
     """
     Represent a person in the C4 model.
 

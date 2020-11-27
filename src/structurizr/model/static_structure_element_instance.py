@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Iterable, List, Optional, Set
 
 from pydantic import Field
 
+from ..mixin.childless_mixin import ChildlessMixin
 from .deployment_element import DeploymentElement, DeploymentElementIO
 from .http_health_check import HTTPHealthCheck, HTTPHealthCheckIO
 from .static_structure_element import StaticStructureElement
@@ -41,7 +42,7 @@ class StaticStructureElementInstanceIO(DeploymentElementIO, ABC):
     health_checks: List[HTTPHealthCheckIO] = Field(default=(), alias="healthChecks")
 
 
-class StaticStructureElementInstance(DeploymentElement, ABC):
+class StaticStructureElementInstance(ChildlessMixin, DeploymentElement, ABC):
     """Define a superclass for all deployment instances."""
 
     def __init__(

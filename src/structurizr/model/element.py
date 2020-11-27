@@ -16,7 +16,7 @@
 """Provide a superclass for all model elements."""
 
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Iterable, Iterator, List, Optional
 
 from pydantic import Field, HttpUrl
@@ -83,12 +83,10 @@ class Element(ModelRefMixin, ModelItem, ABC):
         return f"{type(self).__name__}(id={self.id}, name={self.name})"
 
     @property
+    @abstractmethod
     def child_elements(self) -> Iterable["Element"]:
-        """Return the elements that are children of this one.
-
-        Subclasses should override this to provide their specific children.
-        """
-        return []
+        """Return the elements that are children of this one."""
+        ...  # pragma: no cover
 
     def get_relationships(self) -> Iterator[Relationship]:
         """Return a Iterator over all relationships involving this element."""

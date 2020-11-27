@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from pydantic import Field
 
+from ..mixin.childless_mixin import ChildlessMixin
 from .code_element import CodeElement, CodeElementIO
 from .static_structure_element import StaticStructureElement, StaticStructureElementIO
 from .tags import Tags
@@ -58,7 +59,7 @@ class ComponentIO(StaticStructureElementIO):
     size: Optional[int] = None
 
 
-class Component(StaticStructureElement):
+class Component(ChildlessMixin, StaticStructureElement):
     """
     Represent a component.
 
