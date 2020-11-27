@@ -179,6 +179,6 @@ def test_model_automatically_adds_child_elements(empty_model: Model):
     system = SoftwareSystem(name="System")
     container = system.add_container(name="Container")
 
-    assert not container.is_in_model
+    assert not container.has_model
     empty_model += system
-    assert container.is_in_model
+    assert container.has_model

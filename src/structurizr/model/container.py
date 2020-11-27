@@ -156,7 +156,7 @@ class Container(StaticStructureElement):
                 f"{component.parent}. Cannot add to {self}."
             )
         self._components.add(component)
-        if self.is_in_model:
+        if self.has_model:
             model = self.model
             model += component
         return self
