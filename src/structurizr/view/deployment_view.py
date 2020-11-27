@@ -11,7 +11,7 @@
 # limitations under the License.
 
 
-"""Provide a component view.
+"""Provide a deployment view.
 
 Used to show the mapping of container instances to deployment nodes.
 """
@@ -32,10 +32,18 @@ __all__ = ("DeploymentView", "DeploymentViewIO")
 
 
 class DeploymentViewIO:
+    """Represent a deployment view."""
+
     pass
 
 
 class DeploymentView(ModelRefMixin, View):
+    """Represent a deployment view.
+
+    Deployment views are used to show the mapping of container instances to deployment
+    nodes.
+    """
+
     def __init__(
         self,
         *,
@@ -149,4 +157,5 @@ class DeploymentView(ModelRefMixin, View):
 
     @property
     def animations(self) -> Iterable[Animation]:
+        """Return the animations for this view."""
         pass  # TODO
