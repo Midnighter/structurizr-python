@@ -41,7 +41,7 @@ class ModelRefMixin:
         return self.get_model()
 
     @property
-    def is_in_model(self) -> bool:
+    def has_model(self) -> bool:
         """Return whether a model has been set."""
         return self._model() is not None
 

@@ -280,7 +280,7 @@ class DeploymentNode(DeploymentElement):
                 f"{node.parent}. Cannot add to {self}."
             )
         self._children.add(node)
-        if self.is_in_model:
+        if self.has_model:
             model = self.model
             model += node
 

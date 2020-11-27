@@ -110,7 +110,7 @@ class SoftwareSystem(StaticStructureElement):
                 f"{container.parent}. Cannot add to {self}."
             )
         self._containers.add(container)
-        if self.is_in_model:
+        if self.has_model:
             model = self.model
             model += container
         return self
