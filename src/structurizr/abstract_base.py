@@ -25,6 +25,25 @@ __all__ = ("AbstractBase",)
 class AbstractBase(ABC):
     """Define common business logic through an abstract base class."""
 
+    def __init__(self, **kwargs):
+        """
+        Initialize an abstract base class.
+
+        The AbstractBase class is designed to be the singular root of the entire class
+        hierarchy, similar to `object`, and acts as a guard against unknown keyword
+        arguments. Any keyword arguments not consumed in the hierarchy above cause a
+        `TypeError`.
+
+        """
+        if kwargs:
+            is_plural = len(kwargs) > 1
+            message = "\n    ".join(f"{key}={value}" for key, value in kwargs.items())
+            raise TypeError(
+                f"{type(self).__name__}.__init__() got {'' if is_plural else 'an '}"
+                f"unexpected keyword argument{'s' if is_plural else ''}:\n    {message}"
+            )
+        super().__init__()
+
     def __hash__(self) -> int:
         """Return an integer that represents a unique hash value for this instance."""
         return id(self)

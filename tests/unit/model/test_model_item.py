@@ -45,24 +45,34 @@ def test_model_item_init(attributes):
         assert getattr(model_item, attr) == expected
 
 
-def test_handling_of_bogus_init_params():
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        pytest.param(
+            {"foo": 7},
+            marks=pytest.mark.raises(
+                exception=TypeError,
+                message="ConcreteModelItem.__init__() got an unexpected keyword "
+                "argument:\n    foo=7",
+            ),
+        ),
+        pytest.param(
+            {"foo": 7, "bar": 17},
+            marks=pytest.mark.raises(
+                exception=TypeError,
+                message="ConcreteModelItem.__init__() got unexpected keyword "
+                "arguments:\n    foo=7\n    bar=17",
+            ),
+        ),
+    ],
+)
+def test_handle_unknown_argument(kwargs: dict):
     """
-    Test for sensible error message if wrong param passed.
+    Test for a sensible error message when unknown keyword arguments are passed.
 
     See https://github.com/Midnighter/structurizr-python/issues/50.
     """
-    with pytest.raises(
-        TypeError,
-        match=r"ConcreteModelItem.__init__\(\) got an unexpected "
-        r"keyword argument 'foo'",
-    ):
-        ConcreteModelItem(foo=7)
-    with pytest.raises(
-        TypeError,
-        match=r"ConcreteModelItem.__init__\(\) got unexpected keyword "
-        r"arguments 'foo', 'bar'",
-    ):
-        ConcreteModelItem(foo=7, bar=17)
+    ConcreteModelItem(**kwargs)
 
 
 def test_default_element_tags_order(empty_model: Model):
