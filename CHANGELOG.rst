@@ -5,6 +5,9 @@ History
 Next Release
 ------------
 
+0.2.1 (2020-11-27)
+------------------
+* Docs: There is now documentation live at https://structurizr-python.readthedocs.io/
 
 0.2.0 (2020-11-20)
 ------------------
