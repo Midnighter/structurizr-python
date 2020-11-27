@@ -26,6 +26,7 @@ from ..mixin import ModelRefMixin
 from .component_view import ComponentView, ComponentViewIO
 from .configuration import Configuration, ConfigurationIO
 from .container_view import ContainerView, ContainerViewIO
+from .deployment_view import DeploymentView
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .system_landscape_view import SystemLandscapeView, SystemLandscapeViewIO
 from .view import View
@@ -57,7 +58,6 @@ class ViewSetIO(BaseModel):
 
     # TODO:
     # dynamic_views: List[DynamicView] = Field(set(), alias="dynamicViews")
-    # deployment_views: List[DeploymentView] = Field(set(), alias="deploymentViews")
     # filtered_views: List[FilteredView] = Field(set(), alias="filteredViews")
 
 
@@ -78,6 +78,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         system_context_views: Iterable[SystemContextView] = (),
         container_views: Iterable[ContainerView] = (),
         component_views: Iterable[ComponentView] = (),
+        deployment_views: Iterable[DeploymentView] = (),
         configuration: Optional[Configuration] = None,
         **kwargs
     ) -> None:
@@ -90,6 +91,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self.system_context_views: Set[SystemContextView] = set(system_context_views)
         self.container_views: Set[ContainerView] = set(container_views)
         self.component_views: Set[ComponentView] = set(component_views)
+        self.deployment_views: Set[DeploymentView] = set(deployment_views)
         self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
 
@@ -232,6 +234,21 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self.component_views.add(component_view)
         return component_view
 
+    def create_deployment_view(self, **kwargs) -> DeploymentView:
+        """
+        Add a new DeploymentView to the ViewSet.
+
+        Args:
+            **kwargs: Provide keyword arguments for instantiating a `DeploymentView`
+        """
+        # TODO:
+        # AssertThatTheViewKeyIsUnique(key);
+        deployment_view = DeploymentView(**kwargs)
+        deployment_view.set_viewset(self)
+        deployment_view.set_model(self.model)
+        self.deployment_views.add(deployment_view)
+        return deployment_view
+
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""
         for source_view in source.system_landscape_views:
@@ -260,11 +277,10 @@ class ViewSet(ModelRefMixin, AbstractBase):
         #     if destination_view:
         #         destination_view.copy_layout_information_from(source_view)
 
-        # TODO: deployment view
-        # for source_view in source.deployment_views:
-        #     destination_view = self.find_deployment_view(source_view)
-        #     if destination_view:
-        #         destination_view.copy_layout_information_from(source_view)
+        for source_view in source.deployment_views:
+            destination_view = self.find_deployment_view(source_view)
+            if destination_view:
+                destination_view.copy_layout_information_from(source_view)
 
     def _find_system_landscape_view(
         self, view: SystemLandscapeView
@@ -302,9 +318,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
     #             return current_view
     #     return None
 
-    # TODO: deployment view
-    # def find_deployment_view(self, view: DeploymentView) -> DeploymentView:
-    #     for current_view in self.deployment_views:
-    #         if view.key == current_view.key:
-    #             return current_view
-    #     return None
+    def find_deployment_view(self, view: DeploymentView) -> DeploymentView:
+        for current_view in self.deployment_views:
+            if view.key == current_view.key:
+                return current_view
+        return None
