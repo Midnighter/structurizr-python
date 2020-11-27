@@ -84,21 +84,7 @@ class ModelItem(AbstractBase, ABC):
         **kwargs,
     ):
         """Initialise a ModelItem instance."""
-        if len(kwargs) > 0:
-            type_name = type(self).__name__
-            args = [f"'{key}'" for key in kwargs.keys()]
-            if len(args) == 1:
-                raise TypeError(
-                    f"{type_name}.__init__() got an unexpected "
-                    f"keyword argument {args[0]}"
-                )
-            else:
-                raise TypeError(
-                    f"{type_name}.__init__() got unexpected "
-                    f"keyword arguments {', '.join(args)}"
-                )
-
-        super().__init__()
+        super().__init__(**kwargs)
         self.id = id
         self.tags = OrderedSet(tags)
         self.properties = dict(properties)
