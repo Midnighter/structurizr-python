@@ -30,7 +30,6 @@ from .tags import Tags
 
 if TYPE_CHECKING:  # pragma: no cover
     from .deployment_node import DeploymentNode
-    from .model import Model
 
 
 __all__ = ("SoftwareSystemInstance", "SoftwareSystemInstanceIO")
@@ -64,11 +63,10 @@ class SoftwareSystemInstance(StaticStructureElementInstance):
     def hydrate(
         cls,
         system_instance_io: SoftwareSystemInstanceIO,
-        model: "Model",
+        system: SoftwareSystem,
         parent: "DeploymentNode",
     ) -> "SoftwareSystemInstance":
         """Hydrate a new SoftwareSystemInstance instance from its IO."""
-        system = model.get_element(system_instance_io.software_system_id)
         instance = cls(
             **cls.hydrate_arguments(system_instance_io),
             software_system=system,

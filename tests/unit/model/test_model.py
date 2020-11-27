@@ -165,6 +165,13 @@ def test_model_get_software_system_bad_id(empty_model: Model):
     assert empty_model.get_software_system_with_id(container.id) is None
 
 
+def test_model_add_element_twice_is_ignored(empty_model: Model):
+    """Test you can't add an element with the same ID as an existing one."""
+    system1 = empty_model.add_software_system(name="System")
+    empty_model += system1
+    assert empty_model.software_systems == {system1}
+
+
 def test_model_add_element_with_existing_id_raises_error(empty_model: Model):
     """Test you can't add an element with the same ID as an existing one."""
     system1 = empty_model.add_software_system(name="System")

@@ -30,7 +30,6 @@ from .tags import Tags
 
 if TYPE_CHECKING:  # pragma: no cover
     from .deployment_node import DeploymentNode
-    from .model import Model
 
 
 __all__ = ("ContainerInstance", "ContainerInstanceIO")
@@ -64,18 +63,16 @@ class ContainerInstance(StaticStructureElementInstance):
     def hydrate(
         cls,
         container_instance_io: ContainerInstanceIO,
-        model: "Model",
+        container: Container,
         parent: "DeploymentNode",
     ) -> "ContainerInstance":
         """Hydrate a new ContainerInstance instance from its IO.
 
         This will also automatically register with the model.
         """
-        container = model.get_element(container_instance_io.container_id)
         instance = cls(
             **cls.hydrate_arguments(container_instance_io),
             container=container,
             parent=parent,
         )
-        model += instance
         return instance
