@@ -302,12 +302,16 @@ class DeploymentNode(DeploymentElement):
             node += child_node
 
         for instance_io in deployment_node_io.container_instances:
-            instance = ContainerInstance.hydrate(instance_io, model=model, parent=node)
+            container = model.get_element(instance_io.container_id)
+            instance = ContainerInstance.hydrate(
+                instance_io, container=container, parent=node
+            )
             node._container_instances.add(instance)
 
         for instance_io in deployment_node_io.software_system_instances:
+            system = model.get_element(instance_io.software_system_id)
             instance = SoftwareSystemInstance.hydrate(
-                instance_io, model=model, parent=node
+                instance_io, system=system, parent=node
             )
             node._software_system_instances.add(instance)
 
