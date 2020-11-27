@@ -86,7 +86,7 @@ class Element(ModelRefMixin, ModelItem, ABC):
     @abstractmethod
     def child_elements(self) -> Iterable["Element"]:
         """Return the elements that are children of this one."""
-        ...  # pragma: no cover
+        pass  # pragma: no cover
 
     def get_relationships(self) -> Iterator[Relationship]:
         """Return a Iterator over all relationships involving this element."""
