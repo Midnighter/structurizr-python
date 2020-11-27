@@ -29,7 +29,7 @@ have an existing workspace that you want to modify locally.
     The `#!python main()` function in each example script creates a more or less involved
     workspace for you.  When you have created a workspace, it is time to upload
     it so that you can create diagrams for it.  You will need to create a
-    `#!python StructurizrClient` instance and its settings. The settings can be provided
+    [`StructurizrClient`][structurizr.api.structurizr_client.StructurizrClient] instance and its settings. The settings can be provided
     as arguments, be read from environment variables, or be provided in a `.env`
     file.
  

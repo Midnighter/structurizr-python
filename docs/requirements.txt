@@ -1,4 +1,4 @@
 mkdocs ~=1.1
 mkdocs-material ~=6.1
 mkdocs-awesome-pages-plugin ~=2.4
-mkdocstrings ~=0.13
+mkdocstrings ~=0.14

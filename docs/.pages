@@ -1,4 +1,4 @@
 nav:
-  - Home: index.md
-  - Reference: reference
+  - Overview: index.md
+  - reference
   - ...
