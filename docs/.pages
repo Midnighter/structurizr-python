@@ -1,5 +1,3 @@
 nav:
     - Home: index.md
-    - Issue Tracker: https://github.com/Midnighter/structurizr-python/issues/
-    - Development Plan: https://github.com/Midnighter/structurizr-python/projects/1/
-    - adr
+    - ...

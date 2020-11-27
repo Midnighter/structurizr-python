@@ -1,0 +1,9 @@
+title: Development Documentation
+
+nav:
+  - ...
+  - Contributing Guidelines: https://github.com/Midnighter/structurizr-python/blob/devel/.github/CONTRIBUTING.rst
+  - Issue Tracker: https://github.com/Midnighter/structurizr-python/issues/
+  - Development Plan: https://github.com/Midnighter/structurizr-python/projects/1/
+  - adr
+
