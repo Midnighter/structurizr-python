@@ -18,10 +18,11 @@
 
 import pytest
 
+from structurizr.mixin.childless_mixin import ChildlessMixin
 from structurizr.model.element import Element
 
 
-class ConcreteElement(Element):
+class ConcreteElement(ChildlessMixin, Element):
     """Implement a concrete `Element` class for testing purposes."""
 
     pass

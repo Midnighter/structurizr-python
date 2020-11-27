@@ -15,6 +15,7 @@
 
 from typing import TYPE_CHECKING, Optional
 
+from ..mixin.childless_mixin import ChildlessMixin
 from .deployment_element import DeploymentElement, DeploymentElementIO
 from .tags import Tags
 
@@ -40,7 +41,7 @@ class InfrastructureNodeIO(DeploymentElementIO):
     technology: Optional[str] = ""
 
 
-class InfrastructureNode(DeploymentElement):
+class InfrastructureNode(ChildlessMixin, DeploymentElement):
     """
     Represent an infrastructure node.
 
