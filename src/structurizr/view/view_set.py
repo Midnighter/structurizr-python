@@ -278,7 +278,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         #         destination_view.copy_layout_information_from(source_view)
 
         for source_view in source.deployment_views:
-            destination_view = self.find_deployment_view(source_view)
+            destination_view = self._find_deployment_view(source_view)
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
 
@@ -318,7 +318,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
     #             return current_view
     #     return None
 
-    def find_deployment_view(self, view: DeploymentView) -> DeploymentView:
+    def _find_deployment_view(self, view: DeploymentView) -> DeploymentView:
         for current_view in self.deployment_views:
             if view.key == current_view.key:
                 return current_view
