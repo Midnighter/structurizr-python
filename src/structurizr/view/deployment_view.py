@@ -16,7 +16,7 @@
 Used to show the mapping of container instances to deployment nodes.
 """
 
-from typing import Iterable, Optional, Union
+from typing import Iterable, List, Optional, Union
 
 from ..mixin.model_ref_mixin import ModelRefMixin
 from ..model.container_instance import ContainerInstance
@@ -26,17 +26,25 @@ from ..model.infrastructure_node import InfrastructureNode
 from ..model.relationship import Relationship
 from ..model.software_system_instance import SoftwareSystemInstance
 from ..model.static_structure_element import StaticStructureElement
-from .animation import Animation
-from .view import View
+from .animation import Animation, AnimationIO
+from .view import View, ViewIO
 
 
 __all__ = ("DeploymentView", "DeploymentViewIO")
 
 
-class DeploymentViewIO:
-    """Represent a deployment view."""
+class DeploymentViewIO(ViewIO):
+    """
+    Represent a deployment view.
 
-    pass
+    Attributes:
+        environment: the name of the environment that this deployment view is for
+                     (e.g. "Development", "Live", etc.)
+        animations: the set of animation steps (optional)
+    """
+
+    environment: Optional[str] = None
+    animations: List[AnimationIO] = []
 
 
 class DeploymentView(ModelRefMixin, View):
@@ -236,3 +244,12 @@ class DeploymentView(ModelRefMixin, View):
     def animations(self) -> Iterable[Animation]:
         """Return the animations for this view."""
         return list(self._animations)
+
+    @classmethod
+    def hydrate(cls, deployment_view_io: DeploymentViewIO) -> "DeploymentView":
+        """Hydrate a new DeploymentView instance from its IO."""
+        return cls(
+            environment=deployment_view_io.environment,
+            animations=map(Animation.hydrate, deployment_view_io.animations),
+            **cls.hydrate_arguments(deployment_view_io),
+        )
