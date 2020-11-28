@@ -137,6 +137,12 @@ def dotenv(tmpdir, monkeypatch, archive_location):
             "api_secret": "ae140655-da7c-4a8d-9467-5a7d9792fca0",
             "workspace_archive_location": ".",
         },
+        {
+            "workspace_id": 19,
+            "api_key": "7f4e4edc-f61c-4ff2-97c9-ea4bc2a7c98c",
+            "api_secret": "ae140655-da7c-4a8d-9467-5a7d9792fca0",
+            "workspace_archive_location": None,
+        },
     ],
 )
 def test_init_from_arguments(attributes: dict):
@@ -145,7 +151,7 @@ def test_init_from_arguments(attributes: dict):
     for attr, expected in attributes.items():
         value = getattr(settings, attr)
         if attr in ("api_key", "api_secret", "workspace_archive_location"):
-            value = str(value)
+            value = None if value is None else str(value)
         assert value == expected
 
 

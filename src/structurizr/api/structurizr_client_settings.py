@@ -20,6 +20,7 @@ import logging
 from getpass import getuser
 from pathlib import Path
 from socket import getfqdn
+from typing import Optional
 
 
 try:
@@ -98,10 +99,11 @@ class StructurizrClientSettings(BaseSettings):
         env="STRUCTURIZR_AGENT",
         description="A string identifying the agent (e.g. 'structurizr-java/1.2.0').",
     )
-    workspace_archive_location: DirectoryPath = Field(
+    workspace_archive_location: Optional[DirectoryPath] = Field(
         default=Path.cwd(),
         env="STRUCTURIZR_WORKSPACE_ARCHIVE_LOCATION",
-        description="A directory for archiving downloaded workspaces.",
+        description="A directory for archiving downloaded workspaces, or None to "
+        "suppress archiving.",
     )
 
     class Config:

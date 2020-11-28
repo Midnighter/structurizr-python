@@ -5,6 +5,7 @@ History
 Next Release
 ------------
 * Fix: Better error on bad ModelItem constructor argument (#50)
+* Fix: Suppress archiving of downloaded workspaces by setting archive location to None (#54)
 
 0.2.1 (2020-11-27)
 ------------------
