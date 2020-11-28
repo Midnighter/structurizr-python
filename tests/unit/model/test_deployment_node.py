@@ -16,7 +16,7 @@
 
 import pytest
 
-from structurizr.model import Container, SoftwareSystem
+from structurizr.model import Container, Relationship, SoftwareSystem
 from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
 from structurizr.model.infrastructure_node import InfrastructureNode
 
@@ -45,6 +45,9 @@ class MockModel:
     def get_elements(self):
         """Simulate get_elements."""
         return []
+
+    def add_relationship(self, **kwargs):
+        return Relationship(**kwargs)
 
 
 class MockElement:
@@ -256,3 +259,15 @@ def test_deployment_node_serialising_infrastructure_nodes(model_with_node):
     infra_node = node2.infrastructure_nodes[0]
     assert infra_node.name == "infraNode"
     assert infra_node.parent is node2
+
+
+def test_deployment_node_uses_adds_relationship(model_with_node):
+    node1 = model_with_node.empty_node
+    node2 = DeploymentNode(name="node2")
+    node2.set_model(model_with_node)
+    rel = node1.uses(node2, "Replicates data to", technology="Some tech")
+
+    assert rel.source is node1
+    assert rel.destination is node2
+    assert rel.description == "Replicates data to"
+    assert rel.technology == "Some tech"

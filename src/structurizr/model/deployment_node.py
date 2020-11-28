@@ -24,6 +24,7 @@ from .container_instance import ContainerInstance, ContainerInstanceIO
 from .deployment_element import DeploymentElement, DeploymentElementIO
 from .element import Element
 from .infrastructure_node import InfrastructureNode, InfrastructureNodeIO
+from .relationship import Relationship
 from .software_system import SoftwareSystem
 from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
 
@@ -254,6 +255,22 @@ class DeploymentNode(DeploymentElement):
         else:
             self._add_child_deployment_node(child)
         return self
+
+    def uses(
+        self,
+        destination: "DeploymentNode",
+        description: str = "Uses",
+        technology: str = "",
+        **kwargs,
+    ) -> Optional["Relationship"]:
+        """Add a relationship between this and another deployment node."""
+        return self.model.add_relationship(
+            source=self,
+            destination=destination,
+            description=description,
+            technology=technology,
+            **kwargs,
+        )
 
     def _add_infrastructure_node(self, infra_node: InfrastructureNode):
         """Add a new infrastructure node."""
