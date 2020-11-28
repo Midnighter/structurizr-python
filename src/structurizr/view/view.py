@@ -208,6 +208,10 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                     source_relationship_view
                 )
 
+    def is_element_in_view(self, element: Element) -> bool:
+        """Return True if the given element is in this view."""
+        return any([e.element.id == element.id for e in self.element_views])
+
     def find_element_view(
         self, source_element_view: ElementView
     ) -> Optional[ElementView]:

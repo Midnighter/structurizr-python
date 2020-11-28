@@ -21,9 +21,11 @@ from typing import Iterable, Optional, Union
 from ..mixin.model_ref_mixin import ModelRefMixin
 from ..model.container_instance import ContainerInstance
 from ..model.deployment_node import DeploymentNode
+from ..model.element import Element
 from ..model.infrastructure_node import InfrastructureNode
 from ..model.relationship import Relationship
 from ..model.software_system_instance import SoftwareSystemInstance
+from ..model.static_structure_element import StaticStructureElement
 from .animation import Animation
 from .view import View
 
@@ -95,6 +97,11 @@ class DeploymentView(ModelRefMixin, View):
         else:
             pass  # TODO
 
+    def __iadd__(self, item: Union[DeploymentNode, Relationship]):
+        """Add a deployment node or relationship to this view."""
+        self.add(item)
+        return self
+
     def remove(
         self,
         item: Union[
@@ -147,15 +154,77 @@ class DeploymentView(ModelRefMixin, View):
             name = f"{name} - {self.environment}"
         return name
 
-    # def can_be_removed(element: Element)
+    def add_animation(
+        self, *element_instances: Union[StaticStructureElement, InfrastructureNode]
+    ):
+        """Add an animation step, with the given elements and infrastructure nodes."""
+        if len(element_instances) == 0:
+            raise ValueError(
+                "One or more software system/container instances and/or "
+                + "infrastructure nodes must be specified"
+            )
 
-    # def add_animation(element_instances)
+        element_ids_in_previous_steps = set()
+        for step in self.animations:
+            element_ids_in_previous_steps = element_ids_in_previous_steps.union(
+                step.elements
+            )
 
-    # def add_animation_step(elements)
+        element_ids_in_this_step = set()
+        relationship_ids_in_this_step = set()
 
-    # def _find_deployment_node(element: Element)
+        for element in element_instances:
+            if (
+                self.is_element_in_view(element)
+                and element.id not in element_ids_in_previous_steps
+            ):
+                element_ids_in_previous_steps.add(element.id)
+                element_ids_in_this_step.add(element.id)
+
+                deployment_node = self._find_deployment_node(element)
+                while deployment_node is not None:
+                    if deployment_node.id not in element_ids_in_previous_steps:
+                        element_ids_in_previous_steps.add(deployment_node.id)
+                        element_ids_in_this_step.add(deployment_node.id)
+                    deployment_node = deployment_node.parent
+
+        if element_ids_in_this_step == set():
+            raise ValueError(
+                "None of the specified container instances exist in this view."
+            )
+
+        for relationship_view in self.relationship_views:
+            relationship = relationship_view.relationship
+            if (
+                relationship.source.id in element_ids_in_this_step
+                and relationship.destination.id in element_ids_in_previous_steps
+            ) or (
+                relationship.destination.id in element_ids_in_this_step
+                and relationship.source.id in element_ids_in_previous_steps
+            ):
+                relationship_ids_in_this_step.add(relationship.id)
+
+        self._animations.append(
+            Animation(
+                order=len(self._animations) + 1,
+                elements=element_ids_in_this_step,
+                relationships=relationship_ids_in_this_step,
+            )
+        )
+
+    def _find_deployment_node(self, element: Element) -> DeploymentNode:
+        all_deployment_nodes = [
+            e for e in self.model.get_elements() if isinstance(e, DeploymentNode)
+        ]
+        for node in all_deployment_nodes:
+            if (
+                element in node.container_instances
+                or element in node.infrastructure_nodes
+            ):
+                return node
+        return None
 
     @property
     def animations(self) -> Iterable[Animation]:
         """Return the animations for this view."""
-        pass  # TODO
+        return list(self._animations)

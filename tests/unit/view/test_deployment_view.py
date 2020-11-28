@@ -188,7 +188,7 @@ def test_deployment_view_add_deployment_node_adds_parent(empty_workspace: Worksp
     deployment_view = empty_workspace.views.create_deployment_view(
         software_system=software_system, key="deployment", description="Description"
     )
-    deployment_view.add(child_deployment_node)
+    deployment_view += child_deployment_node
     element_views = deployment_view.element_views
     assert len(element_views) == 3
     assert any([x.element is parent_deployment_node for x in element_views])
@@ -196,6 +196,107 @@ def test_deployment_view_add_deployment_node_adds_parent(empty_workspace: Worksp
     assert any([x.element is container_instance for x in element_views])
 
 
-# TODO: Animations
+def test_add_animation_step_raises_if_no_elements(empty_workspace: Workspace):
+    """Check error handling if no elements passed."""
+    deployment_view = empty_workspace.views.create_deployment_view(
+        key="deployment", description="Description"
+    )
+    with pytest.raises(ValueError):
+        deployment_view.add_animation()
+
+
+def test_add_animation_step(empty_workspace: Workspace):
+    """Check happy path."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    web_application = software_system.add_container("Web Application")
+    database = software_system.add_container("Database")
+    web_application.uses(database, "Reads from and writes to", "JDBC/HTTPS")
+
+    developer_laptop = model.add_deployment_node("Developer Laptop")
+    apache_tomcat = developer_laptop.add_deployment_node("Apache Tomcat")
+    oracle = developer_laptop.add_deployment_node("Oracle")
+    web_application_instance = apache_tomcat.add_container(web_application)
+    database_instance = oracle.add_container(database)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view += developer_laptop
+
+    deployment_view.add_animation(web_application_instance)
+    deployment_view.add_animation(database_instance)
+
+    step1 = deployment_view.animations[0]
+    assert step1.order == 1
+    assert len(step1.elements) == 3
+    assert developer_laptop.id in step1.elements
+    assert apache_tomcat.id in step1.elements
+    assert web_application_instance.id in step1.elements
+    assert len(step1.relationships) == 0
+
+    step2 = deployment_view.animations[1]
+    assert step2.order == 2
+    assert len(step2.elements) == 2
+    assert oracle.id in step2.elements
+    assert database_instance.id in step2.elements
+    assert len(step2.relationships) == 1
+    assert next(iter(web_application_instance.relationships)).id in step2.relationships
+
+
+def test_animation_ignores_containers_outside_this_view(empty_workspace: Workspace):
+    """Check that containers outside this view are ignored when adding animations."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    web_application = software_system.add_container("Web Application")
+    database = software_system.add_container("Database")
+    web_application.uses(database, "Reads from and writes to", "JDBC/HTTPS")
+
+    developer_laptop = model.add_deployment_node("Developer Laptop")
+    apache_tomcat = developer_laptop.add_deployment_node("Apache Tomcat")
+    oracle = developer_laptop.add_deployment_node("Oracle")
+    web_application_instance = apache_tomcat.add_container(web_application)
+    database_instance = oracle.add_container(database)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view += apache_tomcat
+
+    # database_instance isn't in the view this time
+    deployment_view.add_animation(web_application_instance, database_instance)
+
+    step1 = deployment_view.animations[0]
+    assert developer_laptop.id in step1.elements
+    assert database.id not in step1.elements
+
+
+def test_animation_raises_if_no_container_instances_found(empty_workspace: Workspace):
+    """Check error raised if no container instance exists in the view."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    web_application = software_system.add_container("Web Application")
+    database = software_system.add_container("Database")
+    web_application.uses(database, "Reads from and writes to", "JDBC/HTTPS")
+
+    developer_laptop = model.add_deployment_node("Developer Laptop")
+    apache_tomcat = developer_laptop.add_deployment_node("Apache Tomcat")
+    oracle = developer_laptop.add_deployment_node("Oracle")
+    web_application_instance = apache_tomcat.add_container(web_application)
+    database_instance = oracle.add_container(database)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+
+    with pytest.raises(ValueError):
+        deployment_view.add_animation(web_application_instance, database_instance)
+
 
 # TODO: Removing
