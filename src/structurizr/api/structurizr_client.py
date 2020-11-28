@@ -55,7 +55,7 @@ class StructurizrClient:
         user (str): A string identifying the user (e.g. an e-mail address or username).
         agent (str): A string identifying the agent (e.g. 'structurizr-java/1.2.0').
         workspace_archive_location (pathlib.Path): A directory for archiving downloaded
-            workspaces.
+            workspaces, or None to suppress archiving.
 
     """
 
@@ -276,13 +276,14 @@ class StructurizrClient:
 
     def _archive_workspace(self, json: str) -> None:
         """Store the workspace."""
-        location = self._create_archive_filename()
-        logger.debug(
-            f"Archiving workspace {self.workspace_id} to"
-            f" '{self.workspace_archive_location}'."
-        )
-        with gzip.open(location, mode="wt") as handle:
-            handle.write(json)
+        if self.workspace_archive_location is not None:
+            location = self._create_archive_filename()
+            logger.debug(
+                f"Archiving workspace {self.workspace_id} to"
+                f" '{self.workspace_archive_location}'."
+            )
+            with gzip.open(location, mode="wt") as handle:
+                handle.write(json)
 
     def _create_archive_filename(self) -> Path:
         """Generate a filename for a workspace archive."""

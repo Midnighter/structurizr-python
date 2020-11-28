@@ -117,6 +117,20 @@ def test_archive_workspace(client, mocker):
     mocked_handle.write.assert_called_once_with('{"mock_key":"mock_value"}')
 
 
+def test_suppressing_archive(mock_settings, mocker):
+    """Test that when the archive location is None then no archive is written."""
+    old_settings = mock_settings._asdict()
+    old_settings["workspace_archive_location"] = None
+    new_mock_settings = MockSettings(**old_settings)
+    client = StructurizrClient(settings=new_mock_settings)
+
+    mocked_open = mocker.mock_open(mock=mocker.Mock(spec_set=GzipFile))
+    mocker.patch("gzip.open", mocked_open)
+
+    client._archive_workspace('{"mock_key":"mock_value"}')
+    assert not mocked_open.called
+
+
 def test_httpx_response_raw_path_behaviour():
     """Make sure that `Response.raw_path` continues to do what we need.
 
