@@ -111,7 +111,16 @@ class DeploymentView(ModelRefMixin, View):
         ],
     ):
         """Remove the given item from this view."""
-        pass  # TODO
+        if isinstance(item, DeploymentNode):
+            child_items = (
+                item.container_instances
+                + item.software_system_instances
+                + item.infrastructure_nodes
+                + item.children
+            )
+            for child in child_items:
+                self.remove(child)
+        self._remove_element(item)
 
     def _add_node_children(
         self, deployment_node: DeploymentNode, add_relationships: bool

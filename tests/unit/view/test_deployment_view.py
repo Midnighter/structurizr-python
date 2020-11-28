@@ -327,4 +327,103 @@ def test_animation_raises_if_no_container_instances_found(empty_workspace: Works
         deployment_view.add_animation(web_application_instance, database_instance)
 
 
-# TODO: Removing
+def test_deployment_view_removing_infrastructure_node(empty_workspace: Workspace):
+    """Test removing an infrastructure node from the view."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    container = software_system.add_container("Container")
+    parent_deployment_node = model.add_deployment_node("Deployment Node")
+    child_deployment_node = parent_deployment_node.add_deployment_node("Child Node")
+    infrastructure_node = child_deployment_node.add_infrastructure_node("Infra Node")
+    container_instance = child_deployment_node.add_container(container)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view.add_all_deployment_nodes()
+    assert len(deployment_view.element_views) == 4
+
+    deployment_view.remove(infrastructure_node)
+    assert len(deployment_view.element_views) == 3
+    assert not deployment_view.is_element_in_view(infrastructure_node)
+    assert deployment_view.is_element_in_view(parent_deployment_node)
+    assert deployment_view.is_element_in_view(child_deployment_node)
+    assert deployment_view.is_element_in_view(container_instance)
+
+
+def test_deployment_view_removing_container_instance(empty_workspace: Workspace):
+    """Test removing a container instance from the view."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    container = software_system.add_container("Container")
+    parent_deployment_node = model.add_deployment_node("Deployment Node")
+    child_deployment_node = parent_deployment_node.add_deployment_node("Child Node")
+    infrastructure_node = child_deployment_node.add_infrastructure_node("Infra Node")
+    container_instance = child_deployment_node.add_container(container)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view.add_all_deployment_nodes()
+    assert len(deployment_view.element_views) == 4
+
+    deployment_view.remove(container_instance)
+    assert len(deployment_view.element_views) == 3
+    assert deployment_view.is_element_in_view(infrastructure_node)
+    assert deployment_view.is_element_in_view(parent_deployment_node)
+    assert deployment_view.is_element_in_view(child_deployment_node)
+    assert not deployment_view.is_element_in_view(container_instance)
+
+
+def test_deployment_view_removing_deployment_node_and_children(
+    empty_workspace: Workspace,
+):
+    """Test removing a deployment node from the view removes its child instances."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    container = software_system.add_container("Container")
+    parent_deployment_node = model.add_deployment_node("Deployment Node")
+    child_deployment_node = parent_deployment_node.add_deployment_node("Child Node")
+    infrastructure_node = child_deployment_node.add_infrastructure_node("Infra Node")
+    container_instance = child_deployment_node.add_container(container)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view.add_all_deployment_nodes()
+    assert len(deployment_view.element_views) == 4
+
+    deployment_view.remove(child_deployment_node)
+    assert len(deployment_view.element_views) == 1
+    assert not deployment_view.is_element_in_view(infrastructure_node)
+    assert deployment_view.is_element_in_view(parent_deployment_node)
+    assert not deployment_view.is_element_in_view(child_deployment_node)
+    assert not deployment_view.is_element_in_view(container_instance)
+
+
+def test_deployment_view_removing_parent_deployment_node(empty_workspace: Workspace):
+    """Test removing a parent deployment node from the view removes its children."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    container = software_system.add_container("Container")
+    parent_deployment_node = model.add_deployment_node("Deployment Node")
+    child_deployment_node = parent_deployment_node.add_deployment_node("Child Node")
+    child_deployment_node.add_infrastructure_node("Infra Node")
+    child_deployment_node.add_container(container)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view.add_all_deployment_nodes()
+    assert len(deployment_view.element_views) == 4
+
+    deployment_view.remove(parent_deployment_node)
+    assert len(deployment_view.element_views) == 0
