@@ -354,10 +354,10 @@ def create_big_bank_workspace():
     secondary_database = secondary_database_server.add_container(database)
 
     # # model.Relationships.Where(r=>r.Destination.Equals(secondary_database)).ToList().ForEach(r=>r.tags.add(failover_tag))
-    # dataReplicationRelationship = primary_database_server.uses(
-    #     secondary_database_server, "Replicates data to", ""
-    # )
-    # secondary_database.tags.add(failover_tag)
+    data_replication_relationship = primary_database_server.uses(
+        secondary_database_server, "Replicates data to"
+    )
+    secondary_database.tags.add(failover_tag)
 
     # views/diagrams
     system_landscape_view = views.create_system_landscape_view(
@@ -428,18 +428,26 @@ def create_big_bank_workspace():
     # dynamicView.Add(securityComponent, "select * from users where username = ?", database)
     # dynamicView.PaperSize = PaperSize.A5_Landscape
 
-    # DeploymentView developmentDeploymentView = views.CreateDeploymentView(internet_banking_system, "DevelopmentDeployment", "An example development deployment scenario for the Internet Banking System.")
-    # developmentDeploymentView.Environment = "Development"
-    # developmentDeploymentView.Add(developerLaptop)
-    # developmentDeploymentView.PaperSize = PaperSize.A5_Landscape
+    development_deployment_view = views.create_deployment_view(
+        software_system=internet_banking_system,
+        key="DevelopmentDeployment",
+        description="An example development deployment scenario for the Internet Banking System.",
+        environment="Development",
+    )
+    development_deployment_view.add(developer_laptop)
+    development_deployment_view.paper_size = PaperSize.A5_Landscape
 
-    # DeploymentView liveDeploymentView = views.CreateDeploymentView(internet_banking_system, "LiveDeployment", "An example live deployment scenario for the Internet Banking System.")
-    # liveDeploymentView.Environment = "Live"
-    # liveDeploymentView.Add(big_bank_data_center)
-    # liveDeploymentView.Add(customerMobileDevice)
-    # liveDeploymentView.Add(customerComputer)
-    # liveDeploymentView.Add(dataReplicationRelationship)
-    # liveDeploymentView.PaperSize = PaperSize.A5_Landscape
+    live_deployment_view = views.create_deployment_view(
+        software_system=internet_banking_system,
+        key="LiveDeployment",
+        description="An example live deployment scenario for the Internet Banking System.",
+        environment="Live",
+    )
+    live_deployment_view += big_bank_data_center
+    live_deployment_view += customer_mobile_device
+    live_deployment_view += customer_computer
+    live_deployment_view += data_replication_relationship
+    live_deployment_view.paper_size = PaperSize.A5_Landscape
 
     # colours, shapes and other diagram styling
     styles = views.configuration.styles
