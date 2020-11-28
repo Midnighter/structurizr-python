@@ -47,6 +47,7 @@ class MockModel:
         return []
 
     def add_relationship(self, **kwargs):
+        """Simulate adding relationships."""
         return Relationship(**kwargs)
 
 
@@ -262,6 +263,7 @@ def test_deployment_node_serialising_infrastructure_nodes(model_with_node):
 
 
 def test_deployment_node_uses_adds_relationship(model_with_node):
+    """Test begin able to add a relationships between deployment nodes with using()."""
     node1 = model_with_node.empty_node
     node2 = DeploymentNode(name="node2")
     node2.set_model(model_with_node)
