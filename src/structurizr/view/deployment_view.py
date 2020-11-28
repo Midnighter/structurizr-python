@@ -76,13 +76,12 @@ class DeploymentView(ModelRefMixin, View):
         If the environment is set in this view, then only nodes from the same
         environment will be added.
         """
-        for deployment_node in self.model.deployment_nodes:
-            if deployment_node.parent is None:
-                if (
-                    self.environment is None
-                    or self.environment == deployment_node.environment
-                ):
-                    self.add(deployment_node)
+        for deployment_node in self.model.deployment_nodes:  # This returns top-level
+            if (
+                self.environment is None
+                or self.environment == deployment_node.environment
+            ):
+                self.add(deployment_node)
 
     def add(
         self, item: Union[DeploymentNode, Relationship], add_relationships: bool = True
@@ -95,9 +94,9 @@ class DeploymentView(ModelRefMixin, View):
                     self._add_element(parent, add_relationships)
                     parent = parent.parent
         else:
-            pass  # TODO
+            self._add_relationship(item)
 
-    def __iadd__(self, item: Union[DeploymentNode, Relationship]):
+    def __iadd__(self, item: Union[DeploymentNode, Relationship]) -> "DeploymentView":
         """Add a deployment node or relationship to this view."""
         self.add(item)
         return self
