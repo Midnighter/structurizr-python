@@ -17,6 +17,7 @@ import pytest
 
 from structurizr import Workspace
 from structurizr.model import SoftwareSystem
+from structurizr.model.container_instance import ContainerInstance
 from structurizr.view.deployment_view import DeploymentView, DeploymentViewIO
 
 
@@ -224,6 +225,22 @@ def test_deployment_view_add_relationship(empty_workspace: Workspace):
     assert len(deployment_view.relationship_views) == 1
 
 
+def test_deployment_view_adding_system_instance(empty_workspace: Workspace):
+    """Test that `SoftwareSystemInstance` is supported within deployment view."""
+    model = empty_workspace.model
+    software_system = model.add_software_system("Software System")
+    deployment_node = model.add_deployment_node("Deployment Node")
+    software_system_instance = deployment_node.add_software_system(software_system)
+
+    deployment_view = empty_workspace.views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view.add_default_elements()
+
+    views = deployment_view.element_views
+    assert any([x.element is software_system_instance for x in views])
+
+
 def test_add_animation_step_raises_if_no_elements(empty_workspace: Workspace):
     """Check error handling if no elements passed."""
     deployment_view = empty_workspace.views.create_deployment_view(
@@ -231,6 +248,26 @@ def test_add_animation_step_raises_if_no_elements(empty_workspace: Workspace):
     )
     with pytest.raises(ValueError):
         deployment_view.add_animation()
+
+
+def test_deployment_view_find_deployment_node(empty_workspace: Workspace):
+    """Test _find_deployment_node."""
+    model = empty_workspace.model
+    software_system = model.add_software_system("Software System")
+    container1 = software_system.add_container("Container 1")
+    node1 = model.add_deployment_node("Deployment Node 1")
+    container_instance1 = node1.add_container(container1)
+    container2 = software_system.add_container("Container 2")
+    container_instance2 = ContainerInstance(container=container2, instance_id=1)
+    # Explicitly we don't add container_instance2 to a deployment node
+
+    deployment_view = empty_workspace.views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view += node1
+
+    assert deployment_view._find_deployment_node(container_instance1) is node1
+    assert deployment_view._find_deployment_node(container_instance2) is None
 
 
 def test_add_animation_step(empty_workspace: Workspace):
