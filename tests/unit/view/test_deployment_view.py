@@ -17,7 +17,7 @@ import pytest
 
 from structurizr import Workspace
 from structurizr.model import SoftwareSystem
-from structurizr.view.deployment_view import DeploymentView
+from structurizr.view.deployment_view import DeploymentView, DeploymentViewIO
 
 
 @pytest.fixture(scope="function")
@@ -427,3 +427,41 @@ def test_deployment_view_removing_parent_deployment_node(empty_workspace: Worksp
 
     deployment_view.remove(parent_deployment_node)
     assert len(deployment_view.element_views) == 0
+
+
+def test_deployment_view_hydration(empty_workspace: Workspace):
+    """Test round-tripping via the DeploymentViewIO instance."""
+    model = empty_workspace.model
+    views = empty_workspace.views
+
+    software_system = model.add_software_system("Software System")
+    web_application = software_system.add_container("Web Application")
+    database = software_system.add_container("Database")
+    web_application.uses(database, "Reads from and writes to", "JDBC/HTTPS")
+
+    developer_laptop = model.add_deployment_node("Developer Laptop")
+    apache_tomcat = developer_laptop.add_deployment_node("Apache Tomcat")
+    oracle = developer_laptop.add_deployment_node("Oracle")
+    web_application_instance = apache_tomcat.add_container(web_application)
+    database_instance = oracle.add_container(database)
+
+    deployment_view = views.create_deployment_view(
+        software_system=software_system,
+        key="deployment",
+        description="Description",
+        environment="Live",
+    )
+    deployment_view += developer_laptop
+    assert len(deployment_view.element_views) == 5
+
+    deployment_view.add_animation(web_application_instance)
+    deployment_view.add_animation(database_instance)
+
+    io = DeploymentViewIO.from_orm(deployment_view)
+    assert io.environment == "Live"
+    assert len(io.animations) == 2
+
+    new_deployment_view = DeploymentView.hydrate(io)
+    assert len(new_deployment_view.element_views) == 5
+    assert new_deployment_view.environment == deployment_view.environment
+    assert len(new_deployment_view.animations) == len(deployment_view.animations)

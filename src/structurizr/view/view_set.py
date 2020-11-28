@@ -26,7 +26,7 @@ from ..mixin import ModelRefMixin
 from .component_view import ComponentView, ComponentViewIO
 from .configuration import Configuration, ConfigurationIO
 from .container_view import ContainerView, ContainerViewIO
-from .deployment_view import DeploymentView
+from .deployment_view import DeploymentView, DeploymentViewIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .system_landscape_view import SystemLandscapeView, SystemLandscapeViewIO
 from .view import View
@@ -55,6 +55,9 @@ class ViewSetIO(BaseModel):
     configuration: ConfigurationIO
     container_views: List[ContainerViewIO] = Field(default=(), alias="containerViews")
     component_views: List[ComponentViewIO] = Field(default=(), alias="componentViews")
+    deployment_views: List[DeploymentViewIO] = Field(
+        default=(), alias="deploymentViews"
+    )
 
     # TODO:
     # dynamic_views: List[DynamicView] = Field(set(), alias="dynamicViews")
@@ -129,6 +132,12 @@ class ViewSet(ModelRefMixin, AbstractBase):
             cls._hydrate_view(view, model=model)
             component_views.append(view)
 
+        deployment_views = []
+        for view_io in views.deployment_views:
+            view = DeploymentView.hydrate(view_io)
+            cls._hydrate_view(view, model=model)
+            deployment_views.append(view)
+
         return cls(
             model=model,
             # TODO:
@@ -137,6 +146,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
             system_context_views=system_context_views,
             container_views=container_views,
             component_views=component_views,
+            deployment_views=deployment_views,
             configuration=Configuration.hydrate(views.configuration),
         )
 
