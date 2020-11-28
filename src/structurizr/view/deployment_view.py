@@ -20,8 +20,8 @@ from typing import Iterable, List, Optional, Union
 
 from ..mixin.model_ref_mixin import ModelRefMixin
 from ..model.container_instance import ContainerInstance
+from ..model.deployment_element import DeploymentElement
 from ..model.deployment_node import DeploymentNode
-from ..model.element import Element
 from ..model.infrastructure_node import InfrastructureNode
 from ..model.relationship import Relationship
 from ..model.software_system_instance import SoftwareSystemInstance
@@ -205,9 +205,7 @@ class DeploymentView(ModelRefMixin, View):
                     deployment_node = deployment_node.parent
 
         if element_ids_in_this_step == set():
-            raise ValueError(
-                "None of the specified container instances exist in this view."
-            )
+            raise ValueError("None of the specified instances exist in this view.")
 
         for relationship_view in self.relationship_views:
             relationship = relationship_view.relationship
@@ -228,13 +226,14 @@ class DeploymentView(ModelRefMixin, View):
             )
         )
 
-    def _find_deployment_node(self, element: Element) -> DeploymentNode:
+    def _find_deployment_node(self, element: DeploymentElement) -> DeploymentNode:
         all_deployment_nodes = [
             e for e in self.model.get_elements() if isinstance(e, DeploymentNode)
         ]
         for node in all_deployment_nodes:
             if (
                 element in node.container_instances
+                or element in node.software_system_instances
                 or element in node.infrastructure_nodes
             ):
                 return node
