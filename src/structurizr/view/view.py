@@ -24,7 +24,7 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ViewSetRefMixin
-from ..model import Element, Model, SoftwareSystem
+from ..model import Element, Model, Relationship, SoftwareSystem
 from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
 from .element_view import ElementView, ElementViewIO
 from .paper_size import PaperSize
@@ -168,6 +168,21 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 or relationship_view.relationship.destination.id == element.id
             ):
                 self.relationship_views.remove(relationship_view)
+
+    def _add_relationship(self, relationship: Relationship) -> RelationshipView:
+        """Add a single relationship to this view.
+
+        Returns:
+            The new view if both the source and destination for the relationship are
+            in this view, else `None`.
+        """
+        if self.is_element_in_view(relationship.source) and self.is_element_in_view(
+            relationship.destination
+        ):
+            view = RelationshipView(relationship=relationship)
+            self.relationship_views.add(view)
+            return view
+        return None
 
     def _add_relationships(self, element: Element) -> None:
         """

@@ -114,7 +114,7 @@ def test_deployment_view_add_all_deployment_nodes_with_container_instances(
         key="deployment",
         description="Description",
     )
-    deployment_view.add_all_deployment_nodes()
+    deployment_view.add_default_elements()
     element_views = deployment_view.element_views
     assert len(element_views) == 2
     assert any([x.element is deployment_node for x in element_views])
@@ -194,6 +194,34 @@ def test_deployment_view_add_deployment_node_adds_parent(empty_workspace: Worksp
     assert any([x.element is parent_deployment_node for x in element_views])
     assert any([x.element is child_deployment_node for x in element_views])
     assert any([x.element is container_instance for x in element_views])
+
+
+def test_deployment_view_add_relationship(empty_workspace: Workspace):
+    """Check adding a relationship to the deployment view."""
+    model = empty_workspace.model
+    software_system = model.add_software_system("Software System")
+    container1 = software_system.add_container("Container1")
+    container2 = software_system.add_container("Container2")
+    rel = container1.uses(container2)
+    parent_deployment_node = model.add_deployment_node("Deployment Node")
+    child_deployment_node1 = parent_deployment_node.add_deployment_node("Child1")
+    child_deployment_node1 += container1
+    child_deployment_node2 = parent_deployment_node.add_deployment_node("Child2")
+    child_deployment_node2 += container2
+
+    deployment_view = empty_workspace.views.create_deployment_view(
+        software_system=software_system, key="deployment", description="Description"
+    )
+    deployment_view += child_deployment_node1
+
+    # First try before we have the destination in the view
+    deployment_view += rel
+    assert len(deployment_view.relationship_views) == 0
+
+    # Now try with it in
+    deployment_view += child_deployment_node2
+    deployment_view += rel
+    assert len(deployment_view.relationship_views) == 1
 
 
 def test_add_animation_step_raises_if_no_elements(empty_workspace: Workspace):
