@@ -158,11 +158,11 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 f"this view."
             )
         self.element_views.add(ElementView(id=element.id))
-        for element_view in self.element_views:
+        for element_view in list(self.element_views):  # Copy as modifying as we go
             if element_view.id == element.id:
                 self.element_views.remove(element_view)
 
-        for relationship_view in self.relationship_views:
+        for relationship_view in list(self.relationship_views):
             if (
                 relationship_view.relationship.source.id == element.id
                 or relationship_view.relationship.destination.id == element.id
