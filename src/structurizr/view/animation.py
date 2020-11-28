@@ -46,9 +46,9 @@ class Animation(AbstractBase):
     Define a wrapper for a collection of animation steps.
 
     Attributes:
-        order:
-        elements:
-        relationships:
+        order: the order in which this animation step appears
+        elements: the IDs of the elements to show in this step
+        relationships: ths IDs of the relationships to show in this step
 
     """
 
