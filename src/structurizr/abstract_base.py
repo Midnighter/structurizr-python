@@ -36,11 +36,14 @@ class AbstractBase(ABC):
 
         """
         if kwargs:
-            is_plural = len(kwargs) > 1
+            phrase = (
+                "unexpected keyword arguments"
+                if len(kwargs) > 1
+                else "an unexpected keyword argument"
+            )
             message = "\n    ".join(f"{key}={value}" for key, value in kwargs.items())
             raise TypeError(
-                f"{type(self).__name__}.__init__() got {'' if is_plural else 'an '}"
-                f"unexpected keyword argument{'s' if is_plural else ''}:\n    {message}"
+                f"{type(self).__name__}.__init__() got {phrase}:\n    {message}"
             )
         super().__init__()
 
