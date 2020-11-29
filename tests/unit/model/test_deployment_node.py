@@ -19,6 +19,7 @@ import pytest
 from structurizr.model import Container, Relationship, SoftwareSystem
 from structurizr.model.deployment_node import DeploymentNode, DeploymentNodeIO
 from structurizr.model.infrastructure_node import InfrastructureNode
+from structurizr.model.tags import Tags
 
 
 class MockModel:
@@ -78,6 +79,7 @@ def test_deployment_node_init(attributes):
     node = DeploymentNode(**attributes)
     for attr, expected in attributes.items():
         assert getattr(node, attr) == expected
+    assert Tags.DEPLOYMENT_NODE in node.tags
 
 
 def test_deployment_node_adds_to_children(model_with_node):
@@ -97,6 +99,25 @@ def test_deployment_node_adding_same_child_twice_is_ok(model_with_node):
     child = top_node.add_deployment_node(name="child")
     top_node += child
     assert len(top_node.children) == 1
+
+
+def test_deployment_node_child_picks_up_environment(model_with_node):
+    """Ensure that the environment of the child matches the parent."""
+    top_node = model_with_node.empty_node
+    child = top_node.add_deployment_node(name="child")
+    assert child.environment == "Live"
+
+
+def test_deployment_node_cant_add_child_in_different_environment(model_with_node):
+    """Ensure that the environment of the child matches the parent."""
+    top_node = model_with_node.empty_node
+    child = DeploymentNode(name="child", environment="Dev")
+    with pytest.raises(
+        ValueError,
+        match=r"DeploymentNode .* cannot be in a different environment \(Dev\) from "
+        + r"its parent \(Live\)\.",
+    ):
+        top_node += child
 
 
 def test_deployment_node_add_child_with_existing_parent(model_with_node: MockModel):
@@ -156,7 +177,7 @@ def test_deployment_node_add_with_iadd(model_with_node: MockModel):
     model_with_node += system
     container = Container(name="container")
     system += container
-    child_node = DeploymentNode(name="child")
+    child_node = DeploymentNode(name="child", environment="Live")
     infra_node = InfrastructureNode(name="infra")
 
     node += child_node

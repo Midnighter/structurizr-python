@@ -27,6 +27,7 @@ from .infrastructure_node import InfrastructureNode, InfrastructureNodeIO
 from .relationship import Relationship
 from .software_system import SoftwareSystem
 from .software_system_instance import SoftwareSystemInstance, SoftwareSystemInstanceIO
+from .tags import Tags
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -114,6 +115,7 @@ class DeploymentNode(DeploymentElement):
         self._container_instances = set(container_instances)
         self._software_system_instances = set(software_system_instances)
         self._infrastructure_nodes = set(infrastructure_nodes)
+        self.tags.add(Tags.DEPLOYMENT_NODE)
 
     @property
     def children(self) -> Iterable["DeploymentNode"]:
@@ -158,7 +160,11 @@ class DeploymentNode(DeploymentElement):
             **kwargs: additional keyword arguments for instantiating a `DeploymentNode`
         """
         node = DeploymentNode(
-            name=name, description=description, technology=technology, **kwargs
+            name=name,
+            description=description,
+            technology=technology,
+            environment=self.environment,
+            **kwargs,
         )
         self._add_child_deployment_node(node)
         return node
@@ -296,6 +302,13 @@ class DeploymentNode(DeploymentElement):
                 f"DeploymentNode with name '{node.name}' already has parent "
                 f"{node.parent}. Cannot add to {self}."
             )
+
+        if node.environment != self.environment:
+            raise ValueError(
+                f"DeploymentNode {node.name} cannot be in a different environment "
+                f"({node.environment}) from its parent ({self.environment})."
+            )
+
         self._children.add(node)
         if self.has_model:
             model = self.model
