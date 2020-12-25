@@ -72,7 +72,7 @@ class StaticView(View, ABC):
     @abstractmethod
     def add_all_elements(self) -> None:
         """Add all permitted elements from a model to this view."""
-        pass
+        pass  # pragma: no cover
 
     def add(
         self,
