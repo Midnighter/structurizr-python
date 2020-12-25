@@ -173,14 +173,23 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         """Add a single relationship to this view.
 
         Returns:
-            The new view if both the source and destination for the relationship are
-            in this view, else `None`.
+            The new (or existing) view if both the source and destination for the
+            relationship are in this view, else `None`.
         """
         if self.is_element_in_view(relationship.source) and self.is_element_in_view(
             relationship.destination
         ):
-            view = RelationshipView(relationship=relationship)
-            self.relationship_views.add(view)
+            view = next(
+                (
+                    rv
+                    for rv in self.relationship_views
+                    if rv.relationship is relationship
+                ),
+                None,
+            )
+            if not view:
+                view = RelationshipView(relationship=relationship)
+                self.relationship_views.add(view)
             return view
         return None
 
