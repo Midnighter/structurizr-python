@@ -152,14 +152,16 @@ def create_big_bank_workspace():
     single_page_application.tags.add(web_browser_tag)
     mobile_app = internet_banking_system.add_container(
         "Mobile App",
-        "Provides a limited subset of the Internet banking functionality to customers via their mobile device.",
+        "Provides a limited subset of the Internet banking functionality to "
+        + "customers via their mobile device.",
         "Xamarin",
         id="mobileApp",
     )
     mobile_app.tags.add(mobile_app_tag)
     web_application = internet_banking_system.add_container(
         "Web Application",
-        "Delivers the static content and the Internet banking single page application.",
+        "Delivers the static content and the Internet banking single page "
+        + "application.",
         "Java and Spring MVC",
         id="webApplication",
     )
@@ -171,7 +173,8 @@ def create_big_bank_workspace():
     )
     database = internet_banking_system.add_container(
         "Database",
-        "Stores user registration information, hashed authentication credentials, access logs, etc.",
+        "Stores user registration information, hashed authentication credentials, "
+        + "access logs, etc.",
         "Relational Database Schema",
         id="database",
     )
@@ -188,8 +191,9 @@ def create_big_bank_workspace():
     api_application.uses(email_system, "Sends e-mail using", technology="SMTP")
 
     # components
-    # - for a real-world software system, you would probably want to extract the components using
-    # - static analysis/reflection rather than manually specifying them all
+    # - for a real-world software system, you would probably want to extract the
+    #   components using static analysis/reflection rather than manually specifying
+    #   them all
 
     signin_controller = api_application.add_component(
         name="Sign In Controller",
@@ -211,7 +215,8 @@ def create_big_bank_workspace():
     )
     security_component = api_application.add_component(
         name="Security Component",
-        description="Provides functionality related to signing in, changing passwords, etc.",
+        description="Provides functionality related to signing in, changing passwords, "
+        + "etc.",
         technology="Spring Bean",
         id="securityComponent",
     )
@@ -353,7 +358,8 @@ def create_big_bank_workspace():
     secondary_database_server.tags.add(failover_tag)
     secondary_database = secondary_database_server.add_container(database)
 
-    # # model.Relationships.Where(r=>r.Destination.Equals(secondary_database)).ToList().ForEach(r=>r.tags.add(failover_tag))
+    # model.Relationships.Where(r=>r.Destination.Equals(secondary_database)).ToList()
+    #   .ForEach(r=>r.tags.add(failover_tag))
     data_replication_relationship = primary_database_server.uses(
         secondary_database_server, "Replicates data to"
     )
@@ -400,7 +406,8 @@ def create_big_bank_workspace():
     component_view.add(email_system)
     component_view.paper_size = PaperSize.A5_Landscape
 
-    # systemLandscapeView.AddAnimation(internet_banking_system, customer, mainframe_banking_system, emailSystem)
+    # systemLandscapeView.AddAnimation(internet_banking_system, customer,
+    #   mainframe_banking_system, emailSystem)
     # systemLandscapeView.AddAnimation(atm)
     # systemLandscapeView.AddAnimation(customerServiceStaff, back_office_staff)
 
@@ -418,20 +425,24 @@ def create_big_bank_workspace():
 
     # componentView.AddAnimation(singlePageApplication, mobile_app)
     # componentView.AddAnimation(signinController, securityComponent, database)
-    # componentView.AddAnimation(accountsSummaryController, mainframe_banking_systemFacade, mainframe_banking_system)
+    # componentView.AddAnimation(accountsSummaryController,
+    #   mainframe_banking_systemFacade, mainframe_banking_system)
     # componentView.AddAnimation(resetPasswordController, emailComponent, database)
 
     # # dynamic diagrams and deployment diagrams are not available with the Free Plan
-    # DynamicView dynamicView = views.CreateDynamicView(apiApplication, "SignIn", "Summarises how the sign in feature works in the single-page application.")
+    # DynamicView dynamicView = views.CreateDynamicView(apiApplication, "SignIn",
+    #   "Summarises how the sign in feature works in the single-page application.")
     # dynamicView.Add(singlePageApplication, "Submits credentials to", signinController)
     # dynamicView.Add(signinController, "Calls isAuthenticated() on", securityComponent)
-    # dynamicView.Add(securityComponent, "select * from users where username = ?", database)
+    # dynamicView.Add(securityComponent, "select * from users where username = ?",
+    #   database)
     # dynamicView.PaperSize = PaperSize.A5_Landscape
 
     development_deployment_view = views.create_deployment_view(
         software_system=internet_banking_system,
         key="DevelopmentDeployment",
-        description="An example development deployment scenario for the Internet Banking System.",
+        description="An example development deployment scenario for the Internet "
+        + "Banking System.",
         environment="Development",
     )
     development_deployment_view.add(developer_laptop)
@@ -440,7 +451,8 @@ def create_big_bank_workspace():
     live_deployment_view = views.create_deployment_view(
         software_system=internet_banking_system,
         key="LiveDeployment",
-        description="An example live deployment scenario for the Internet Banking System.",
+        description="An example live deployment scenario for the Internet Banking "
+        + "System.",
         environment="Live",
     )
     live_deployment_view += big_bank_data_center

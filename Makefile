@@ -8,6 +8,7 @@
 qa:
 	isort src/structurizr/ tests/ examples/ setup.py
 	black src/structurizr/ tests/ examples/ setup.py
+	flake8 src/structurizr/ tests/ examples/ setup.py
 
 ## Prepare a release by generating the automatic code documentation.
 release:
