@@ -16,7 +16,7 @@
 """Ensure the expected behaviour of View."""
 
 
-from structurizr.model import Model, SoftwareSystem
+from structurizr.model import Model
 from structurizr.view.view import View
 
 
