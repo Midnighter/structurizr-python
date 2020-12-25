@@ -106,7 +106,7 @@ class StaticView(View, ABC):
         element_type: Union[Type[Person], Type[SoftwareSystem], Type[Container]],
     ) -> None:
         """Add all permitted elements from a model to this view."""
-        self._add_element(element, True)
+        self._add_element(element, False)
 
         # TODO(ilaif): @midnighter - Should we move to @property instead
         #  of get_X()? More pythonic.

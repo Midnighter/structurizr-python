@@ -4,6 +4,7 @@ History
 
 Next Release
 ------------
+* Fix: Don't duplicate relationships if ``add_nearest_neighbours()`` called twice (#63)
 
 0.3.0 (2020-11-29)
 ------------------
