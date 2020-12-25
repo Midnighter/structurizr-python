@@ -127,7 +127,10 @@ def main() -> Workspace:
     contextView = views.create_system_context_view(
         software_system=financial_risk_system,
         key="Context",
-        description="An example System Context diagram for the Financial Risk System architecture kata.",
+        description=(
+            "An example System Context diagram for the Financial Risk System "
+            "architecture kata."
+        ),
     )
     contextView.add_all_software_systems()
     contextView.add_all_people()
