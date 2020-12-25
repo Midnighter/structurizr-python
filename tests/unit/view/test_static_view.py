@@ -16,8 +16,6 @@
 """Ensure the expected behaviour of StaticView."""
 
 
-import pytest
-
 from structurizr.model import Model, Person, SoftwareSystem
 from structurizr.view.static_view import StaticView
 
@@ -56,13 +54,11 @@ def test_add_nearest_neighbours():
     assert len(view.relationship_views) == 1
 
 
-@pytest.mark.xfail(strict=True)
 def test_add_nearest_neighbours_doesnt_dupe_relationships():
     """Test relationships aren't duplicated if neighbours added more than once.
 
     See https://github.com/Midnighter/structurizr-python/issues/63.
     """
-
     model = Model()
     sys1 = model.add_software_system(name="System 1")
     sys2 = model.add_software_system(name="System 2")
@@ -71,6 +67,6 @@ def test_add_nearest_neighbours_doesnt_dupe_relationships():
     view.add_nearest_neighbours(sys1, SoftwareSystem)
     assert len(view.relationship_views) == 1
 
-    # The next line will currently dupe the relationship
+    # The next line should not add any new relationships
     view.add_nearest_neighbours(sys1, Person)
-    assert len(view.relationship_views) == 1  # This fails as it's 2
+    assert len(view.relationship_views) == 1
