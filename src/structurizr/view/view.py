@@ -42,7 +42,7 @@ class ViewIO(BaseModel, ABC):
     """
 
     key: str
-    description: str
+    description: str = ""
     software_system_id: Optional[str] = Field(default=None, alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(default=None, alias="paperSize")
     automatic_layout: Optional[AutomaticLayoutIO] = Field(

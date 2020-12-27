@@ -15,8 +15,6 @@
 
 """Ensure the expected behaviour of View."""
 
-import pytest
-
 from structurizr.model import Model
 from structurizr.view.view import View, ViewIO
 
@@ -82,7 +80,6 @@ def test_adding_all_relationships():
     assert rel2 in [vr.relationship for vr in view.relationship_views]
 
 
-@pytest.mark.xfail(strict=True)
 def test_missing_json_description_allowed():
     """
     Ensure that missing descriptions in the JSON form are supported.
@@ -98,4 +95,5 @@ def test_missing_json_description_allowed():
         "key": "System1-SystemContext"
     }
     """
-    ViewIO.parse_raw(json)  # Fails as description is missing
+    io = ViewIO.parse_raw(json)
+    assert io is not None
