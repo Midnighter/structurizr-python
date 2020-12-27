@@ -15,9 +15,10 @@
 
 """Ensure the expected behaviour of View."""
 
+import pytest
 
 from structurizr.model import Model
-from structurizr.view.view import View
+from structurizr.view.view import View, ViewIO
 
 
 class DerivedView(View):
@@ -79,3 +80,22 @@ def test_adding_all_relationships():
     assert len(view.relationship_views) == 2
     assert rel1 in [vr.relationship for vr in view.relationship_views]
     assert rel2 in [vr.relationship for vr in view.relationship_views]
+
+
+@pytest.mark.xfail(strict=True)
+def test_missing_json_description_allowed():
+    """
+    Ensure that missing descriptions in the JSON form are supported.
+
+    Raised as https://github.com/Midnighter/structurizr-python/issues/40, it is
+    permitted through the Structurizr UI to create views with a blank description,
+    which then gets ommitted from the workspace JSON, so this needs to be allowed by
+    the Pydantic validation also.
+    """
+
+    json = """
+    {
+        "key": "System1-SystemContext"
+    }
+    """
+    ViewIO.parse_raw(json)  # Fails as description is missing
