@@ -10,6 +10,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+"""Ensure the expected behaviour of DeploymentView."""
+
+
 from structurizr.view.container_view import ContainerView, ContainerViewIO
 
 
