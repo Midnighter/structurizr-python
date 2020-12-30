@@ -39,7 +39,7 @@ class ContainerViewIO(StaticViewIO):
     """
 
     external_software_system_boundary_visible: bool = Field(
-        default=True, alias="externalSoftwareSystemBoundariesVisible"
+        alias="externalSoftwareSystemBoundariesVisible"
     )
 
 

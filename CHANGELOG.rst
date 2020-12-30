@@ -6,6 +6,7 @@ Next Release
 ------------
 * Fix: Don't duplicate relationships if ``add_nearest_neighbours()`` called twice (#63)
 * Fix: Support blank diagrams descriptions from the Structurizr UI (#40)
+* Fix: External boundaries visible flag in ContainerView now preserved in JSON (#67)
 
 0.3.0 (2020-11-29)
 ------------------
