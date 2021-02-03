@@ -174,7 +174,7 @@ def create_big_bank_workspace():
     database = internet_banking_system.add_container(
         "Database",
         "Stores user registration information, hashed authentication credentials, "
-        + "access logs, etc.",
+        "access logs, etc.",
         "Relational Database Schema",
         id="database",
     )
@@ -216,7 +216,7 @@ def create_big_bank_workspace():
     security_component = api_application.add_component(
         name="Security Component",
         description="Provides functionality related to signing in, changing passwords, "
-        + "etc.",
+        "etc.",
         technology="Spring Bean",
         id="securityComponent",
     )
@@ -442,7 +442,7 @@ def create_big_bank_workspace():
         software_system=internet_banking_system,
         key="DevelopmentDeployment",
         description="An example development deployment scenario for the Internet "
-        + "Banking System.",
+        "Banking System.",
         environment="Development",
     )
     development_deployment_view.add(developer_laptop)
@@ -452,7 +452,7 @@ def create_big_bank_workspace():
         software_system=internet_banking_system,
         key="LiveDeployment",
         description="An example live deployment scenario for the Internet Banking "
-        + "System.",
+        "System.",
         environment="Live",
     )
     live_deployment_view += big_bank_data_center
