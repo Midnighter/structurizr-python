@@ -23,6 +23,17 @@ plugins:
   - search:
       prebuild_index: true
   - awesome-pages
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_source: true
+            show_root_heading: false
+            show_root_toc_entry: true
+            show_root_full_path: false
+      watch:
+        - src/structurizr
 
 extra:
   social:

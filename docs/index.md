@@ -26,12 +26,15 @@ have an existing workspace that you want to modify locally.
    [getting-started](https://github.com/Midnighter/structurizr-python/blob/devel/examples/getting_started.py)
    script will be suitable.
 
-    The `#!python main()` function in each example script creates a more or less involved
-    workspace for you.  When you have created a workspace, it is time to upload
-    it so that you can create diagrams for it.  You will need to create a
-    `#!python StructurizrClient` instance and its settings. The settings can be provided
-    as arguments, be read from environment variables, or be provided in a `.env`
-    file.
+    The `#!python main()` function in each example script creates a more or less
+    involved workspace for you.  When you have created a workspace, it is time
+    to upload it so that you can create diagrams for it.  You will need to
+    create a
+    [`StructurizrClient`][structurizr.api.structurizr_client.StructurizrClient]
+    instance and its
+    [settings][structurizr.api.structurizr_client_settings.StructurizrClientSettings].
+    The settings can be provided as arguments, be read from environment
+    variables, or be provided in a `.env` file.
  
     ```python
     from structurizr import StructurizrClient, StructurizrClientSettings
