@@ -161,7 +161,7 @@ def create_big_bank_workspace():
     web_application = internet_banking_system.add_container(
         "Web Application",
         "Delivers the static content and the Internet banking single page "
-        + "application.",
+        "application.",
         "Java and Spring MVC",
         id="webApplication",
     )
