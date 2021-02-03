@@ -153,7 +153,7 @@ def create_big_bank_workspace():
     mobile_app = internet_banking_system.add_container(
         "Mobile App",
         "Provides a limited subset of the Internet banking functionality to "
-        + "customers via their mobile device.",
+        "customers via their mobile device.",
         "Xamarin",
         id="mobileApp",
     )
