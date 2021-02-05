@@ -18,7 +18,9 @@ from structurizr.view.container_view import ContainerView, ContainerViewIO
 
 
 def test_external_system_boundary_preserved():
-    """Test the externalSoftwareSystemBoundariesVisible flag appears in the JSON.
+    """
+    Test the externalSoftwareSystemBoundariesVisible flag appears in the JSON.
+    
     Not having this set means that Structurizr assumes it is false (see
     https://github.com/Midnighter/structurizr-python/issues/67).  When exported
     from Structurizr, the flag is present whether true or false, so check that
