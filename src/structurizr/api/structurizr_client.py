@@ -100,8 +100,9 @@ class StructurizrClient:
 
     def __enter__(self):
         """Enter a context by locking the corresponding remote workspace."""
-        is_successful = self.lock_workspace()
-        if not is_successful:
+        paid_plan, is_successful = self.lock_workspace()
+
+        if paid_plan and not is_successful:
             raise StructurizrClientException(
                 f"Failed to lock the Structurizr workspace {self.workspace_id}."
             )
@@ -110,9 +111,9 @@ class StructurizrClient:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit a context by unlocking the corresponding remote workspace."""
-        is_successful = self.unlock_workspace()
+        paid_plan, is_successful = self.unlock_workspace()
         self._client.close()
-        if exc_type is None and not is_successful:
+        if exc_type is None and (paid_plan and not is_successful):
             raise StructurizrClientException(
                 f"Failed to unlock the Structurizr workspace {self.workspace_id}."
             )
@@ -206,11 +207,13 @@ class StructurizrClient:
         logger.debug("%r", response.json())
         response.raise_for_status()
         response = APIResponse.parse_raw(response.text)
+
         if not response.success:
-            logger.error(
+            logger.warn(
                 f"Failed to lock workspace {self.workspace_id}. {response.message}"
             )
-        return response.success
+
+        return self._paid_plan(response), response.success
 
     def unlock_workspace(self) -> bool:
         """
@@ -228,10 +231,10 @@ class StructurizrClient:
         response.raise_for_status()
         response = APIResponse.parse_raw(response.text)
         if not response.success:
-            logger.error(
+            logger.warn(
                 f"Failed to unlock workspace {self.workspace_id}. {response.message}"
             )
-        return response.success
+        return self._paid_plan(response), response.success
 
     def _add_headers(
         self,
@@ -327,3 +330,7 @@ class StructurizrClient:
     ) -> str:
         """Assemble the complete message digest."""
         return f"{http_verb}\n{uri_path}\n{definition_md5}\n{content_type}\n{nonce}\n"
+
+    @staticmethod
+    def _paid_plan(response: APIResponse) -> bool:
+        return not "free plan" in response.message.lower()
