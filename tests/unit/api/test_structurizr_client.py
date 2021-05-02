@@ -210,3 +210,29 @@ def test_locking_and_unlocking(client: StructurizrClient, mocker: MockerFixture)
     assert requests[0].url.path == "/workspace/19/lock"
     assert requests[1].method == "DELETE"
     assert requests[1].url.path == "/workspace/19/lock"
+
+
+def test_locking_and_unlocking_with_context_manager(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Check new-style locking using .lock()."""
+    requests: List[Request] = []
+
+    def fake_send(request: Request):
+        nonlocal requests
+        requests.append(request)
+        return Response(
+            200,
+            content='{"success": true, "message": "OK"}'.encode("ascii"),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with client.lock():
+        pass
+
+    assert len(requests) == 2
+    assert requests[0].method == "PUT"
+    assert requests[0].url.path == "/workspace/19/lock"
+    assert requests[1].method == "DELETE"
+    assert requests[1].url.path == "/workspace/19/lock"
