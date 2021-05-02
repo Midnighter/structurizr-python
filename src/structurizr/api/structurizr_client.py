@@ -230,8 +230,8 @@ class StructurizrClient:
         request = self._client.build_request("PUT", self._lock_url, params=self._params)
         request.headers.update(self._add_headers(request))
         response = self._client.send(request)
-        logger.debug("%r", response.json())
         response.raise_for_status()
+        logger.debug("%r", response.json())
         response = APIResponse.parse_raw(response.text)
         if not response.success:
             logger.error(
