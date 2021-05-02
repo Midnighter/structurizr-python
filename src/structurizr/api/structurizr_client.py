@@ -20,6 +20,7 @@ import gzip
 import hashlib
 import hmac
 import logging
+import warnings
 from base64 import b64encode
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
@@ -100,11 +101,13 @@ class StructurizrClient:
         )
 
     def __enter__(self):
-        """Enter a context by locking the corresponding remote workspace.
-
-        Note: this method is deprecated in favour of lock(), and will be removed in a
-        future relesae.
-        """
+        """Enter a context by locking the corresponding remote workspace."""
+        warnings.warn(
+            "Using the `StructurizrClient` in a context is deprecated since version "
+            "0.4.1 and will be removed in a future release. Please use the "
+            "preferred method `.lock()` instead.",
+            DeprecationWarning,
+        )
         is_successful = self.lock_workspace()
         if not is_successful:
             raise StructurizrClientException(
@@ -114,11 +117,13 @@ class StructurizrClient:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exit a context by unlocking the corresponding remote workspace.
-
-        Note: this method is deprecated in favour of lock(), and will be removed in a
-        future relesae.
-        """
+        """Exit a context by unlocking the corresponding remote workspace."""
+        warnings.warn(
+            "Using the `StructurizrClient` in a context is deprecated since version "
+            "0.4.1 and will be removed in a future release. Please use the "
+            "preferred method `.lock()` instead.",
+            DeprecationWarning,
+        )
         is_successful = self.unlock_workspace()
         self._client.close()
         if exc_type is None and not is_successful:
@@ -135,7 +140,7 @@ class StructurizrClient:
                 f"Failed to lock the Structurizr workspace {self.workspace_id}."
             )
         try:
-            yield None
+            yield self
         finally:
             is_successful = self.unlock_workspace()
             self._client.close()
