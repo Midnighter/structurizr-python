@@ -21,6 +21,7 @@ import hashlib
 import hmac
 import logging
 from base64 import b64encode
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict
@@ -99,7 +100,11 @@ class StructurizrClient:
         )
 
     def __enter__(self):
-        """Enter a context by locking the corresponding remote workspace."""
+        """Enter a context by locking the corresponding remote workspace.
+
+        Note: this method is deprecated in favour of lock(), and will be removed in a
+        future relesae.
+        """
         is_successful = self.lock_workspace()
         if not is_successful:
             raise StructurizrClientException(
@@ -109,13 +114,35 @@ class StructurizrClient:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exit a context by unlocking the corresponding remote workspace."""
+        """Exit a context by unlocking the corresponding remote workspace.
+
+        Note: this method is deprecated in favour of lock(), and will be removed in a
+        future relesae.
+        """
         is_successful = self.unlock_workspace()
         self._client.close()
         if exc_type is None and not is_successful:
             raise StructurizrClientException(
                 f"Failed to unlock the Structurizr workspace {self.workspace_id}."
             )
+
+    @contextmanager
+    def lock(self):
+        """Provide a context manager for locking and unlocking a workspace."""
+        is_successful = self.lock_workspace()
+        if not is_successful:
+            raise StructurizrClientException(
+                f"Failed to lock the Structurizr workspace {self.workspace_id}."
+            )
+        try:
+            yield None
+        finally:
+            is_successful = self.unlock_workspace()
+            self._client.close()
+            if not is_successful:
+                raise StructurizrClientException(
+                    f"Failed to unlock the Structurizr workspace {self.workspace_id}."
+                )
 
     def close(self) -> None:
         """Close the connection pool."""
