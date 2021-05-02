@@ -22,6 +22,7 @@ from gzip import GzipFile
 from pathlib import Path
 from typing import List
 
+import httpx
 import pytest
 from httpx import URL, Request, Response
 from pytest_mock import MockerFixture
@@ -236,3 +237,73 @@ def test_locking_and_unlocking_with_context_manager(
     assert requests[0].url.path == "/workspace/19/lock"
     assert requests[1].method == "DELETE"
     assert requests[1].url.path == "/workspace/19/lock"
+
+
+def test_failed_lock_raises_exception(client: StructurizrClient, mocker: MockerFixture):
+    """Check failing to lock raises an exception.
+
+    Trying to lock a workspace which is already locked by someone else actually
+    returns a 200 status, but with success as false in the message.
+    """
+
+    def fake_send(request: Request):
+        msg = '{"success": false, "message": "The workspace is already locked"}'
+        return Response(
+            200,
+            content=msg.encode("ascii"),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with pytest.raises(StructurizrClientException, match="Failed to lock"):
+        with client.lock():
+            pass
+
+
+def test_failed_unlock_raises_exception(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Check failing to unlock raises an exception.
+
+    Not quite sure how this could occur, but check the handling anyway.
+    """
+
+    def fake_send(request: Request):
+        if request.method == "PUT":
+            return Response(
+                200,
+                content='{"success": true, "message": "OK"}'.encode("ascii"),
+                request=request,
+            )
+        else:
+            return Response(
+                200,
+                content='{"success": false, "message": "Not OK"}'.encode("ascii"),
+                request=request,
+            )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with pytest.raises(StructurizrClientException, match="Failed to unlock"):
+        with client.lock():
+            pass
+
+
+def test_failed_lock_bad_http_code(client: StructurizrClient, mocker: MockerFixture):
+    """Check getting a non-200 HTTP response raises an HTTPX exception.
+
+    Trying to lock a workspace which is already locked by someone else actually
+    returns a 200 status, but with success as false in the message.
+    """
+
+    def fake_send(request: Request):
+        msg = "Server failure"
+        return Response(
+            500,
+            content=msg.encode("ascii"),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with pytest.raises(httpx.HTTPStatusError):
+        with client.lock():
+            pass
