@@ -213,6 +213,34 @@ def test_locking_and_unlocking(client: StructurizrClient, mocker: MockerFixture)
     assert requests[1].url.path == "/workspace/19/lock"
 
 
+def test_locking_and_unlocking_on_free_plan(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Ensure that lock failures on free plans are handled correctly."""
+    requests: List[Request] = []
+
+    def fake_send(request: Request):
+        nonlocal requests
+        requests.append(request)
+        return Response(
+            200,
+            content='{"success": false, "message": "Free plans cannot lock"}'.encode(
+                "ascii"
+            ),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with client:
+        pass
+
+    assert len(requests) == 2
+    assert requests[0].method == "PUT"
+    assert requests[0].url.path == "/workspace/19/lock"
+    assert requests[1].method == "DELETE"
+    assert requests[1].url.path == "/workspace/19/lock"
+
+
 def test_locking_and_unlocking_with_context_manager(
     client: StructurizrClient, mocker: MockerFixture
 ):
@@ -305,5 +333,51 @@ def test_failed_lock_bad_http_code(client: StructurizrClient, mocker: MockerFixt
 
     mocker.patch.object(client._client, "send", new=fake_send)
     with pytest.raises(httpx.HTTPStatusError):
+        with client.lock():
+            pass
+
+
+def test_failed_lock_on_free_plan_doesnt_attempt_unlock(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Check that if lock failed because on free plan then unlock isn't called."""
+    requests: List[Request] = []
+
+    def fake_send(request: Request):
+        nonlocal requests
+        requests.append(request)
+        return Response(
+            200,
+            content='{"success": false, "message": "Cannot lock on free plan"}'.encode(
+                "ascii"
+            ),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+    with client.lock():
+        pass
+
+    assert len(requests) == 1
+
+
+def test_failed_lock_on_free_plan_with_ignore_off(
+    client: StructurizrClient, mocker: MockerFixture
+):
+    """Check that if ignoring free plan lock failures is disabled then it does fail."""
+
+    def fake_send(request: Request):
+        return Response(
+            200,
+            content='{"success": false, "message": "Cannot lock on free plan"}'.encode(
+                "ascii"
+            ),
+            request=request,
+        )
+
+    mocker.patch.object(client._client, "send", new=fake_send)
+
+    client.ignore_free_plan_locking_errors = False
+    with pytest.raises(StructurizrClientException, match="Failed to lock"):
         with client.lock():
             pass

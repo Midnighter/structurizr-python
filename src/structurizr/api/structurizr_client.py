@@ -25,7 +25,7 @@ from base64 import b64encode
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Tuple
 from urllib.parse import unquote_plus
 
 import httpx
@@ -58,7 +58,9 @@ class StructurizrClient:
         agent (str): A string identifying the agent (e.g. 'structurizr-java/1.2.0').
         workspace_archive_location (pathlib.Path): A directory for archiving downloaded
             workspaces, or None to suppress archiving.
-
+        ignore_free_plan_locking_errors (bool): When True (the default), attempts to
+            lock a workspace on a free plan licence will succeed even though free plans
+            don't allow locking.
     """
 
     def __init__(self, *, settings: StructurizrClientSettings, **kwargs):
@@ -82,6 +84,7 @@ class StructurizrClient:
         self.agent = settings.agent
         self.workspace_archive_location = settings.workspace_archive_location
         self.merge_from_remote = True
+        self.ignore_free_plan_locking_errors = True
         self._workspace_url = f"/workspace/{self.workspace_id}"
         self._lock_url = f"{self._workspace_url}/lock"
         self._params = {
@@ -134,15 +137,16 @@ class StructurizrClient:
     @contextmanager
     def lock(self):
         """Provide a context manager for locking and unlocking a workspace."""
-        is_successful = self.lock_workspace()
-        if not is_successful:
-            raise StructurizrClientException(
-                f"Failed to lock the Structurizr workspace {self.workspace_id}."
-            )
+        locked, paid_plan = self._lock_workspace()
+        if not locked:
+            if paid_plan or not self.ignore_free_plan_locking_errors:
+                raise StructurizrClientException(
+                    f"Failed to lock the Structurizr workspace {self.workspace_id}."
+                )
         try:
             yield self
         finally:
-            is_successful = self.unlock_workspace()
+            is_successful = self.unlock_workspace() if locked else True
             self._client.close()
             if not is_successful:
                 raise StructurizrClientException(
@@ -224,13 +228,13 @@ class StructurizrClient:
                 f"Error message: {body.get('message', '')}"
             )
 
-    def lock_workspace(self) -> bool:
+    def _lock_workspace(self) -> Tuple[bool, bool]:
         """
         Lock the Structurizr workspace.
 
         Returns:
-            bool: `True` if the workspace could be locked, `False` otherwise.
-
+            bool: `True` if lock succeeeded
+            bool: `True` if on paid plan
         """
         request = self._client.build_request("PUT", self._lock_url, params=self._params)
         request.headers.update(self._add_headers(request))
@@ -239,10 +243,26 @@ class StructurizrClient:
         logger.debug("%r", response.json())
         response = APIResponse.parse_raw(response.text)
         if not response.success:
-            logger.error(
+            logger.warning(
                 f"Failed to lock workspace {self.workspace_id}. {response.message}"
             )
-        return response.success
+        return response.success, self._paid_plan(response)
+
+    def lock_workspace(self) -> bool:
+        """Lock the Structurizr workspace.
+
+        Returns:
+            bool: `True` if the workspace could be locked, `False` otherwise.
+
+        Note that free plan Structurizr licences do not support locking.  By
+        default this failure will be ignored, however if you do want such locks
+        to fail then set ignore_free_plan_locking_errors to False.
+        """
+        success, paid_plan = self._lock_workspace()
+        if not success and not paid_plan and self.ignore_free_plan_locking_errors:
+            logger.debug("Ignoring lock failure on free plan")
+            success = True
+        return success
 
     def unlock_workspace(self) -> bool:
         """
@@ -259,11 +279,15 @@ class StructurizrClient:
         response = self._client.send(request)
         response.raise_for_status()
         response = APIResponse.parse_raw(response.text)
+        success = response.success
         if not response.success:
-            logger.error(
+            logger.warning(
                 f"Failed to unlock workspace {self.workspace_id}. {response.message}"
             )
-        return response.success
+            if self.ignore_free_plan_locking_errors and not self._paid_plan(response):
+                logger.debug("Ignoring unlock failure on free plan")
+                success = True
+        return success
 
     def _add_headers(
         self,
@@ -359,3 +383,7 @@ class StructurizrClient:
     ) -> str:
         """Assemble the complete message digest."""
         return f"{http_verb}\n{uri_path}\n{definition_md5}\n{content_type}\n{nonce}\n"
+
+    @staticmethod
+    def _paid_plan(response: APIResponse) -> bool:
+        return "free plan" not in response.message.lower()
