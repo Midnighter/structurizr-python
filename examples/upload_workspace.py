@@ -32,5 +32,5 @@ if __name__ == "__main__":
     settings = StructurizrClientSettings()
     workspace.id = settings.workspace_id
     client = StructurizrClient(settings=settings)
-    with client:
+    with client.lock():
         client.put_workspace(workspace)
