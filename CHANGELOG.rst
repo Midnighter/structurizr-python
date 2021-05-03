@@ -4,6 +4,9 @@ History
 
 Next Release
 ------------
+
+0.5.0 (2021-05-03)
+------------------
 * Feat: Add support for grouping elements (#72)
 * Feat: Locking workspace in ``with`` block through ``lock()`` method (#62)
 * Fix: On free plans, ignore errors when locking/unlocking workspaces (thanks @maximveksler)
