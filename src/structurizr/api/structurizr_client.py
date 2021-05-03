@@ -107,8 +107,8 @@ class StructurizrClient:
         """Enter a context by locking the corresponding remote workspace."""
         warnings.warn(
             "Using the `StructurizrClient` in a context is deprecated since version "
-            "0.4.1 and will be removed in a future release. Please use the "
-            "preferred method `.lock()` instead.",
+            "0.5.0 and will be removed in a future release. Please use the preferred "
+            "method `.lock()` instead.",
             DeprecationWarning,
         )
         is_successful = self.lock_workspace()
@@ -123,8 +123,8 @@ class StructurizrClient:
         """Exit a context by unlocking the corresponding remote workspace."""
         warnings.warn(
             "Using the `StructurizrClient` in a context is deprecated since version "
-            "0.4.1 and will be removed in a future release. Please use the "
-            "preferred method `.lock()` instead.",
+            "0.5.0 and will be removed in a future release. Please use the preferred "
+            "method `.lock()` instead.",
             DeprecationWarning,
         )
         is_successful = self.unlock_workspace()
