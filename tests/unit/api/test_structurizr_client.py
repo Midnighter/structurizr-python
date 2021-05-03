@@ -359,25 +359,3 @@ def test_failed_lock_on_free_plan_doesnt_attempt_unlock(
         pass
 
     assert len(requests) == 1
-
-
-def test_failed_lock_on_free_plan_with_ignore_off(
-    client: StructurizrClient, mocker: MockerFixture
-):
-    """Check that if ignoring free plan lock failures is disabled then it does fail."""
-
-    def fake_send(request: Request):
-        return Response(
-            200,
-            content='{"success": false, "message": "Cannot lock on free plan"}'.encode(
-                "ascii"
-            ),
-            request=request,
-        )
-
-    mocker.patch.object(client._client, "send", new=fake_send)
-
-    client.ignore_free_plan_locking_errors = False
-    with pytest.raises(StructurizrClientException, match="Failed to lock"):
-        with client.lock():
-            pass
