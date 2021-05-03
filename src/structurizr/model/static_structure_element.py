@@ -19,7 +19,8 @@
 from abc import ABC
 from typing import TYPE_CHECKING, Optional
 
-from .element import Element, ElementIO
+from .element import Element
+from .groupable_element import GroupableElement, GroupableElementIO
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -29,7 +30,7 @@ if TYPE_CHECKING:  # pragma: no cover
 __all__ = ("StaticStructureElementIO", "StaticStructureElement")
 
 
-class StaticStructureElementIO(ElementIO, ABC):
+class StaticStructureElementIO(GroupableElementIO, ABC):
     """
     Define a superclass for all static structure model elements.
 
@@ -41,7 +42,7 @@ class StaticStructureElementIO(ElementIO, ABC):
     pass
 
 
-class StaticStructureElement(Element, ABC):
+class StaticStructureElement(GroupableElement, ABC):
     """
     Define a superclass for all static structure model elements.
 

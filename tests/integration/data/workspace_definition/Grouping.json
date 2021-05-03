@@ -1,0 +1,252 @@
+{
+    "id" : 0,
+    "name" : "Grouping",
+    "description" : "Based on https://github.com/structurizr/dsl/blob/master/examples/groups.dsl",
+    "properties" : {
+      "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgZ3JvdXAgIkNvbnN1bWVycyAtIEdyb3VwIDEiIHsKICAgICAgICAgICAgY29uc3VtZXJBID0gc29mdHdhcmVTeXN0ZW0gIkNvbnN1bWVyIEEiCiAgICAgICAgICAgIGNvbnN1bWVyQiA9IHNvZnR3YXJlU3lzdGVtICJDb25zdW1lciBCIgogICAgICAgIH0KICAgICAgICBncm91cCAiQ29uc3VtZXJzIC0gR3JvdXAgMiIgewogICAgICAgICAgICBjb25zdW1lckMgPSBzb2Z0d2FyZVN5c3RlbSAiQ29uc3VtZXIgQyIKICAgICAgICAgICAgY29uc3VtZXJEID0gc29mdHdhcmVTeXN0ZW0gIkNvbnN1bWVyIEQiCiAgICAgICAgfQoKICAgICAgICBzb2Z0d2FyZVN5c3RlbSA9IHNvZnR3YXJlU3lzdGVtICJTb2Z0d2FyZSBTeXN0ZW0iICJNeSBzb2Z0d2FyZSBzeXN0ZW0uIiB7CiAgICAgICAgICAgIGdyb3VwICJTZXJ2aWNlIDEiIHsKICAgICAgICAgICAgICAgIHNlcnZpY2UxRGF0YWJhc2UgPSBjb250YWluZXIgIlNlcnZpY2UgMSBEYXRhYmFzZSIKICAgICAgICAgICAgICAgIHNlcnZpY2UxQXBpID0gY29udGFpbmVyICJTZXJ2aWNlIDEgQVBJIgogICAgICAgICAgICB9CiAgICAgICAgICAgIGdyb3VwICJTZXJ2aWNlIDIiIHsKICAgICAgICAgICAgICAgIHNlcnZpY2UyRGF0YWJhc2UgPSBjb250YWluZXIgIlNlcnZpY2UgMiBEYXRhYmFzZSIKICAgICAgICAgICAgICAgIHNlcnZpY2UyQXBpID0gY29udGFpbmVyICJTZXJ2aWNlIDIgQVBJIgogICAgICAgICAgICB9CiAgICAgICAgfQoKICAgICAgICBjb25zdW1lckEgLT4gc2VydmljZTFBcGkgIlVzZXMiCiAgICAgICAgY29uc3VtZXJCIC0+IHNlcnZpY2UxQXBpICJVc2VzIgogICAgICAgIGNvbnN1bWVyQyAtPiBzZXJ2aWNlMUFwaSAiVXNlcyIKICAgICAgICBjb25zdW1lckQgLT4gc2VydmljZTFBcGkgIlVzZXMiCgogICAgICAgIHNlcnZpY2UxQXBpIC0+IHNlcnZpY2UxRGF0YWJhc2UgIlJlYWRzIGZyb20gYW5kIHdyaXRlcyB0byIKICAgICAgICBzZXJ2aWNlMkFwaSAtPiBzZXJ2aWNlMkRhdGFiYXNlICJSZWFkcyBmcm9tIGFuZCB3cml0ZXMgdG8iCiAgICAgICAgc2VydmljZTFBcGkgLT4gc2VydmljZTJBcGkgIlVzZXMiCiAgICB9CgogICAgdmlld3MgewogICAgICAgIHN5c3RlbUNvbnRleHQgc29mdHdhcmVTeXN0ZW0gIlN5c3RlbUNvbnRleHQiIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9MYXlvdXQKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBzb2Z0d2FyZVN5c3RlbSAiQ29udGFpbmVycyIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b2xheW91dAogICAgICAgIH0KCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiUGVyc29uIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBwZXJzb24KICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KICAgIAp9Cg=="
+    },
+    "configuration" : { },
+    "model" : {
+      "softwareSystems" : [ {
+        "id" : "1",
+        "tags" : "Element,Software System",
+        "name" : "Consumer A",
+        "relationships" : [ {
+          "id" : "10",
+          "tags" : "Relationship",
+          "sourceId" : "1",
+          "destinationId" : "7",
+          "description" : "Uses"
+        }, {
+          "id" : "11",
+          "tags" : "Relationship",
+          "sourceId" : "1",
+          "destinationId" : "5",
+          "description" : "Uses"
+        } ],
+        "group" : "Consumers - Group 1",
+        "location" : "Unspecified"
+      }, {
+        "id" : "2",
+        "tags" : "Element,Software System",
+        "name" : "Consumer B",
+        "relationships" : [ {
+          "id" : "12",
+          "tags" : "Relationship",
+          "sourceId" : "2",
+          "destinationId" : "7",
+          "description" : "Uses"
+        }, {
+          "id" : "13",
+          "tags" : "Relationship",
+          "sourceId" : "2",
+          "destinationId" : "5",
+          "description" : "Uses"
+        } ],
+        "group" : "Consumers - Group 1",
+        "location" : "Unspecified"
+      }, {
+        "id" : "3",
+        "tags" : "Element,Software System",
+        "name" : "Consumer C",
+        "relationships" : [ {
+          "id" : "14",
+          "tags" : "Relationship",
+          "sourceId" : "3",
+          "destinationId" : "7",
+          "description" : "Uses"
+        }, {
+          "id" : "15",
+          "tags" : "Relationship",
+          "sourceId" : "3",
+          "destinationId" : "5",
+          "description" : "Uses"
+        } ],
+        "group" : "Consumers - Group 2",
+        "location" : "Unspecified"
+      }, {
+        "id" : "4",
+        "tags" : "Element,Software System",
+        "name" : "Consumer D",
+        "relationships" : [ {
+          "id" : "16",
+          "tags" : "Relationship",
+          "sourceId" : "4",
+          "destinationId" : "7",
+          "description" : "Uses"
+        }, {
+          "id" : "17",
+          "tags" : "Relationship",
+          "sourceId" : "4",
+          "destinationId" : "5",
+          "description" : "Uses"
+        } ],
+        "group" : "Consumers - Group 2",
+        "location" : "Unspecified"
+      }, {
+        "id" : "5",
+        "tags" : "Element,Software System",
+        "name" : "Software System",
+        "description" : "My software system.",
+        "location" : "Unspecified",
+        "containers" : [ {
+          "id" : "6",
+          "tags" : "Element,Container",
+          "name" : "Service 1 Database",
+          "group" : "Service 1"
+        }, {
+          "id" : "9",
+          "tags" : "Element,Container",
+          "name" : "Service 2 API",
+          "relationships" : [ {
+            "id" : "19",
+            "tags" : "Relationship",
+            "sourceId" : "9",
+            "destinationId" : "8",
+            "description" : "Reads from and writes to"
+          } ],
+          "group" : "Service 2"
+        }, {
+          "id" : "7",
+          "tags" : "Element,Container",
+          "name" : "Service 1 API",
+          "relationships" : [ {
+            "id" : "18",
+            "tags" : "Relationship",
+            "sourceId" : "7",
+            "destinationId" : "6",
+            "description" : "Reads from and writes to"
+          }, {
+            "id" : "20",
+            "tags" : "Relationship",
+            "sourceId" : "7",
+            "destinationId" : "9",
+            "description" : "Uses"
+          } ],
+          "group" : "Service 1"
+        }, {
+          "id" : "8",
+          "tags" : "Element,Container",
+          "name" : "Service 2 Database",
+          "group" : "Service 2"
+        } ]
+      } ]
+    },
+    "documentation" : { },
+    "views" : {
+      "systemContextViews" : [ {
+        "softwareSystemId" : "5",
+        "key" : "SystemContext",
+        "automaticLayout" : {
+          "implementation" : "Graphviz",
+          "rankDirection" : "TopBottom",
+          "rankSeparation" : 300,
+          "nodeSeparation" : 300,
+          "edgeSeparation" : 0,
+          "vertices" : false
+        },
+        "enterpriseBoundaryVisible" : true,
+        "elements" : [ {
+          "id" : "1",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "2",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "3",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "4",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "5",
+          "x" : 0,
+          "y" : 0
+        } ],
+        "relationships" : [ {
+          "id" : "17"
+        }, {
+          "id" : "15"
+        }, {
+          "id" : "13"
+        }, {
+          "id" : "11"
+        } ]
+      } ],
+      "containerViews" : [ {
+        "softwareSystemId" : "5",
+        "key" : "Containers",
+        "automaticLayout" : {
+          "implementation" : "Graphviz",
+          "rankDirection" : "TopBottom",
+          "rankSeparation" : 300,
+          "nodeSeparation" : 300,
+          "edgeSeparation" : 0,
+          "vertices" : false
+        },
+        "externalSoftwareSystemBoundariesVisible" : true,
+        "elements" : [ {
+          "id" : "1",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "2",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "3",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "4",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "6",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "7",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "8",
+          "x" : 0,
+          "y" : 0
+        }, {
+          "id" : "9",
+          "x" : 0,
+          "y" : 0
+        } ],
+        "relationships" : [ {
+          "id" : "18"
+        }, {
+          "id" : "16"
+        }, {
+          "id" : "14"
+        }, {
+          "id" : "12"
+        }, {
+          "id" : "20"
+        }, {
+          "id" : "10"
+        }, {
+          "id" : "19"
+        } ]
+      } ],
+      "configuration" : {
+        "branding" : { },
+        "styles" : {
+          "elements" : [ {
+            "tag" : "Person",
+            "shape" : "Person"
+          } ]
+        },
+        "terminology" : { }
+      }
+    }
+  }
