@@ -4,6 +4,7 @@ History
 
 Next Release
 ------------
+* Feat: Add support for grouping elements (#72)
 
 0.4.0 (2021-02-05)
 ------------------
