@@ -28,10 +28,11 @@ class GroupableElementIO(ElementIO, ABC):
     Define a superclass for all elements that can be included in a group.
 
     Attributes:
-        group (str): The name of thegroup in which this element should be included.
+        group (str): The name of thegroup in which this element should be included, or
+            None if no group.
     """
 
-    group: Optional[str] = ""
+    group: Optional[str]
 
 
 class GroupableElement(Element, ABC):
@@ -39,12 +40,14 @@ class GroupableElement(Element, ABC):
     Define a superclass for all elements that can be included in a group.
 
     Attributes:
-        group (str): The name of thegroup in which this element should be included.
+        group (str): The name of thegroup in which this element should be included, or
+            None if no group.
     """
 
-    def __init__(self, *, group: str = "", **kwargs):
+    def __init__(self, *, group: Optional[str] = None, **kwargs):
         """Initialise a GroupableElement."""
         super().__init__(**kwargs)
+        group = group.strip() or None if group else None
         self.group = group
 
     @classmethod

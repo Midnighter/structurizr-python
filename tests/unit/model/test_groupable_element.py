@@ -23,6 +23,15 @@ class ConcreteElement(ChildlessMixin, GroupableElement):
     pass
 
 
+def test_group_name_normalisation():
+    """Test that empty group names are normalised to None."""
+    assert ConcreteElement(name="Name").group is None
+    assert ConcreteElement(name="Name", group=None).group is None
+    assert ConcreteElement(name="Name", group="").group is None
+    assert ConcreteElement(name="Name", group=" ").group is None
+    assert ConcreteElement(name="Name", group=" g1 ").group == "g1"
+
+
 def test_group_in_json():
     """Test the group field is output to JSON."""
     element = ConcreteElement(name="Name", group="Group 1")
