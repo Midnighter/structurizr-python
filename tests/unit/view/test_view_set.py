@@ -14,19 +14,14 @@
 
 import pytest
 
+from structurizr.model.model import Model
 from structurizr.view.view_set import ViewSet, ViewSetIO
 
 
-class MockModel:
-    """Mock model for testing."""
-
-    pass
-
-
 @pytest.fixture(scope="function")
-def empty_model() -> MockModel:
-    """Provide an emptty model for testing."""
-    return MockModel()
+def empty_model() -> Model:
+    """Provide an empty model for testing."""
+    return Model()
 
 
 def test_view_set_construction(empty_model):
@@ -49,12 +44,17 @@ def test_adding_dynamic_view(empty_model):
 def test_dynamic_view_hydrated(empty_model):
     """Check dynamic views hydrated properly."""
     viewset = ViewSet(model=empty_model)
-    viewset.create_dynamic_view(key="dyn1", description="dynamic")
+    system1 = empty_model.add_software_system(name="sys1")
+    viewset.create_dynamic_view(
+        key="dyn1", description="dynamic", software_system=system1
+    )
     io = ViewSetIO.from_orm(viewset)
 
     new_viewset = ViewSet.hydrate(io, empty_model)
     assert len(new_viewset.dynamic_views) == 1
-    assert list(new_viewset.dynamic_views)[0].description == "dynamic"
+    view = list(new_viewset.dynamic_views)[0]
+    assert view.description == "dynamic"
+    assert view.element is system1
 
 
 @pytest.mark.xfail(strict=True)

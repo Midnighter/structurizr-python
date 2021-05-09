@@ -143,7 +143,10 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
         dynamic_views = []
         for view_io in views.dynamic_views:
-            view = DynamicView.hydrate(view_io)
+            element = (
+                model.get_element(view_io.element_id) if view_io.element_id else None
+            )
+            view = DynamicView.hydrate(view_io, element=element)
             cls._hydrate_view(view, model=model)
             dynamic_views.append(view)
 

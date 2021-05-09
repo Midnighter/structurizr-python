@@ -20,7 +20,13 @@ free-form arrangement of diagram elements with numbered interactions to indicate
 ordering.
 """
 
+from typing import Optional, Union
+
+from pydantic import Field
+
 from ..mixin.model_ref_mixin import ModelRefMixin
+from ..model.container import Container
+from ..model.software_system import SoftwareSystem
 from .view import View, ViewIO
 
 
@@ -28,21 +34,52 @@ __all__ = ("DynamicView", "DynamicViewIO")
 
 
 class DynamicViewIO(ViewIO):
-    """Represent the dynamic view from the C4 model."""
+    """
+    Represent the dynamic view from the C4 model.
 
-    pass
+    Attributes:
+        element: The software system or container that this view is focused on.
+    """
+
+    element_id: Optional[str] = Field(default=None, alias="elementId")
 
 
 class DynamicView(ModelRefMixin, View):
-    """Represent the dynamic view from the C4 model."""
+    """
+    Represent the dynamic view from the C4 model.
 
-    def __init__(self, **kwargs) -> None:
-        """Initialize a DynamicView."""
+    Attributes:
+        element: The software system or container that this view is focused on.
+    """
+
+    def __init__(
+        self,
+        *,
+        software_system: Optional[SoftwareSystem] = None,
+        container: Optional[Container] = None,
+        **kwargs
+    ) -> None:
+        """Initialize a DynamicView.
+
+        Note that we explicitly don't pass the software_system to the superclass as we
+        don't want it to appear in the JSON output (DynamicView uses elementId
+        instead).
+        """
+        if software_system is not None and container is not None:
+            raise ValueError("You cannot specify both software_system and container")
         super().__init__(**kwargs)
+        self.element = software_system or container
+        self.element_id = self.element.id if self.element else None
 
     @classmethod
-    def hydrate(cls, io: DynamicViewIO) -> "DynamicView":
+    def hydrate(
+        cls, io: DynamicViewIO, *, element: Optional[Union[SoftwareSystem, Container]]
+    ) -> "DynamicView":
         """Hydrate a new DynamicView instance from its IO."""
+        system = element if isinstance(element, SoftwareSystem) else None
+        container = element if isinstance(element, Container) else None
         return cls(
+            software_system=system,
+            container=container,
             **cls.hydrate_arguments(io),
         )
