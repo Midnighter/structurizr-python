@@ -27,13 +27,14 @@ from .component_view import ComponentView, ComponentViewIO
 from .configuration import Configuration, ConfigurationIO
 from .container_view import ContainerView, ContainerViewIO
 from .deployment_view import DeploymentView, DeploymentViewIO
+from .dynamic_view import DynamicView, DynamicViewIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .system_landscape_view import SystemLandscapeView, SystemLandscapeViewIO
 from .view import View
 
 
 if TYPE_CHECKING:
-    from ..model import Model
+    from ..model import Model  # pragma: no cover
 
 
 __all__ = ("ViewSet", "ViewSetIO")
@@ -58,9 +59,9 @@ class ViewSetIO(BaseModel):
     deployment_views: List[DeploymentViewIO] = Field(
         default=(), alias="deploymentViews"
     )
+    dynamic_views: List[DynamicViewIO] = Field(default=(), alias="dynamicViews")
 
     # TODO:
-    # dynamic_views: List[DynamicView] = Field(set(), alias="dynamicViews")
     # filtered_views: List[FilteredView] = Field(set(), alias="filteredViews")
 
 
@@ -82,6 +83,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         container_views: Iterable[ContainerView] = (),
         component_views: Iterable[ComponentView] = (),
         deployment_views: Iterable[DeploymentView] = (),
+        dynamic_views: Iterable[DynamicView] = (),
         configuration: Optional[Configuration] = None,
         **kwargs
     ) -> None:
@@ -95,6 +97,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self.container_views: Set[ContainerView] = set(container_views)
         self.component_views: Set[ComponentView] = set(component_views)
         self.deployment_views: Set[DeploymentView] = set(deployment_views)
+        self.dynamic_views: Set[DynamicView] = set(dynamic_views)
         self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
 
@@ -138,6 +141,12 @@ class ViewSet(ModelRefMixin, AbstractBase):
             cls._hydrate_view(view, model=model)
             deployment_views.append(view)
 
+        dynamic_views = []
+        for view_io in views.dynamic_views:
+            view = DynamicView.hydrate(view_io)
+            cls._hydrate_view(view, model=model)
+            dynamic_views.append(view)
+
         return cls(
             model=model,
             # TODO:
@@ -147,6 +156,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
             container_views=container_views,
             component_views=component_views,
             deployment_views=deployment_views,
+            dynamic_views=dynamic_views,
             configuration=Configuration.hydrate(views.configuration),
         )
 
@@ -259,6 +269,21 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self.deployment_views.add(deployment_view)
         return deployment_view
 
+    def create_dynamic_view(self, **kwargs) -> DynamicView:
+        """
+        Add a new DynamicView to the ViewSet.
+
+        Args:
+            **kwagrs: Provide keyword arguments for instantiating a `DynamicView`.
+        """
+        # TODO:
+        # AssertThatTheViewKeyIsUnique(key);
+        dynamic_view = DynamicView(**kwargs)
+        dynamic_view.set_viewset(self)
+        dynamic_view.set_model(self.model)
+        self.dynamic_views.add(dynamic_view)
+        return dynamic_view
+
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""
         for source_view in source.system_landscape_views:
@@ -281,11 +306,10 @@ class ViewSet(ModelRefMixin, AbstractBase):
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
 
-        # TODO: dynamic view
-        # for source_view in source.dynamic_views:
-        #     destination_view = self.find_dynamic_view(source_view)
-        #     if destination_view:
-        #         destination_view.copy_layout_information_from(source_view)
+        for source_view in source.dynamic_views:
+            destination_view = self._find_dynamic_view(source_view)
+            if destination_view:
+                destination_view.copy_layout_information_from(source_view)
 
         for source_view in source.deployment_views:
             destination_view = self._find_deployment_view(source_view)
@@ -321,12 +345,11 @@ class ViewSet(ModelRefMixin, AbstractBase):
                 return current_view
         return None
 
-    # TODO: dynamic view
-    # def find_dynamic_view(self, view: DynamicView) -> DynamicView:
-    #     for current_view in self.dynamic_views:
-    #         if view.key == current_view.key:
-    #             return current_view
-    #     return None
+    def _find_dynamic_view(self, view: DynamicView) -> Optional[DynamicView]:
+        for current_view in self.dynamic_views:
+            if view.key == current_view.key:
+                return current_view
+        return None
 
     def _find_deployment_view(self, view: DeploymentView) -> DeploymentView:
         for current_view in self.deployment_views:
