@@ -77,8 +77,8 @@ class DynamicView(ModelRefMixin, View):
     def add(
         self,
         source: Element,
-        description: str,
         destination: Element,
+        description: Optional[str] = None,
         *,
         technology: Optional[str] = None,
     ) -> RelationshipView:
@@ -115,7 +115,7 @@ class DynamicView(ModelRefMixin, View):
         self._add_element(destination, False)
         return self._add_relationship(
             relationship,
-            description=description,
+            description=description or relationship.description,
             order=self.sequence_number.get_next(),
             response=response,
         )
@@ -141,14 +141,14 @@ class DynamicView(ModelRefMixin, View):
         number 2, and C->E and D->E to get order number 3.  To achieve this,
         you would do:
 
-            dynamic_view.add(a, "Uses", b)      # Will be order "1"
+            dynamic_view.add(a, b)      # Will be order "1"
             with dynamic_view.parallel_sequence(False):
-                dynamic_view.add(b, "Uses", c)  # "2"
-                dynamic_view.add(c, "Uses", e)  # "3"
+                dynamic_view.add(b, c)  # "2"
+                dynamic_view.add(c, e)  # "3"
             with dynamic_view.parallel_sequence(True):
-                dynamic_view.add(b, "Uses", d)  # "2" again
-                dynamic_view.add(d, "Uses", e)  # "3"
-            dynamiic_view.add(e, "Uses", f)     # "4"
+                dynamic_view.add(b, d)  # "2" again
+                dynamic_view.add(d, e)  # "3"
+            dynamiic_view.add(e, f)     # "4"
         """
         try:
             self.sequence_number.start_parallel_sequence()
@@ -167,8 +167,9 @@ class DynamicView(ModelRefMixin, View):
             (
                 rel
                 for rel in source.get_efferent_relationships()
-                if rel.description == description
-                and (technology is None or rel.technology == technology)
+                if rel.destination is destination
+                and (rel.description == description or not description)
+                and (rel.technology == technology or technology is None)
             ),
             None,
         )
@@ -181,7 +182,8 @@ class DynamicView(ModelRefMixin, View):
             (
                 rel
                 for rel in source.get_afferent_relationships()
-                if technology is None or rel.technology == technology
+                if rel.source is destination
+                and (rel.technology == technology or technology is None)
             ),
             None,
         )

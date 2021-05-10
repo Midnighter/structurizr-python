@@ -72,17 +72,21 @@ def test_adding_relationships_finds_correct_relationship(empty_view: DynamicView
     rel3 = model.add_relationship(
         source=system2, destination=system3, description="Invokes", technology="SOAP"
     )
+    rel4 = model.add_relationship(
+        source=system1, destination=system3, description="Depends on"
+    )
 
-    assert empty_view.add(system1, "Sends requests to", system2).relationship is rel1
-    assert not empty_view.add(system1, "Sends requests to", system2).response
+    assert empty_view.add(system1, system2, "Sends requests to").relationship is rel1
+    assert not empty_view.add(system1, system2, "Sends requests to").response
     assert (
-        empty_view.add(system2, "Invokes", system3, technology="REST").relationship
+        empty_view.add(system2, system3, "Invokes", technology="REST").relationship
         is rel2
     )
     assert (
-        empty_view.add(system2, "Invokes", system3, technology="SOAP").relationship
+        empty_view.add(system2, system3, "Invokes", technology="SOAP").relationship
         is rel3
     )
+    assert empty_view.add(system1, system3).relationship is rel4
 
 
 def test_matching_on_response_relationship(empty_view: DynamicView):
@@ -101,12 +105,12 @@ def test_matching_on_response_relationship(empty_view: DynamicView):
         source=system2, destination=system3, description="Invokes", technology="SOAP"
     )
 
-    view = empty_view.add(system2, "Sends response back to", system1)
+    view = empty_view.add(system2, system1, "Sends response back to")
     assert view.relationship is rel1
     assert view.response
     assert view.description == "Sends response back to"
 
-    view = empty_view.add(system3, "Replies back to", system2, technology="SOAP")
+    view = empty_view.add(system3, system2, "Replies back to", technology="SOAP")
     assert view.relationship is rel3
     assert view.response
     assert view.description == "Replies back to"
@@ -127,11 +131,11 @@ def test_adding_relationships_failure_cases(empty_view: DynamicView):
     with pytest.raises(
         ValueError, match="A relationship between System 1 and System 2"
     ):
-        empty_view.add(system1, "Bogus description", system2)
+        empty_view.add(system1, system2, "Bogus description")
     with pytest.raises(ValueError, match="with technology 'Bogus'"):
-        empty_view.add(system1, "Sends requests to", system2, technology="Bogus")
+        empty_view.add(system1, system2, "Sends requests to", technology="Bogus")
     with pytest.raises(ValueError, match="with technology 'Bogus'"):
-        empty_view.add(system2, "Sends response back to", system1, technology="Bogus")
+        empty_view.add(system2, system1, "Sends response back to", technology="Bogus")
 
 
 @pytest.mark.xfail(sctrict=True)
@@ -149,10 +153,10 @@ def test_basic_sequencing(empty_view: DynamicView):
     system1.uses(system2)
     system2.uses(system3)
 
-    rel1 = empty_view.add(system1, "Uses", system2)
-    rel2 = empty_view.add(system2, "Uses", system3)
-    rel3 = empty_view.add(system3, "Replies to", system2)
-    rel4 = empty_view.add(system2, "Replies to", system1)
+    rel1 = empty_view.add(system1, system2)
+    rel2 = empty_view.add(system2, system3)
+    rel3 = empty_view.add(system3, system2, "Replies to")
+    rel4 = empty_view.add(system2, system1, "Replies to")
 
     assert rel1.order == "1"
     assert rel2.order == "2"
@@ -180,14 +184,14 @@ def test_parallel_sequencing(empty_view: DynamicView):
     d.uses(e)
     e.uses(f)
 
-    r1 = empty_view.add(a, "Uses", b)
+    r1 = empty_view.add(a, b)
     with empty_view.parallel_sequence(False):
-        r2 = empty_view.add(b, "Uses", c)
-        r3 = empty_view.add(c, "Uses", e)
+        r2 = empty_view.add(b, c)
+        r3 = empty_view.add(c, e)
     with empty_view.parallel_sequence(True):
-        r4 = empty_view.add(b, "Uses", d)
-        r5 = empty_view.add(d, "Uses", e)
-    r6 = empty_view.add(e, "Uses", f)
+        r4 = empty_view.add(b, d)
+        r5 = empty_view.add(d, e)
+    r6 = empty_view.add(e, f)
 
     assert r1.order == "1"
     assert r2.order == "2"
