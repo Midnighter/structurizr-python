@@ -21,3 +21,19 @@ def test_basic_sequence():
     assert seq.get_next() == "1"
     assert seq.get_next() == "2"
     assert seq.get_next() == "3"
+
+
+def test_parallel_sequences():
+    """Test "parallel" sequences."""
+    seq = SequenceNumber()
+    assert seq.get_next() == "1"
+
+    seq.start_parallel_sequence()
+    assert seq.get_next() == "2"
+    seq.end_parallel_sequence(False)
+
+    seq.start_parallel_sequence()
+    assert seq.get_next() == "2"
+    seq.end_parallel_sequence(True)
+
+    assert seq.get_next() == "3"
