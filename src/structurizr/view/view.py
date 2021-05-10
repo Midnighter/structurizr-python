@@ -140,7 +140,8 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 f"The element {element} does not exist in the model associated with "
                 f"this view."
             )
-        self.element_views.add(ElementView(element=element))
+        if element not in [view.element for view in self.element_views]:
+            self.element_views.add(ElementView(element=element))
         if add_relationships:
             self._add_relationships(element)
 
@@ -169,7 +170,13 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
             ):
                 self.relationship_views.remove(relationship_view)
 
-    def _add_relationship(self, relationship: Relationship) -> RelationshipView:
+    def _add_relationship(
+        self,
+        relationship: Relationship,
+        *,
+        description: Optional[str] = None,
+        response: bool = False,
+    ) -> RelationshipView:
         """Add a single relationship to this view.
 
         Returns:
@@ -184,11 +191,17 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                     rv
                     for rv in self.relationship_views
                     if rv.relationship is relationship
+                    and rv.description == description
+                    and rv.response == response
                 ),
                 None,
             )
             if not view:
-                view = RelationshipView(relationship=relationship)
+                view = RelationshipView(
+                    relationship=relationship,
+                    description=description,
+                    response=response,
+                )
                 self.relationship_views.add(view)
             return view
         return None
