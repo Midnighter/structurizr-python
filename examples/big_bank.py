@@ -429,14 +429,14 @@ def create_big_bank_workspace():
     #   mainframe_banking_systemFacade, mainframe_banking_system)
     # componentView.AddAnimation(resetPasswordController, emailComponent, database)
 
-    # # dynamic diagrams and deployment diagrams are not available with the Free Plan
-    # DynamicView dynamicView = views.CreateDynamicView(apiApplication, "SignIn",
-    #   "Summarises how the sign in feature works in the single-page application.")
-    # dynamicView.Add(singlePageApplication, "Submits credentials to", signinController)
-    # dynamicView.Add(signinController, "Calls isAuthenticated() on", securityComponent)
-    # dynamicView.Add(securityComponent, "select * from users where username = ?",
-    #   database)
-    # dynamicView.PaperSize = PaperSize.A5_Landscape
+    # dynamic diagrams and deployment diagrams are not available with the Free Plan
+    dynamic_view = views.create_dynamic_view(container=api_application, key="SignIn",
+       description="Summarises how the sign in feature works in the single-page application.")
+    dynamic_view.add(single_page_application, "Submits credentials to", signin_controller)
+    dynamic_view.add(signin_controller, "Calls isAuthenticated() on", security_component)
+    dynamic_view.add(security_component, "select * from users where username = ?",
+        database)
+    dynamic_view.paper_size = PaperSize.A5_Landscape
 
     development_deployment_view = views.create_deployment_view(
         software_system=internet_banking_system,
