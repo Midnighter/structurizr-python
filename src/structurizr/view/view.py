@@ -175,6 +175,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         relationship: Relationship,
         *,
         description: Optional[str] = None,
+        order: Optional[str] = None,
         response: bool = False,
     ) -> RelationshipView:
         """Add a single relationship to this view.
@@ -200,6 +201,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 view = RelationshipView(
                     relationship=relationship,
                     description=description,
+                    order=order,
                     response=response,
                 )
                 self.relationship_views.add(view)

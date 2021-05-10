@@ -140,6 +140,25 @@ def test_trying_to_add_element_outside_scope(empty_view: DynamicView):
     assert 1 == 0  # TODO
 
 
+def test_basic_sequencing(empty_view: DynamicView):
+    """Check the simplest form of incrementing order sequence."""
+    model = empty_view.model
+    system1 = model.add_software_system(name="System 1", id="sys1")
+    system2 = model.add_software_system(name="System 2", id="sys2")
+    system3 = model.add_software_system(name="System 3", id="sys3")
+    system1.uses(system2)
+    system2.uses(system3)
+
+    rel1 = empty_view.add(system1, "Uses", system2)
+    rel2 = empty_view.add(system2, "Uses", system3)
+    rel3 = empty_view.add(system3, "Replies to", system2)
+    rel4 = empty_view.add(system2, "Replies to", system1)
+
+    assert rel1.order == "1"
+    assert rel2.order == "2"
+    assert rel3.order == "3"
+    assert rel4.order == "4"
+
 def test_hydration(empty_model: Model):
     """Check dehydrating and hydrating."""
     system = empty_model.add_software_system(name="system", id="sys1")

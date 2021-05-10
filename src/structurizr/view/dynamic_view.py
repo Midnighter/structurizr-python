@@ -27,6 +27,7 @@ from pydantic import Field
 from ..mixin.model_ref_mixin import ModelRefMixin
 from ..model import Container, Element, Relationship, SoftwareSystem
 from .relationship_view import RelationshipView
+from .sequence_number import SequenceNumber
 from .view import View, ViewIO
 
 
@@ -70,6 +71,7 @@ class DynamicView(ModelRefMixin, View):
         super().__init__(**kwargs)
         self.element = software_system or container
         self.element_id = self.element.id if self.element else None
+        self.sequence_number = SequenceNumber()
 
     def add(
         self,
@@ -111,7 +113,10 @@ class DynamicView(ModelRefMixin, View):
         self._add_element(source, False)
         self._add_element(destination, False)
         return self._add_relationship(
-            relationship, description=description, response=response
+            relationship,
+            description=description,
+            order=self.sequence_number.get_next(),
+            response=response,
         )
 
     def _find_relationship(
