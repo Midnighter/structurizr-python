@@ -159,6 +159,44 @@ def test_basic_sequencing(empty_view: DynamicView):
     assert rel3.order == "3"
     assert rel4.order == "4"
 
+
+def test_parallel_sequencing(empty_view: DynamicView):
+    """Test parallel sequencing.
+
+    Note that this test is constructed to match the example in the documentation
+    for `DynamicView.parallel_sequence()`.
+    """
+    model = empty_view.model
+    a = model.add_software_system(name="A", id="a")
+    b = model.add_software_system(name="B", id="b")
+    c = model.add_software_system(name="C", id="c")
+    d = model.add_software_system(name="D", id="d")
+    e = model.add_software_system(name="E", id="e")
+    f = model.add_software_system(name="F", id="f")
+    a.uses(b)
+    b.uses(c)
+    b.uses(d)
+    c.uses(e)
+    d.uses(e)
+    e.uses(f)
+
+    r1 = empty_view.add(a, "Uses", b)
+    with empty_view.parallel_sequence(False):
+        r2 = empty_view.add(b, "Uses", c)
+        r3 = empty_view.add(c, "Uses", e)
+    with empty_view.parallel_sequence(True):
+        r4 = empty_view.add(b, "Uses", d)
+        r5 = empty_view.add(d, "Uses", e)
+    r6 = empty_view.add(e, "Uses", f)
+
+    assert r1.order == "1"
+    assert r2.order == "2"
+    assert r3.order == "3"
+    assert r4.order == "2"
+    assert r5.order == "3"
+    assert r6.order == "4"
+
+
 def test_hydration(empty_model: Model):
     """Check dehydrating and hydrating."""
     system = empty_model.add_software_system(name="system", id="sys1")

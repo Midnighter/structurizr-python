@@ -20,6 +20,7 @@ free-form arrangement of diagram elements with numbered interactions to indicate
 ordering.
 """
 
+from contextlib import contextmanager
 from typing import Optional, Tuple, Union
 
 from pydantic import Field
@@ -118,6 +119,42 @@ class DynamicView(ModelRefMixin, View):
             order=self.sequence_number.get_next(),
             response=response,
         )
+
+    @contextmanager
+    def parallel_sequence(self, continue_numbering: bool):
+        r"""
+        Start a parallel sequence through a `with` block.
+
+        Args:
+            continue_numbering: if `True` then when the with block completes, the main
+                                sequence number will continue from after the last
+                                number from the parallel sequence.  If `False` then it
+                                will reset back to the start (usually so you can start
+                                a new parallel sequence).
+
+        Parallel sequences allow for multiple parallel flows to share the same
+        sequence numbers, so e.g.
+                   /-> C -\
+          A -> B -{        }-> E -> F
+                   \-> D -/
+        could happen concurrently but you want both B->C and B->D to get order
+        number 2, and C->E and D->E to get order number 3.  To achieve this,
+        you would do:
+
+            dynamic_view.add(a, "Uses", b)      # Will be order "1"
+            with dynamic_view.parallel_sequence(False):
+                dynamic_view.add(b, "Uses", c)  # "2"
+                dynamic_view.add(c, "Uses", e)  # "3"
+            with dynamic_view.parallel_sequence(True):
+                dynamic_view.add(b, "Uses", d)  # "2" again
+                dynamic_view.add(d, "Uses", e)  # "3"
+            dynamiic_view.add(e, "Uses", f)     # "4"
+        """
+        try:
+            self.sequence_number.start_parallel_sequence()
+            yield self
+        finally:
+            self.sequence_number.end_parallel_sequence(continue_numbering)
 
     def _find_relationship(
         self,

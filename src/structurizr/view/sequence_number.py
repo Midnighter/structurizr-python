@@ -13,14 +13,42 @@
 """Provide a sequence number, used in Dynamic views."""
 
 
+from .sequence_counter import ParallelSequenceCounter, SequenceCounter
+
+
 class SequenceNumber:
     """A class to provide interaction sequence numbers."""
 
     def __init__(self):
         """Initialise a new SequenceNumber instance."""
-        self.counter = 0
+        self.counter = SequenceCounter()
 
     def get_next(self) -> str:
         """Return the next number in the sequence."""
-        self.counter += 1
+        self.counter.increment()
         return str(self.counter)
+
+    def start_parallel_sequence(self):
+        """Begin a parallel sequence.
+
+        See `DynamicView.parallel_sequence()` for an explanation.
+        """
+        self.counter = ParallelSequenceCounter(self.counter)
+
+    def end_parallel_sequence(self, continue_numbering: bool):
+        """End a parallel sequence.
+
+        Args:
+            continue_numbering: if True then the main sequence will continue from
+                                the next number after this parallel sequence, else
+                                it will reset back to before this parallel sequence
+                                began.
+
+        See `DynamicView.parallel_sequence()` for an explanation.
+        """
+        if continue_numbering:
+            sequence = self.counter.sequence
+            self.counter = self.counter.parent
+            self.counter.sequence = sequence
+        else:
+            self.counter = self.counter.parent
