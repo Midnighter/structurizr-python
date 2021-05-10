@@ -37,7 +37,8 @@ class RelationshipViewIO(BaseModel):
     """Represent an instance of a relationship in a view."""
 
     id: Optional[str]
-    order: Optional[str]
+    order: Optional[str]  # Only used in dynamic views
+    response: bool = Field(default=False)  # Only used in dynamic views
     description: Optional[str]
     vertices: List[VertexIO] = Field(default=())
     # TODO
@@ -55,6 +56,7 @@ class RelationshipView(AbstractBase):
         id: Optional[str] = None,
         description: Optional[str] = None,
         order: Optional[str] = None,
+        response: bool = False,
         vertices: Iterable[Vertex] = (),
         routing: Optional[Any] = None,
         position: Optional[int] = None,
@@ -66,6 +68,7 @@ class RelationshipView(AbstractBase):
         self.id = relationship.id if relationship else id
         self.description = description
         self.order = order
+        self.response = response
         self.vertices = set(vertices)
         self.routing = routing
         self.position = position
@@ -87,6 +90,7 @@ class RelationshipView(AbstractBase):
             id=relationship_view_io.id,
             description=relationship_view_io.description,
             order=relationship_view_io.order,
+            response=relationship_view_io.response,
             vertices=map(Vertex.hydrate, relationship_view_io.vertices),
             routing=relationship_view_io.routing,
             position=relationship_view_io.position,
