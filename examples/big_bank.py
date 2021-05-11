@@ -430,12 +430,20 @@ def create_big_bank_workspace():
     # componentView.AddAnimation(resetPasswordController, emailComponent, database)
 
     # dynamic diagrams and deployment diagrams are not available with the Free Plan
-    dynamic_view = views.create_dynamic_view(container=api_application, key="SignIn",
-       description="Summarises how the sign in feature works in the single-page application.")
-    dynamic_view.add(single_page_application, "Submits credentials to", signin_controller)
-    dynamic_view.add(signin_controller, "Calls isAuthenticated() on", security_component)
-    dynamic_view.add(security_component, "select * from users where username = ?",
-        database)
+    dynamic_view = views.create_dynamic_view(
+        container=api_application,
+        key="SignIn",
+        description="Summarises how the sign in feature works in the single-page application.",
+    )
+    dynamic_view.add(
+        single_page_application, signin_controller, "Submits credentials to"
+    )
+    dynamic_view.add(
+        signin_controller, security_component, "Calls isAuthenticated() on"
+    )
+    dynamic_view.add(
+        security_component, database, "select * from users where username = ?"
+    )
     dynamic_view.paper_size = PaperSize.A5_Landscape
 
     development_deployment_view = views.create_deployment_view(

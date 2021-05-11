@@ -86,15 +86,15 @@ class DynamicView(ModelRefMixin, View):
         """Add a relationship to this DynamicView.
 
         This will search for a relationship in the model from the source to the
-        destination with matching description and technology (if specified).  It
-        will also look for situations where this interaction is a "response" in
-        that it it goes in the opposite direction to the relationship in the
-        model, and in this case then description is ignored for matching but will
-        appear in the view.
+        destination with matching technology (if specified).  It will also look for
+        situations where this interaction is a "response" in that it it goes in the
+        opposite direction to the relationship in the model.  If a description is
+        provided then this will be used in the view in preference to the description
+        on the relationship.
 
-        Example:
-            dynamic_view.add(container1, "Requests data from", container2)
-            dynamic_view.add(container2, "Sends response back to" container1)
+        Example of request/response, assuming a single relationship in the model:
+            dynamic_view.add(container1, container2, "Requests data from")
+            dynamic_view.add(container2, container1, "Sends response back to")
         """
         self.check_element_can_be_added(source)
         self.check_element_can_be_added(destination)
@@ -206,6 +206,7 @@ class DynamicView(ModelRefMixin, View):
         destination: Element,
         technology: Optional[str],
     ) -> Tuple[Optional[Relationship], bool]:
+        # First preference is exactly matching description
         rel = next(
             (
                 rel
@@ -219,8 +220,21 @@ class DynamicView(ModelRefMixin, View):
         if rel:
             return rel, False
 
-        # Look for "response" to relationship in the opposite direction but ignore
-        # descriptions
+        # Next preference is non-matching description
+        rel = next(
+            (
+                rel
+                for rel in source.get_efferent_relationships()
+                if rel.destination is destination
+                and (rel.technology == technology or technology is None)
+            ),
+            None,
+        )
+        if rel:
+            return rel, False
+
+        # Finally look for "response" to relationship in the opposite direction but
+        # ignore descriptions
         rel = next(
             (
                 rel

@@ -86,7 +86,21 @@ def test_adding_relationships_finds_correct_relationship(empty_view: DynamicView
         empty_view.add(system2, system3, "Invokes", technology="SOAP").relationship
         is rel3
     )
-    assert empty_view.add(system1, system3).relationship is rel4
+    view = empty_view.add(system1, system3)
+    assert view.relationship is rel4
+    assert view.description == "Depends on"
+
+
+def test_matching_where_descriptions_differ(empty_view: DynamicView):
+    """Check case where description is different from than on the relationship."""
+    model = empty_view.model
+    system1 = model.add_software_system(name="System 1")
+    system2 = model.add_software_system(name="System 2")
+    rel = system1.uses(system2)
+
+    view = empty_view.add(system1, system2, "New description")
+    assert view.relationship is rel
+    assert view.description == "New description"
 
 
 def test_matching_on_response_relationship(empty_view: DynamicView):
@@ -128,10 +142,6 @@ def test_adding_relationships_failure_cases(empty_view: DynamicView):
         technology="REST",
     )
 
-    with pytest.raises(
-        ValueError, match="A relationship between System 1 and System 2"
-    ):
-        empty_view.add(system1, system2, "Bogus description")
     with pytest.raises(ValueError, match="with technology 'Bogus'"):
         empty_view.add(system1, system2, "Sends requests to", technology="Bogus")
     with pytest.raises(ValueError, match="with technology 'Bogus'"):
