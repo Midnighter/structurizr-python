@@ -138,10 +138,64 @@ def test_adding_relationships_failure_cases(empty_view: DynamicView):
         empty_view.add(system2, system1, "Sends response back to", technology="Bogus")
 
 
-@pytest.mark.xfail(sctrict=True)
-def test_trying_to_add_element_outside_scope(empty_view: DynamicView):
+def test_trying_to_add_element_outside_scope(empty_model: Model):
     """Ensure adding relationships beyond this scope fails."""
-    assert 1 == 0  # TODO
+    model = empty_model
+    system1 = model.add_software_system(name="System 1", id="sys1")
+    container1 = system1.add_container(name="Container 1")
+    container2 = system1.add_container(name="Container 2")
+    container1.add_component(name="Component 1")
+    component2 = container1.add_component(name="Component 2")
+    deploy1 = model.add_deployment_node(name="Deploy 1")
+
+    # Unspecified scope can only take systems and people
+    view = DynamicView(description="test")
+    with pytest.raises(ValueError, match="Only people and software systems"):
+        view.add(container1, container2)
+    with pytest.raises(ValueError, match="Only people and software systems"):
+        view.add(component2, component2)
+    with pytest.raises(ValueError, match="Only people, software systems"):
+        view.add(deploy1, system1)
+
+    # Software system scope
+    view = DynamicView(software_system=system1, description="test")
+    with pytest.raises(ValueError, match="Components can't be added"):
+        view.add(component2, component2)
+    with pytest.raises(ValueError, match="is already the scope"):
+        view.add(system1, container1)
+
+    # Container scope
+    view = DynamicView(container=container1, description="test")
+    with pytest.raises(ValueError, match="is already the scope"):
+        view.add(container1, container2)
+    with pytest.raises(ValueError, match="is already the scope"):
+        view.add(system1, container2)
+
+
+def test_trying_to_add_element_with_existing_parent_or_child_fails(empty_model: Model):
+    """Ensure adding relationships beyond this scope fails."""
+    model = empty_model
+    system1 = model.add_software_system(name="System 1", id="sys1")
+    container1 = system1.add_container(name="Container 1")
+    container2 = system1.add_container(name="Container 2")
+    component1 = container1.add_component(name="Component 1")
+    component2 = container2.add_component(name="Component 2")
+    component1.uses(component2)
+    component1.uses(container2)
+
+    # Can't add if parent is already there
+    view = DynamicView(container=container1, description="test")
+    view.set_model(empty_model)
+    view.add(component1, container2)
+    with pytest.raises(ValueError, match="The parent of Component 2"):
+        view.add(component1, component2)
+
+    # Can't add if a child is already there
+    view = DynamicView(container=container1, description="test")
+    view.set_model(empty_model)
+    view.add(component1, component2)
+    with pytest.raises(ValueError, match="A child of Container 2"):
+        view.add(component1, container2)
 
 
 def test_basic_sequencing(empty_view: DynamicView):
