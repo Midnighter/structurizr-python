@@ -160,6 +160,7 @@ class DynamicView(ModelRefMixin, View):
             self.sequence_number.end_parallel_sequence(continue_numbering)
 
     def check_element_can_be_added(self, element: Element) -> None:
+        """Make sure that the element is valid to be added to this view."""
         if not isinstance(element, StaticStructureElement):
             raise ValueError(
                 "Only people, software systems, containers and components can be "
