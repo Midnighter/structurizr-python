@@ -4,6 +4,7 @@ History
 
 Next Release
 ------------
+* Feat: Add ``DynamicView`` (#77)
 
 0.5.0 (2021-05-03)
 ------------------
