@@ -135,6 +135,7 @@ def test_adding_relationships_failure_cases(empty_view: DynamicView):
     model = empty_view.model
     system1 = model.add_software_system(name="System 1", id="sys1")
     system2 = model.add_software_system(name="System 2", id="sys2")
+    system3 = model.add_software_system(name="System 3", id="sys3")
     model.add_relationship(
         source=system1,
         destination=system2,
@@ -142,6 +143,8 @@ def test_adding_relationships_failure_cases(empty_view: DynamicView):
         technology="REST",
     )
 
+    with pytest.raises(ValueError, match="between System 1 and System 3 does not"):
+        empty_view.add(system1, system3)
     with pytest.raises(ValueError, match="with technology 'Bogus'"):
         empty_view.add(system1, system2, "Sends requests to", technology="Bogus")
     with pytest.raises(ValueError, match="with technology 'Bogus'"):
