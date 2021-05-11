@@ -26,7 +26,8 @@ from typing import Optional, Tuple, Union
 from pydantic import Field
 
 from ..mixin.model_ref_mixin import ModelRefMixin
-from ..model import Container, Element, Relationship, SoftwareSystem
+from ..model import Component, Container, Element, Person, Relationship, SoftwareSystem
+from ..model.static_structure_element import StaticStructureElement
 from .relationship_view import RelationshipView
 from .sequence_number import SequenceNumber
 from .view import View, ViewIO
@@ -95,6 +96,8 @@ class DynamicView(ModelRefMixin, View):
             dynamic_view.add(container1, "Requests data from", container2)
             dynamic_view.add(container2, "Sends response back to" container1)
         """
+        self.check_element_can_be_added(source)
+        self.check_element_can_be_added(destination)
         relationship, response = self._find_relationship(
             source, description, destination, technology
         )
@@ -155,6 +158,45 @@ class DynamicView(ModelRefMixin, View):
             yield self
         finally:
             self.sequence_number.end_parallel_sequence(continue_numbering)
+
+    def check_element_can_be_added(self, element: Element) -> None:
+        if not isinstance(element, StaticStructureElement):
+            raise ValueError(
+                "Only people, software systems, containers and components can be "
+                "added to dynamic views."
+            )
+        if isinstance(element, Person):
+            return
+
+        if isinstance(self.element, SoftwareSystem):
+            # System scope, so only systems and containers are allowed
+            if element is self.element:
+                raise ValueError(
+                    f"{element.name} is already the scope of this view and cannot be "
+                    "added to it."
+                )
+            if isinstance(element, Component):
+                raise ValueError(
+                    "Components can't be added to a dynamic view when the scope is a "
+                    "software system"
+                )
+            self.check_parent_and_children_not_in_view(element)
+        elif isinstance(self.element, Container):
+            # Container scope
+            if element is self.element or element is self.element.parent:
+                raise ValueError(
+                    f"{element.name} is already the scope of this view and cannot be "
+                    "added to it."
+                )
+            self.check_parent_and_children_not_in_view(element)
+        else:
+            # No scope - only systems can be added
+            assert self.element is None
+            if not isinstance(element, SoftwareSystem):
+                raise ValueError(
+                    "Only people and software systems can be added to this dynamic "
+                    "view."
+                )
 
     def _find_relationship(
         self,
