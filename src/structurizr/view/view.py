@@ -274,14 +274,12 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
 
     def check_parent_and_children_not_in_view(self, element: Element) -> None:
         """Enusre elements can be added with parents or chldren already in the view."""
-        element_ids = {view.element.id for view in self.element_views}
-        if element.parent is not None and element.parent.id in element_ids:
-            raise ValueError(f"The parent of {element.name} is already in this view.")
-
-        element_parent_ids = {
-            view.element.parent.id
-            for view in self.element_views
-            if view.element.parent is not None
-        }
-        if element.id in element_parent_ids:
-            raise ValueError(f"A child of {element.name} is already in this view.")
+        # Unfortunately not every element has a parent property so we have to scan
+        # The children instead.
+        for view in self.element_views:
+            if view.element in element.child_elements:
+                raise ValueError(f"A child of {element.name} is already in this view.")
+            for child in view.element.child_elements:
+                if child is element:
+                    raise ValueError(f"The parent of {element.name} is already in "
+                    "this view.")
