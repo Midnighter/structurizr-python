@@ -52,8 +52,10 @@ def test_element_constraints():
     """Test that only valid elements can be added to the view."""
     model = Model()
     system = model.add_software_system(name="System 1")
-    container = system.add_container(name="Container 1")
     view = ContainerView(key="container1", description="Test", software_system=system)
 
-    with pytest.raises(ValueError, match="he software system in scope cannot be added to a container view"):
+    with pytest.raises(
+        ValueError,
+        match="he software system in scope cannot be added to a container view",
+    ):
         view.add(system)
