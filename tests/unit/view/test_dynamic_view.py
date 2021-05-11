@@ -257,6 +257,28 @@ def test_basic_sequencing(empty_view: DynamicView):
     assert rel4.order == "4"
 
 
+def test_subsequences(empty_view: DynamicView):
+    """Test subsequences."""
+    model = empty_view.model
+    a = model.add_person(name="A")
+    b = model.add_software_system(name="B")
+    c = model.add_software_system(name="C")
+    d = model.add_software_system(name="D")
+    a.uses(b)
+    b.uses(c, "Authenticates with")
+    b.uses(d, "Retrieves data from")
+
+    r1 = empty_view.add(a, b, "Loads web page from")
+    with empty_view.subsequence():
+        r2 = empty_view.add(b, c, "Authenticates with")
+        r3 = empty_view.add(b, d, "Retrieves data from")
+    r4 = empty_view.add(b, a, "Shows results to")
+    assert r1.order == "1"
+    assert r2.order == "1.1"
+    assert r3.order == "1.2"
+    assert r4.order == "2"
+
+
 def test_parallel_sequencing(empty_view: DynamicView):
     """Test parallel sequencing.
 

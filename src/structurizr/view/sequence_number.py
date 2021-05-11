@@ -13,7 +13,11 @@
 """Provide a sequence number, used in Dynamic views."""
 
 
-from .sequence_counter import ParallelSequenceCounter, SequenceCounter
+from .sequence_counter import (
+    ParallelSequenceCounter,
+    SequenceCounter,
+    SubsequenceCounter,
+)
 
 
 class SequenceNumber:
@@ -27,6 +31,17 @@ class SequenceNumber:
         """Return the next number in the sequence."""
         self.counter.increment()
         return str(self.counter)
+
+    def start_subsequence(self):
+        """Start a subsequence.
+
+        See `DynamicView.subvsequence()` for an explanation.
+        """
+        self.counter = SubsequenceCounter(self.counter)
+
+    def end_subsequence(self):
+        """End an active subsequence."""
+        self.counter = self.counter.parent
 
     def start_parallel_sequence(self):
         """Begin a parallel sequence.

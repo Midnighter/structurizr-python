@@ -10,15 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Provie a Dynamic View.
-
-A dynamic diagram can be useful when you want to show how elements in a static model
-collaborate at runtime to implement a user story, use case, feature, etc. This dynamic
-diagram is based upon a UML communication diagram (previously known as a "UML
-collaboration diagram"). It is similar to a UML sequence diagram although it allows a
-free-form arrangement of diagram elements with numbered interactions to indicate
-ordering.
-"""
+"""Provie a Dynamic View."""
 
 from contextlib import contextmanager
 from typing import Optional, Tuple, Union
@@ -50,6 +42,13 @@ class DynamicViewIO(ViewIO):
 class DynamicView(ModelRefMixin, View):
     """
     Represent the dynamic view from the C4 model.
+
+    A dynamic diagram can be useful when you want to show how elements in a static
+    model collaborate at runtime to implement a user story, use case, feature, etc.
+    This dynamic diagram is based upon a UML communication diagram (previously known
+    as a "UML collaboration diagram"). It is similar to a UML sequence diagram
+    although it allows a free-form arrangement of diagram elements with numbered
+    interactions to indicate ordering.
 
     Attributes:
         element: The software system or container that this view is focused on.
@@ -122,6 +121,33 @@ class DynamicView(ModelRefMixin, View):
             order=self.sequence_number.get_next(),
             response=response,
         )
+
+    @contextmanager
+    def subsequence(self):
+        """
+        Start a subsueqnce through a `with` block.
+
+        Subsequences allow nested interaction sequences, showing "child" calls through
+        numbering 1.1, 1.2 etc.  Subsequences can themselves be nested.
+
+        As an example, assume four Components, A-D.  A makes a service request to B,
+        which in turn calls both C then D to process the request before returning the
+        results back to A.  This can be shown using:
+
+            dynamic_view.add(a, b, "Sends service request to)
+            with dynamic_view.subsequence():
+                dynamic_view.add(b, c, "Makes subcall to")
+                dynamic_view.add(b, d, "Makes second subcall to")
+            dynamic_view.add(b, a, "Sends results back to)
+
+        This would result in four interactions shown, with orders "1", "1.1", "1.2"
+        and "2" respectively.
+        """
+        try:
+            self.sequence_number.start_subsequence()
+            yield self
+        finally:
+            self.sequence_number.end_subsequence()
 
     @contextmanager
     def parallel_sequence(self, continue_numbering: bool):

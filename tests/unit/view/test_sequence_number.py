@@ -23,6 +23,24 @@ def test_basic_sequence():
     assert seq.get_next() == "3"
 
 
+def test_subsequences():
+    """Test subsequences."""
+    seq = SequenceNumber()
+    assert seq.get_next() == "1"
+
+    seq.start_subsequence()
+    assert seq.get_next() == "1.1"
+    assert seq.get_next() == "1.2"
+    seq.start_subsequence()
+    assert seq.get_next() == "1.2.1"
+    assert seq.get_next() == "1.2.2"
+    seq.end_subsequence()
+    assert seq.get_next() == "1.3"
+    assert seq.get_next() == "1.4"
+    seq.end_subsequence()
+    assert seq.get_next() == "2"
+
+
 def test_parallel_sequences():
     """Test "parallel" sequences."""
     seq = SequenceNumber()

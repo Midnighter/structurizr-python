@@ -37,3 +37,15 @@ class ParallelSequenceCounter(SequenceCounter):
         """Initialise a new ParallelSequenceCounter instance."""
         super().__init__(parent)
         self.sequence = parent.sequence
+
+
+class SubsequenceCounter(SequenceCounter):
+    """Provide support for subsequences."""
+
+    def __init__(self, parent: SequenceCounter):
+        """Initialise a new SubsequenceCounter instance."""
+        super().__init__(parent)
+
+    def __str__(self):
+        """Provide a string representation of the counter."""
+        return f"{self.parent}.{self.sequence}"
