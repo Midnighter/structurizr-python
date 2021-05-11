@@ -138,6 +138,35 @@ def test_adding_relationships_failure_cases(empty_view: DynamicView):
         empty_view.add(system2, system1, "Sends response back to", technology="Bogus")
 
 
+def test_can_add_people_to_view(empty_model: Model):
+    """Make sure people can be added."""
+    model = empty_model
+    system1 = model.add_software_system(name="System 1", id="sys1")
+    person1 = model.add_person(name="Person 1")
+    rel = person1.uses(system1)
+
+    view = DynamicView(description="test")
+    view.set_model(model)
+
+    relationship_view = view.add(person1, system1)
+    assert relationship_view.relationship is rel
+
+
+def test_adding_systems_to_system_scoped_view(empty_model: Model):
+    """Check adding systems to unscoped view."""
+    model = empty_model
+    system1 = model.add_software_system(name="System 1")
+    system2 = model.add_software_system(name="System 2")
+    container1 = system1.add_container(name="Container 1")
+    rel = system2.uses(container1)
+
+    view = DynamicView(description="test", software_system=system1)
+    view.set_model(model)
+
+    relationship_view = view.add(system2, container1)
+    assert relationship_view.relationship is rel
+
+
 def test_trying_to_add_element_outside_scope(empty_model: Model):
     """Ensure adding relationships beyond this scope fails."""
     model = empty_model
