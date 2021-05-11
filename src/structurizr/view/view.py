@@ -281,5 +281,6 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 raise ValueError(f"A child of {element.name} is already in this view.")
             for child in view.element.child_elements:
                 if child is element:
-                    raise ValueError(f"The parent of {element.name} is already in "
-                    "this view.")
+                    raise ValueError(
+                        f"The parent of {element.name} is already in this view."
+                    )
