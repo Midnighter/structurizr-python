@@ -14,6 +14,9 @@
 """Ensure the expected behaviour of DeploymentView."""
 
 
+import pytest
+
+from structurizr.model.model import Model
 from structurizr.view.container_view import ContainerView, ContainerViewIO
 
 
@@ -41,3 +44,16 @@ def test_external_system_boundary_preserved():
     )
     json = ContainerViewIO.from_orm(view).json()
     assert '"externalSoftwareSystemBoundariesVisible": false' in json
+
+
+# See https://github.com/Midnighter/structurizr-python/issues/79
+@pytest.mark.xfail(strict=True)
+def test_element_constraints():
+    """Test that only valid elements can be added to the view."""
+    model = Model()
+    system = model.add_software_system(name="System 1")
+    container = system.add_container(name="Container 1")
+    view = ContainerView(key="container1", description="Test", software_system=system)
+
+    with pytest.raises(ValueError, match="he software system in scope cannot be added to a container view"):
+        view.add(system)
