@@ -15,6 +15,8 @@
 import pytest
 
 from structurizr.model.model import Model
+from structurizr.view.container_view import ContainerView
+from structurizr.view.filtered_view import FilterMode
 from structurizr.view.paper_size import PaperSize
 from structurizr.view.view_set import ViewSet, ViewSetIO
 
@@ -84,3 +86,42 @@ def test_copying_dynamic_view_layout(empty_viewset):
 def test_copying_layout(empty_model):
     """Check copying layout from other view types."""
     assert 1 == 0  # TODO
+
+
+def test_filtered_view_hydrated(empty_viewset):
+    """Check dynamic views hydrated properly."""
+    viewset = empty_viewset
+    system1 = viewset.model.add_software_system(name="sys1")
+    container_view = viewset.create_container_view(
+        key="container1", description="container", software_system=system1
+    )
+    viewset.create_filtered_view(
+        key="filter1",
+        view=container_view,
+        description="filtered",
+        mode=FilterMode.Include,
+        tags=["v2"],
+    )
+    io = ViewSetIO.from_orm(viewset)
+
+    new_viewset = ViewSet.hydrate(io, viewset.model)
+    assert len(new_viewset.filtered_views) == 1
+    view = list(new_viewset.filtered_views)[0]
+    assert view.description == "filtered"
+    assert isinstance(view.view, ContainerView)
+    assert view.view.key == "container1"
+
+
+def test_getting_view_by_key(empty_viewset):
+    """Check retrieving views by key from the ViewSet."""
+    viewset = empty_viewset
+    system1 = viewset.model.add_software_system(name="sys1")
+    container_view = viewset.create_container_view(
+        key="container1", description="container", software_system=system1
+    )
+
+    assert viewset.get_view("container1") is container_view
+    assert viewset.get_view("bogus") is None
+    assert viewset["container1"] is container_view
+    with pytest.raises(KeyError, match="No view with key"):
+        viewset["bogus"]

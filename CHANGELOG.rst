@@ -5,6 +5,7 @@ History
 Next Release
 ------------
 * Feat: Add ``DynamicView`` (#77)
+* Feat: Add ``FilteredView`` (#81)
 * Breaking change: View.find_element_view and find_relationship_view parameter changes.
 
 0.5.0 (2021-05-03)
