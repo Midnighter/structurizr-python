@@ -23,11 +23,13 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..mixin import ModelRefMixin
+from .abstract_view import AbstractView
 from .component_view import ComponentView, ComponentViewIO
 from .configuration import Configuration, ConfigurationIO
 from .container_view import ContainerView, ContainerViewIO
 from .deployment_view import DeploymentView, DeploymentViewIO
 from .dynamic_view import DynamicView, DynamicViewIO
+from .filtered_view import FilteredView, FilteredViewIO
 from .system_context_view import SystemContextView, SystemContextViewIO
 from .system_landscape_view import SystemLandscapeView, SystemLandscapeViewIO
 from .view import View
@@ -60,9 +62,7 @@ class ViewSetIO(BaseModel):
         default=(), alias="deploymentViews"
     )
     dynamic_views: List[DynamicViewIO] = Field(default=(), alias="dynamicViews")
-
-    # TODO:
-    # filtered_views: List[FilteredView] = Field(set(), alias="filteredViews")
+    filtered_views: List[FilteredViewIO] = Field(default=(), alias="filteredViews")
 
 
 class ViewSet(ModelRefMixin, AbstractBase):
@@ -83,9 +83,10 @@ class ViewSet(ModelRefMixin, AbstractBase):
         container_views: Iterable[ContainerView] = (),
         component_views: Iterable[ComponentView] = (),
         deployment_views: Iterable[DeploymentView] = (),
+        filtered_views: Iterable[FilteredView] = (),
         dynamic_views: Iterable[DynamicView] = (),
         configuration: Optional[Configuration] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Initialize a view set."""
         super().__init__(**kwargs)
@@ -98,6 +99,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self.component_views: Set[ComponentView] = set(component_views)
         self.deployment_views: Set[DeploymentView] = set(deployment_views)
         self.dynamic_views: Set[DynamicView] = set(dynamic_views)
+        self.filtered_views: Set[FilteredView] = set(filtered_views)
         self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
 
@@ -150,7 +152,12 @@ class ViewSet(ModelRefMixin, AbstractBase):
             cls._hydrate_view(view, model=model)
             dynamic_views.append(view)
 
-        return cls(
+        filtered_views = []
+        for view_io in views.filtered_views:
+            view = FilteredView.hydrate(view_io)
+            filtered_views.append(view)
+
+        result = cls(
             model=model,
             # TODO:
             # enterprise_context_views: Iterable[EnterpriseContextView] = (),
@@ -160,8 +167,16 @@ class ViewSet(ModelRefMixin, AbstractBase):
             component_views=component_views,
             deployment_views=deployment_views,
             dynamic_views=dynamic_views,
+            filtered_views=filtered_views,
             configuration=Configuration.hydrate(views.configuration),
         )
+
+        # Patch up filtered views
+        for filtered_view in result.filtered_views:
+            base_view = result[filtered_view.base_view_key]
+            filtered_view.view = base_view
+
+        return result
 
     @classmethod
     def _hydrate_view(cls, view: View, model: "Model") -> None:
@@ -286,6 +301,40 @@ class ViewSet(ModelRefMixin, AbstractBase):
         dynamic_view.set_model(self.model)
         self.dynamic_views.add(dynamic_view)
         return dynamic_view
+
+    def create_filtered_view(self, **kwargs) -> FilteredView:
+        """
+        Add a new FilteredView to the ViewSet.
+
+        Args:
+            **kwargs: Provide keyword arguments for instantiating a `FilteredView`.
+        """
+        # TODO:
+        # AssertThatTheViewKeyIsUnique(key);
+        filtered_view = FilteredView(**kwargs)
+        filtered_view.set_viewset(self)
+        self.filtered_views.add(filtered_view)
+        return filtered_view
+
+    def get_view(self, key: str) -> Optional[AbstractView]:
+        """Return the view with the given key, or None."""
+        all_views = (
+            self.system_landscape_views
+            | self.system_context_views
+            | self.container_views
+            | self.component_views
+            | self.deployment_views
+            | self.dynamic_views
+            | self.filtered_views
+        )
+        return next((view for view in all_views if view.key == key), None)
+
+    def __getitem__(self, key: str) -> AbstractView:
+        """Return the view with the given key or raise a KeyError."""
+        result = self.get_view(key)
+        if not result:
+            raise KeyError(f"No view with key '{key}' in ViewSet")
+        return result
 
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""

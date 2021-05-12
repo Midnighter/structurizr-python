@@ -20,8 +20,8 @@ from typing import Any, Dict, Iterable, List, Optional, Set
 
 from pydantic import Field
 
-from .abstract_view import AbstractView, AbstractViewIO
 from ..model import Element, Model, Relationship, SoftwareSystem
+from .abstract_view import AbstractView, AbstractViewIO
 from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
 from .element_view import ElementView, ElementViewIO
 from .paper_size import PaperSize
