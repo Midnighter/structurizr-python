@@ -13,7 +13,7 @@
 """Provie a Dynamic View."""
 
 from contextlib import contextmanager
-from typing import Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union
 
 from pydantic import Field
 
@@ -185,6 +185,14 @@ class DynamicView(ModelRefMixin, View):
         finally:
             self.sequence_number.end_parallel_sequence(continue_numbering)
 
+    @property
+    def relationship_views(self) -> Iterable[RelationshipView]:
+        """Return the relationship views, sorted in order.
+
+        Sorting uses "version number" style ordering, so 1 < 1.1 < 2 < 10.
+        """
+        return _sorted_relationship_views(self._relationship_views)
+
     def check_element_can_be_added(self, element: Element) -> None:
         """Make sure that the element is valid to be added to this view."""
         if not isinstance(element, StaticStructureElement):
@@ -284,3 +292,26 @@ class DynamicView(ModelRefMixin, View):
             container=container,
             **cls.hydrate_arguments(io),
         )
+
+
+def _sorted_relationship_views(
+    views: Iterable[RelationshipView],
+) -> List[RelationshipView]:
+    """Return relationship views, sorted in correct order.
+
+    We want to use version-number style comparisons rather than straight lexical, so
+    1 < 2 < 10, and we also need to support dot-notation, e.g. 1.2.3 < 1.10.  And we
+    also want to support alphanumerics, e.g. 1a, 1b.  To achieve this, we left-pad each
+    segment with spaces so that lexical and numeric comparisons are identical.
+    """
+
+    max_segment_size = max(
+        [len(segment) for view in views for segment in view.order.split(".")] + [0]
+    )
+
+    def sort_key(view: RelationshipView):
+        segments = view.order.split(".")
+        key = [segment.rjust(max_segment_size) for segment in segments]
+        return key
+
+    return sorted(views, key=sort_key)

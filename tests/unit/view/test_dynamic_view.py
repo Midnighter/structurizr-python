@@ -12,10 +12,18 @@
 
 """Ensure the correct behaviour of DynamicView."""
 
+
+from typing import List
+
 import pytest
 
 from structurizr.model import Container, Model, SoftwareSystem
-from structurizr.view.dynamic_view import DynamicView, DynamicViewIO
+from structurizr.view.dynamic_view import (
+    DynamicView,
+    DynamicViewIO,
+    _sorted_relationship_views,
+)
+from structurizr.view.relationship_view import RelationshipView
 
 
 @pytest.fixture(scope="function")
@@ -334,3 +342,79 @@ def test_hydration(empty_model: Model):
     assert view2.key == "dyn1"
     assert view2.description == "Description"
     assert view2.element is system
+
+
+def test_relationships_are_ordered(empty_model: Model):
+    """Check that relationships are ordered for DynamicView."""
+    system1 = empty_model.add_software_system(name="System 1")
+    container1 = system1.add_container(name="Container 1")
+    container2 = system1.add_container(name="Container 2")
+    container1.uses(container2)
+
+    view = DynamicView(key="dyn1", description="test", software_system=system1)
+    view.set_model(empty_model)
+
+    # Test using 10 items, so we can check 1 < 2 < 10 (i.e. not string ordering)
+    for i in range(10):
+        view.add(container1, container2, description=f"rel {i}")
+
+    relationship_views = list(view.relationship_views)
+
+    assert len(relationship_views) == 10
+    for i in range(10):
+        assert relationship_views[i].order == str(i + 1)
+
+
+def test_relationships_with_subsequences_are_ordered(empty_model: Model):
+    """Test ordering works with subsequences."""
+    system1 = empty_model.add_software_system(name="System 1")
+    container1 = system1.add_container(name="Container 1")
+    container2 = system1.add_container(name="Container 2")
+    container1.uses(container2)
+
+    view = DynamicView(key="dyn1", description="test", software_system=system1)
+    view.set_model(empty_model)
+
+    view.add(container1, container2, description="test 1")
+    with view.subsequence():
+        view.add(container1, container2, description="test 1.1")
+        view.add(container1, container2, description="test 1.2")
+    for i in range(2, 11):
+        view.add(container1, container2, description=f"test {i}")
+
+    relationship_views = list(view.relationship_views)
+
+    assert relationship_views[0].order == "1"
+    assert relationship_views[1].order == "1.1"
+    assert relationship_views[2].order == "1.2"
+    assert relationship_views[3].order == "2"
+    assert relationship_views[11].order == "10"
+
+
+def test_relationship_view_sorting():
+    """Check various cases for sorting relationship views into order."""
+
+    def build_views(orders: List[str]) -> List[RelationshipView]:
+        return [RelationshipView(order=x) for x in orders]
+
+    views = build_views(["2", "10", "1"])
+    sorted_views = _sorted_relationship_views(views)
+    assert sorted_views[0].order == "1"
+    assert sorted_views[1].order == "2"
+    assert sorted_views[2].order == "10"
+
+    views = build_views(["1.20.1", "2.10", "1.3", "3"])
+    sorted_views = _sorted_relationship_views(views)
+    assert sorted_views[1].order == "1.20.1"
+    assert sorted_views[0].order == "1.3"
+    assert sorted_views[2].order == "2.10"
+    assert sorted_views[3].order == "3"
+
+    views = build_views(["2a", "2b", "10a", "1b"])
+    sorted_views = _sorted_relationship_views(views)
+    assert sorted_views[0].order == "1b"
+    assert sorted_views[1].order == "2a"
+    assert sorted_views[2].order == "2b"
+    assert sorted_views[3].order == "10a"
+
+    assert _sorted_relationship_views([]) == []

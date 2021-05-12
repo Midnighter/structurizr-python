@@ -93,7 +93,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         self.automatic_layout = automatic_layout
         self.title = title
         self.element_views: Set[ElementView] = set(element_views)
-        self.relationship_views: Set[RelationshipView] = set(relationship_views)
+        self._relationship_views: Set[RelationshipView] = set(relationship_views)
 
         # TODO
         self.layout_merge_strategy = layout_merge_strategy
@@ -124,6 +124,11 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
     def model(self) -> Model:
         """Return the `Model` for this view."""
         return self.software_system.get_model()
+
+    @property
+    def relationship_views(self) -> Iterable[RelationshipView]:
+        """Return the relationship views contained by this view."""
+        return self._relationship_views
 
     def _add_element(self, element: Element, add_relationships: bool) -> None:
         """
@@ -163,12 +168,12 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
             if element_view.id == element.id:
                 self.element_views.remove(element_view)
 
-        for relationship_view in list(self.relationship_views):
+        for relationship_view in list(self._relationship_views):
             if (
                 relationship_view.relationship.source.id == element.id
                 or relationship_view.relationship.destination.id == element.id
             ):
-                self.relationship_views.remove(relationship_view)
+                self._relationship_views.remove(relationship_view)
 
     def _add_relationship(
         self,
@@ -190,7 +195,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
             view = next(
                 (
                     rv
-                    for rv in self.relationship_views
+                    for rv in self._relationship_views
                     if rv.relationship is relationship
                     and rv.description == description
                     and rv.response == response
@@ -204,7 +209,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                     order=order,
                     response=response,
                 )
-                self.relationship_views.add(view)
+                self._relationship_views.add(view)
             return view
         return None
 
@@ -220,11 +225,15 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
 
         for relationship in element.get_efferent_relationships():
             if relationship.destination.id in elements:
-                self.relationship_views.add(RelationshipView(relationship=relationship))
+                self._relationship_views.add(
+                    RelationshipView(relationship=relationship)
+                )
 
         for relationship in element.get_afferent_relationships():
             if relationship.source.id in elements:
-                self.relationship_views.add(RelationshipView(relationship=relationship))
+                self._relationship_views.add(
+                    RelationshipView(relationship=relationship)
+                )
 
     def copy_layout_information_from(self, source: "View") -> None:
         """Copy the layout information from another view, including child views."""
@@ -238,7 +247,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                     source_element_view
                 )
 
-        for source_relationship_view in source.relationship_views:
+        for source_relationship_view in source._relationship_views:
             destintion_relationship_view = self.find_relationship_view(
                 source_relationship_view
             )
@@ -264,7 +273,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         self, source_relationship_view: RelationshipView
     ) -> Optional[RelationshipView]:
         """Find a child element view corresponding to the given relationship view."""
-        for relationship_view in self.relationship_views:
+        for relationship_view in self._relationship_views:
             if (
                 relationship_view.relationship.id
                 == source_relationship_view.relationship.id
