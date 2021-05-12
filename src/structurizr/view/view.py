@@ -16,14 +16,11 @@
 """Provide a superclass for all views."""
 
 
-from abc import ABC
 from typing import Any, Dict, Iterable, List, Optional, Set
 
 from pydantic import Field
 
-from ..abstract_base import AbstractBase
-from ..base_model import BaseModel
-from ..mixin import ViewSetRefMixin
+from .abstract_view import AbstractView, AbstractViewIO
 from ..model import Element, Model, Relationship, SoftwareSystem
 from .automatic_layout import AutomaticLayout, AutomaticLayoutIO
 from .element_view import ElementView, ElementViewIO
@@ -34,21 +31,18 @@ from .relationship_view import RelationshipView, RelationshipViewIO
 __all__ = ("View", "ViewIO")
 
 
-class ViewIO(BaseModel, ABC):
+class ViewIO(AbstractViewIO):
     """
-    Define an abstract base class for all views.
+    Define a base class for non-filtered views.
 
     Views include static views, dynamic views and deployment views.
     """
 
-    key: str
-    description: str = ""
     software_system_id: Optional[str] = Field(default=None, alias="softwareSystemId")
     paper_size: Optional[PaperSize] = Field(default=None, alias="paperSize")
     automatic_layout: Optional[AutomaticLayoutIO] = Field(
         default=None, alias="automaticLayout"
     )
-    title: str = ""
 
     element_views: List[ElementViewIO] = Field(default=(), alias="elements")
     relationship_views: List[RelationshipViewIO] = Field(
@@ -61,9 +55,9 @@ class ViewIO(BaseModel, ABC):
     # )
 
 
-class View(ViewSetRefMixin, AbstractBase, ABC):
+class View(AbstractView):
     """
-    Define an abstract base class for all views.
+    Define a base class for non-filtered views.
 
     Views include static views, dynamic views and deployment views.
 
@@ -73,11 +67,8 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         self,
         *,
         software_system: Optional[SoftwareSystem] = None,
-        key: str = None,
-        description: str,
         paper_size: Optional[PaperSize] = None,
         automatic_layout: Optional[AutomaticLayout] = None,
-        title: str = "",
         element_views: Optional[Iterable[ElementView]] = (),
         relationship_views: Optional[Iterable[RelationshipView]] = (),
         layout_merge_strategy: Optional[Any] = None,
@@ -87,33 +78,24 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         super().__init__(**kwargs)
         self.software_system = software_system
         self.software_system_id = software_system.id if software_system else None
-        self.key = key
-        self.description = description
         self.paper_size = paper_size
         self.automatic_layout = automatic_layout
-        self.title = title
         self.element_views: Set[ElementView] = set(element_views)
         self._relationship_views: Set[RelationshipView] = set(relationship_views)
 
         # TODO
         self.layout_merge_strategy = layout_merge_strategy
 
-    def __repr__(self) -> str:
-        """Return repr(self)."""
-        return f"{type(self).__name__}(key={self.key})"
-
     @classmethod
     def hydrate_arguments(cls, view_io: ViewIO) -> Dict:
         """Hydrate a ViewIO into the constructor arguments for View."""
         return {
+            **super().hydrate_arguments(view_io),
             # TODO: should we add this here? probably not: "software_system"
-            "key": view_io.key,
-            "description": view_io.description,
             "paper_size": view_io.paper_size,
             "automatic_layout": AutomaticLayout.hydrate(view_io.automatic_layout)
             if view_io.automatic_layout
             else None,
-            "title": view_io.title,
             "element_views": map(ElementView.hydrate, view_io.element_views),
             "relationship_views": map(
                 RelationshipView.hydrate, view_io.relationship_views

@@ -23,7 +23,13 @@ from structurizr.view.view import View, ViewIO
 class DerivedView(View):
     """Mock class for testing."""
 
-    pass
+    @classmethod
+    def hydrate(
+        cls,
+        view_io: ViewIO,
+    ):
+        """Hydrate a DerivedView from its IO."""
+        return cls(**cls.hydrate_arguments(view_io))
 
 
 def test_find_element_view():
@@ -173,3 +179,20 @@ def test_copy_layout():
     assert view2.find_element_view(element=sys1).paper_size == PaperSize.A1_Portrait
     rv = view2.find_relationship_view(description="Uses")
     assert rv.paper_size == PaperSize.A3_Portrait
+
+
+def test_hydration_includes_base_fields():
+    """Ensure fields from AbstractView are included when hydrating a View."""
+    view = DerivedView(key="key", title="title", description="description")
+    io = ViewIO.from_orm(view)
+
+    view2 = DerivedView.hydrate(io)
+    assert view2.key == "key"
+    assert view2.title == "title"
+    assert view2.description == "description"
+
+
+def test_repr():
+    """Test __repr__ for views."""
+    view = DerivedView(key="testkey", title="title", description="description")
+    assert repr(view) == "DerivedView(key=testkey)"
