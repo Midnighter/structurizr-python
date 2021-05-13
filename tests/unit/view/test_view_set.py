@@ -43,7 +43,7 @@ def test_view_set_construction(empty_model):
 def test_adding_dynamic_view(empty_model):
     """Check adding dyanmic view initialises it properly."""
     viewset = ViewSet(model=empty_model)
-    view = viewset.create_dynamic_view(description="test")
+    view = viewset.create_dynamic_view(key="dyn1", description="test")
     assert view.model is empty_model
     assert view.get_viewset() is viewset
     assert view.description == "test"
@@ -125,3 +125,28 @@ def test_getting_view_by_key(empty_viewset):
     assert viewset["container1"] is container_view
     with pytest.raises(KeyError, match="No view with key"):
         viewset["bogus"]
+
+
+def test_key_constraints(empty_viewset):
+    """Test the common constraints on view keys when creating views."""
+    viewset = empty_viewset
+    system1 = viewset.model.add_software_system(name="sys1")
+
+    # No key
+    with pytest.raises(ValueError, match="A key must be specified"):
+        viewset.create_container_view(description="container", software_system=system1)
+
+    # Empty key
+    with pytest.raises(ValueError, match="A key must be specified"):
+        viewset.create_container_view(
+            key="", description="container", software_system=system1
+        )
+
+    # Duplicate key
+    viewset.create_container_view(
+        key="container1", description="container", software_system=system1
+    )
+    with pytest.raises(ValueError, match="View already exists"):
+        viewset.create_container_view(
+            key="container1", description="container", software_system=system1
+        )

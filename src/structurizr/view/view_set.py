@@ -200,12 +200,11 @@ class ViewSet(ModelRefMixin, AbstractBase):
             **kwargs: Provide keyword arguments for instantiating a
                 `SystemLandscapeView` (recommended).
         """
-        # TODO:
-        # assertThatTheViewKeyIsSpecifiedAndUnique(key);
         if system_landscape_view is None:
             system_landscape_view = SystemLandscapeView(
                 model=self.get_model(), **kwargs
             )
+        self._ensure_key_is_specific_and_unique(system_landscape_view.key)
         system_landscape_view.set_viewset(self)
         self.system_landscape_views.add(system_landscape_view)
         return system_landscape_view
@@ -224,9 +223,9 @@ class ViewSet(ModelRefMixin, AbstractBase):
         """
         # TODO:
         # assertThatTheSoftwareSystemIsNotNull(softwareSystem);
-        # assertThatTheViewKeyIsSpecifiedAndUnique(key);
         if system_context_view is None:
             system_context_view = SystemContextView(**kwargs)
+        self._ensure_key_is_specific_and_unique(system_context_view.key)
         system_context_view.set_viewset(self)
         self.system_context_views.add(system_context_view)
         return system_context_view
@@ -245,9 +244,9 @@ class ViewSet(ModelRefMixin, AbstractBase):
         """
         # TODO:
         # assertThatTheSoftwareSystemIsNotNull(softwareSystem);
-        # assertThatTheViewKeyIsSpecifiedAndUnique(key);
         if container_view is None:
             container_view = ContainerView(**kwargs)
+        self._ensure_key_is_specific_and_unique(container_view.key)
         container_view.set_viewset(self)
         self.container_views.add(container_view)
         return container_view
@@ -264,10 +263,9 @@ class ViewSet(ModelRefMixin, AbstractBase):
             **kwargs: Provide keyword arguments for instantiating a `ComponentView`
                 (recommended).
         """
-        # TODO:
-        # AssertThatTheViewKeyIsUnique(key);
         if component_view is None:
             component_view = ComponentView(**kwargs)
+        self._ensure_key_is_specific_and_unique(component_view.key)
         component_view.set_viewset(self)
         self.component_views.add(component_view)
         return component_view
@@ -279,9 +277,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
         Args:
             **kwargs: Provide keyword arguments for instantiating a `DeploymentView`
         """
-        # TODO:
-        # AssertThatTheViewKeyIsUnique(key);
         deployment_view = DeploymentView(**kwargs)
+        self._ensure_key_is_specific_and_unique(deployment_view.key)
         deployment_view.set_viewset(self)
         deployment_view.set_model(self.model)
         self.deployment_views.add(deployment_view)
@@ -294,9 +291,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
         Args:
             **kwagrs: Provide keyword arguments for instantiating a `DynamicView`.
         """
-        # TODO:
-        # AssertThatTheViewKeyIsUnique(key);
         dynamic_view = DynamicView(**kwargs)
+        self._ensure_key_is_specific_and_unique(dynamic_view.key)
         dynamic_view.set_viewset(self)
         dynamic_view.set_model(self.model)
         self.dynamic_views.add(dynamic_view)
@@ -309,9 +305,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
         Args:
             **kwargs: Provide keyword arguments for instantiating a `FilteredView`.
         """
-        # TODO:
-        # AssertThatTheViewKeyIsUnique(key);
         filtered_view = FilteredView(**kwargs)
+        self._ensure_key_is_specific_and_unique(filtered_view.key)
         filtered_view.set_viewset(self)
         self.filtered_views.add(filtered_view)
         return filtered_view
@@ -338,6 +333,8 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""
+
+        # Note that filtered views don't have any layout information to copy.
         for source_view in source.system_landscape_views:
             destination_view = self._find_system_landscape_view(source_view)
             if destination_view:
@@ -367,6 +364,12 @@ class ViewSet(ModelRefMixin, AbstractBase):
             destination_view = self._find_deployment_view(source_view)
             if destination_view:
                 destination_view.copy_layout_information_from(source_view)
+
+    def _ensure_key_is_specific_and_unique(self, key: str) -> None:
+        if key is None or key == "":
+            raise ValueError("A key must be specified.")
+        if self.get_view(key) is not None:
+            raise ValueError(f"View already exists in workspace with key '{key}'.")
 
     def _find_system_landscape_view(
         self, view: SystemLandscapeView
