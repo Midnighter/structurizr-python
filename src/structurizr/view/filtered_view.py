@@ -26,6 +26,8 @@ __all__ = ("FilteredView", "FilteredViewIO")
 
 
 class FilterMode(Enum):
+    """indicates whether elements/relationships are being included or excluded."""
+
     Include = "Include"
     Exclude = "Exclude"
 
@@ -51,8 +53,8 @@ class FilteredView(AbstractView):
     """
     Represent the filtered view from the C4 model.
 
-    A FilteredView is a view that is based on another view, but adding or removing
-    specific elements specified by tags.
+    A FilteredView is a view that is based on another view, but including or excluding
+    elements and relationships from the base view according to their tags.
 
     Attributes:
         view: the view which this FilteredView is based on
