@@ -48,14 +48,18 @@ def test_constructor_param_validation():
 
     view1 = DynamicView(description="Description")
     assert view1.element is None
-    view2 = DynamicView(description="Description", software_system=system)
+    view2 = DynamicView(description="Description", element=system)
     assert view2.element is system
-    view3 = DynamicView(description="Description", container=container)
+    view3 = DynamicView(description="Description", element=container)
     assert view3.element is container
-    with pytest.raises(ValueError, match="You cannot specify"):
-        DynamicView(
-            description="Description", software_system=system, container=container
-        )
+
+
+def test_specifying_software_system_explicitly_fails(empty_model: Model):
+    """Check enforcement of passing software_system through element argument."""
+    model = empty_model
+    system1 = model.add_software_system(name="System 1", id="sys1")
+    with pytest.raises(ValueError):
+        DynamicView(software_system=system1, description="test")
 
 
 def test_adding_relationships_finds_correct_relationship(empty_view: DynamicView):
@@ -174,7 +178,7 @@ def test_adding_systems_to_system_scoped_view(empty_model: Model):
     container1 = system1.add_container(name="Container 1")
     rel = system2.uses(container1)
 
-    view = DynamicView(description="test", software_system=system1)
+    view = DynamicView(description="test", element=system1)
     view.set_model(model)
 
     relationship_view = view.add(system2, container1)
@@ -201,14 +205,14 @@ def test_trying_to_add_element_outside_scope(empty_model: Model):
         view.add(deploy1, system1)
 
     # Software system scope
-    view = DynamicView(software_system=system1, description="test")
+    view = DynamicView(element=system1, description="test")
     with pytest.raises(ValueError, match="Components can't be added"):
         view.add(component2, component2)
     with pytest.raises(ValueError, match="is already the scope"):
         view.add(system1, container1)
 
     # Container scope
-    view = DynamicView(container=container1, description="test")
+    view = DynamicView(element=container1, description="test")
     with pytest.raises(ValueError, match="is already the scope"):
         view.add(container1, container2)
     with pytest.raises(ValueError, match="is already the scope"):
@@ -227,14 +231,14 @@ def test_trying_to_add_element_with_existing_parent_or_child_fails(empty_model: 
     component1.uses(container2)
 
     # Can't add if parent is already there
-    view = DynamicView(container=container1, description="test")
+    view = DynamicView(element=container1, description="test")
     view.set_model(empty_model)
     view.add(component1, container2)
     with pytest.raises(ValueError, match="The parent of Component 2"):
         view.add(component1, component2)
 
     # Can't add if a child is already there
-    view = DynamicView(container=container1, description="test")
+    view = DynamicView(element=container1, description="test")
     view.set_model(empty_model)
     view.add(component1, component2)
     with pytest.raises(ValueError, match="A child of Container 2"):
@@ -324,7 +328,7 @@ def test_hydration(empty_model: Model):
     """Check dehydrating and hydrating."""
     system = empty_model.add_software_system(name="system", id="sys1")
 
-    view = DynamicView(key="dyn1", description="Description", software_system=system)
+    view = DynamicView(key="dyn1", description="Description", element=system)
     view.set_model(empty_model)
 
     io = DynamicViewIO.from_orm(view)
@@ -344,7 +348,7 @@ def test_relationships_are_ordered(empty_model: Model):
     container2 = system1.add_container(name="Container 2")
     container1.uses(container2)
 
-    view = DynamicView(key="dyn1", description="test", software_system=system1)
+    view = DynamicView(key="dyn1", description="test", element=system1)
     view.set_model(empty_model)
 
     # Test using 10 items, so we can check 1 < 2 < 10 (i.e. not string ordering)
@@ -365,7 +369,7 @@ def test_relationships_with_subsequences_are_ordered(empty_model: Model):
     container2 = system1.add_container(name="Container 2")
     container1.uses(container2)
 
-    view = DynamicView(key="dyn1", description="test", software_system=system1)
+    view = DynamicView(key="dyn1", description="test", element=system1)
     view.set_model(empty_model)
 
     view.add(container1, container2, description="test 1")

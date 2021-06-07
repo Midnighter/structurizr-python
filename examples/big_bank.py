@@ -430,7 +430,7 @@ def create_big_bank_workspace():
     # componentView.AddAnimation(resetPasswordController, emailComponent, database)
 
     dynamic_view = views.create_dynamic_view(
-        container=api_application,
+        element=api_application,
         key="SignIn",
         description="Summarises how the sign in feature works in the single-page application.",
     )

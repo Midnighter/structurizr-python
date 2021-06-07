@@ -52,9 +52,7 @@ def test_dynamic_view_hydrated(empty_viewset):
     """Check dynamic views hydrated properly."""
     viewset = empty_viewset
     system1 = viewset.model.add_software_system(name="sys1")
-    viewset.create_dynamic_view(
-        key="dyn1", description="dynamic", software_system=system1
-    )
+    viewset.create_dynamic_view(key="dyn1", description="dynamic", element=system1)
     io = ViewSetIO.from_orm(viewset)
 
     new_viewset = ViewSet.hydrate(io, viewset.model)
