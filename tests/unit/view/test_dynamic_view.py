@@ -13,17 +13,10 @@
 """Ensure the correct behaviour of DynamicView."""
 
 
-from typing import List
-
 import pytest
 
 from structurizr.model import Container, Model, SoftwareSystem
-from structurizr.view.dynamic_view import (
-    DynamicView,
-    DynamicViewIO,
-    _sorted_relationship_views,
-)
-from structurizr.view.relationship_view import RelationshipView
+from structurizr.view.dynamic_view import DynamicView, DynamicViewIO
 
 
 @pytest.fixture(scope="function")
@@ -389,32 +382,3 @@ def test_relationships_with_subsequences_are_ordered(empty_model: Model):
     assert relationship_views[2].order == "1.2"
     assert relationship_views[3].order == "2"
     assert relationship_views[11].order == "10"
-
-
-def test_relationship_view_sorting():
-    """Check various cases for sorting relationship views into order."""
-
-    def build_views(orders: List[str]) -> List[RelationshipView]:
-        return [RelationshipView(order=x) for x in orders]
-
-    views = build_views(["2", "10", "1"])
-    sorted_views = _sorted_relationship_views(views)
-    assert sorted_views[0].order == "1"
-    assert sorted_views[1].order == "2"
-    assert sorted_views[2].order == "10"
-
-    views = build_views(["1.20.1", "2.10", "1.3", "3"])
-    sorted_views = _sorted_relationship_views(views)
-    assert sorted_views[1].order == "1.20.1"
-    assert sorted_views[0].order == "1.3"
-    assert sorted_views[2].order == "2.10"
-    assert sorted_views[3].order == "3"
-
-    views = build_views(["2a", "2b", "10a", "1b"])
-    sorted_views = _sorted_relationship_views(views)
-    assert sorted_views[0].order == "1b"
-    assert sorted_views[1].order == "2a"
-    assert sorted_views[2].order == "2b"
-    assert sorted_views[3].order == "10a"
-
-    assert _sorted_relationship_views([]) == []

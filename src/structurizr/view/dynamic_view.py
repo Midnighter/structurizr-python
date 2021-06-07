@@ -10,10 +10,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Provie a Dynamic View."""
+"""Provide a dynamic view."""
 
 from contextlib import contextmanager
-from typing import Iterable, List, Optional, Tuple, Union
+from operator import attrgetter
+from typing import Iterable, Optional, Tuple, Union
 
 from pydantic import Field
 
@@ -30,7 +31,7 @@ __all__ = ("DynamicView", "DynamicViewIO")
 
 class DynamicViewIO(ViewIO):
     """
-    Represent the dynamic view from the C4 model.
+    Represent a dynamic view on a C4 model.
 
     Attributes:
         element: The software system or container that this view is focused on.
@@ -41,7 +42,7 @@ class DynamicViewIO(ViewIO):
 
 class DynamicView(ModelRefMixin, View):
     """
-    Represent the dynamic view from the C4 model.
+    Represent a dynamic view on a C4 model.
 
     A dynamic diagram can be useful when you want to show how elements in a static
     model collaborate at runtime to implement a user story, use case, feature, etc.
@@ -191,7 +192,7 @@ class DynamicView(ModelRefMixin, View):
 
         Sorting uses "version number" style ordering, so 1 < 1.1 < 2 < 10.
         """
-        return _sorted_relationship_views(self._relationship_views)
+        return sorted(self._relationship_views, key=attrgetter("order"))
 
     def check_element_can_be_added(self, element: Element) -> None:
         """Make sure that the element is valid to be added to this view."""
@@ -292,26 +293,3 @@ class DynamicView(ModelRefMixin, View):
             container=container,
             **cls.hydrate_arguments(io),
         )
-
-
-def _sorted_relationship_views(
-    views: Iterable[RelationshipView],
-) -> List[RelationshipView]:
-    """Return relationship views, sorted in correct order.
-
-    We want to use version-number style comparisons rather than straight lexical, so
-    1 < 2 < 10, and we also need to support dot-notation, e.g. 1.2.3 < 1.10.  And we
-    also want to support alphanumerics, e.g. 1a, 1b.  To achieve this, we left-pad each
-    segment with spaces so that lexical and numeric comparisons are identical.
-    """
-
-    max_segment_size = max(
-        [len(segment) for view in views for segment in view.order.split(".")] + [0]
-    )
-
-    def sort_key(view: RelationshipView):
-        segments = view.order.split(".")
-        key = [segment.rjust(max_segment_size) for segment in segments]
-        return key
-
-    return sorted(views, key=sort_key)

@@ -325,7 +325,6 @@ class ViewSet(ModelRefMixin, AbstractBase):
         for current_view in self.system_landscape_views:
             if view.key == current_view.key:
                 return current_view
-        return None
 
     def _find_system_context_view(
         self,
@@ -334,28 +333,23 @@ class ViewSet(ModelRefMixin, AbstractBase):
         for current_view in self.system_context_views:
             if view.key == current_view.key:
                 return current_view
-        return None
 
     def _find_container_view(self, view: ContainerView) -> Optional[ContainerView]:
         for current_view in self.container_views:
             if view.key == current_view.key:
                 return current_view
-        return None
 
     def _find_component_view(self, view: ComponentView) -> Optional[ComponentView]:
         for current_view in self.component_views:
             if view.key == current_view.key:
                 return current_view
-        return None
 
     def _find_dynamic_view(self, view: DynamicView) -> Optional[DynamicView]:
         for current_view in self.dynamic_views:
             if view.key == current_view.key:
                 return current_view
-        return None
 
     def _find_deployment_view(self, view: DeploymentView) -> DeploymentView:
         for current_view in self.deployment_views:
             if view.key == current_view.key:
                 return current_view
-        return None
