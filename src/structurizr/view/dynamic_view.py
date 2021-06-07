@@ -58,8 +58,7 @@ class DynamicView(ModelRefMixin, View):
     def __init__(
         self,
         *,
-        software_system: Optional[SoftwareSystem] = None,
-        container: Optional[Container] = None,
+        element: Optional[Union[Container, SoftwareSystem]] = None,
         **kwargs,
     ) -> None:
         """Initialize a DynamicView.
@@ -68,10 +67,13 @@ class DynamicView(ModelRefMixin, View):
         don't want it to appear in the JSON output (DynamicView uses elementId
         instead).
         """
-        if software_system is not None and container is not None:
-            raise ValueError("You cannot specify both software_system and container")
+        if "software_system" in kwargs:
+            raise ValueError(
+                "Software system must be specified through the 'element' argument for "
+                "DynamicViews"
+            )
         super().__init__(**kwargs)
-        self.element = software_system or container
+        self.element = element
         self.element_id = self.element.id if self.element else None
         self.sequence_number = SequenceNumber()
 
@@ -286,10 +288,7 @@ class DynamicView(ModelRefMixin, View):
         cls, io: DynamicViewIO, *, element: Optional[Union[SoftwareSystem, Container]]
     ) -> "DynamicView":
         """Hydrate a new DynamicView instance from its IO."""
-        system = element if isinstance(element, SoftwareSystem) else None
-        container = element if isinstance(element, Container) else None
         return cls(
-            software_system=system,
-            container=container,
+            element=element,
             **cls.hydrate_arguments(io),
         )
