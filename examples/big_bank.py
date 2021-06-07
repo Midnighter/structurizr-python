@@ -429,7 +429,6 @@ def create_big_bank_workspace():
     #   mainframe_banking_systemFacade, mainframe_banking_system)
     # componentView.AddAnimation(resetPasswordController, emailComponent, database)
 
-    # dynamic diagrams and deployment diagrams are not available with the Free Plan
     dynamic_view = views.create_dynamic_view(
         container=api_application,
         key="SignIn",

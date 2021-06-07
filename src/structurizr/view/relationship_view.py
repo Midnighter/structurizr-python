@@ -16,7 +16,7 @@
 """Provide a container for a relationship instance in a view."""
 
 
-from typing import Any, Iterable, List, Optional
+from typing import Any, Iterable, List, Optional, Union
 
 from pydantic import Field
 
@@ -24,6 +24,7 @@ from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..model.relationship import Relationship
 from .vertex import Vertex, VertexIO
+from .view_order import ViewOrder
 
 
 __all__ = ("RelationshipView", "RelationshipViewIO")
@@ -55,7 +56,7 @@ class RelationshipView(AbstractBase):
         relationship: Optional[Relationship] = None,
         id: Optional[str] = None,
         description: Optional[str] = None,
-        order: Optional[str] = None,
+        order: Optional[Union[str, ViewOrder]] = None,
         response: bool = False,
         vertices: Iterable[Vertex] = (),
         routing: Optional[Any] = None,
@@ -67,7 +68,9 @@ class RelationshipView(AbstractBase):
         self.relationship = relationship
         self.id = relationship.id if relationship else id
         self.description = description
-        self.order = order
+        self.order = (
+            order if order is None or isinstance(order, ViewOrder) else ViewOrder(order)
+        )
         self.response = response
         self.vertices = set(vertices)
         self.routing = routing
