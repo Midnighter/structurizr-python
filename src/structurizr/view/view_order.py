@@ -12,6 +12,8 @@
 
 """Provide a type that supports logical sequencing of view orders."""
 
+from typing import Any
+
 
 class ViewOrder(str):
     """
@@ -21,13 +23,14 @@ class ViewOrder(str):
     numeric ordering is preserved as opposed to lexical - e.g. 1.13 > 1.2.
     """
 
-    def __new__(cls, order: str):
+    def __new__(cls, order: Any) -> "ViewOrder":
         """Initialise a new ViewOrder instance."""
-        self = super(ViewOrder, cls).__new__(cls, order)
-        self._segments = order.split(".")
+        order_str = str(order)
+        self = super(ViewOrder, cls).__new__(cls, order_str)
+        self._segments = order_str.split(".")
         return self
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: "ViewOrder") -> bool:
         """Return true if the this ViewOrder is logically less than other."""
         if not isinstance(other, ViewOrder):
             raise TypeError
@@ -40,15 +43,15 @@ class ViewOrder(str):
 
         return len(self._segments) < len(other._segments)
 
-    def __le__(self, other) -> bool:
+    def __le__(self, other: "ViewOrder") -> bool:
         """Return true if the this ViewOrder is logically <= other."""
         return not other < self
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: "ViewOrder") -> bool:
         """Return true if the this ViewOrder is logically greater than other."""
         return other < self
 
-    def __ge__(self, other) -> bool:
+    def __ge__(self, other: "ViewOrder") -> bool:
         """Return true if the this ViewOrder is logically >= other."""
         return not self < other
 
