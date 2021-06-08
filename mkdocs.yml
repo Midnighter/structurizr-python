@@ -1,6 +1,7 @@
 site_name: Structurizr-Python
 site_description: A Python client package for the Structurizr cloud service and on-premises installation.
 site_author: Moritz E. Beber
+site_url: https://structurizr-python.readthedocs.io/
 
 markdown_extensions:
   - pymdownx.highlight
