@@ -23,8 +23,8 @@ from pydantic import Field
 from ..abstract_base import AbstractBase
 from ..base_model import BaseModel
 from ..model.relationship import Relationship
+from .interaction_order import InteractionOrder
 from .vertex import Vertex, VertexIO
-from .view_order import ViewOrder
 
 
 __all__ = ("RelationshipView", "RelationshipViewIO")
@@ -56,7 +56,7 @@ class RelationshipView(AbstractBase):
         relationship: Optional[Relationship] = None,
         id: Optional[str] = None,
         description: Optional[str] = None,
-        order: Optional[Union[str, ViewOrder]] = None,
+        order: Optional[Union[str, InteractionOrder]] = None,
         response: bool = False,
         vertices: Iterable[Vertex] = (),
         routing: Optional[Any] = None,
@@ -69,7 +69,9 @@ class RelationshipView(AbstractBase):
         self.id = relationship.id if relationship else id
         self.description = description
         self.order = (
-            order if order is None or isinstance(order, ViewOrder) else ViewOrder(order)
+            order
+            if order is None or isinstance(order, InteractionOrder)
+            else InteractionOrder(order)
         )
         self.response = response
         self.vertices = set(vertices)
