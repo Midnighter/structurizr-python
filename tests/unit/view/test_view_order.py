@@ -26,6 +26,11 @@ def test_basics():
     assert not ViewOrder("2") < ViewOrder("2")
 
 
+def test_construction_on_non_str_types():
+    """Verify that ViewOrder can be constructed on non-str types."""
+    assert ViewOrder(2) < ViewOrder(10)
+
+
 def test_comparing_bad_types_raises_error():
     """Test behaviour when trying to compare against a different type."""
     with pytest.raises(TypeError):

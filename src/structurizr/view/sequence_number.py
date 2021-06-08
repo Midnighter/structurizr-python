@@ -18,6 +18,7 @@ from .sequence_counter import (
     SequenceCounter,
     SubsequenceCounter,
 )
+from .view_order import ViewOrder
 
 
 class SequenceNumber:
@@ -27,10 +28,10 @@ class SequenceNumber:
         """Initialise a new SequenceNumber instance."""
         self.counter = SequenceCounter()
 
-    def get_next(self) -> str:
+    def get_next(self) -> ViewOrder:
         """Return the next number in the sequence."""
         self.counter.increment()
-        return str(self.counter)
+        return ViewOrder(self.counter)
 
     def start_subsequence(self):
         """Start a subsequence.
