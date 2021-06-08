@@ -13,12 +13,12 @@
 """Provide a sequence number, used in Dynamic views."""
 
 
+from .interaction_order import InteractionOrder
 from .sequence_counter import (
     ParallelSequenceCounter,
     SequenceCounter,
     SubsequenceCounter,
 )
-from .view_order import ViewOrder
 
 
 class SequenceNumber:
@@ -28,10 +28,10 @@ class SequenceNumber:
         """Initialise a new SequenceNumber instance."""
         self.counter = SequenceCounter()
 
-    def get_next(self) -> ViewOrder:
+    def get_next(self) -> InteractionOrder:
         """Return the next number in the sequence."""
         self.counter.increment()
-        return ViewOrder(self.counter)
+        return InteractionOrder(self.counter)
 
     def start_subsequence(self):
         """Start a subsequence.
