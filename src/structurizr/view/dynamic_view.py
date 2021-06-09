@@ -159,7 +159,7 @@ class DynamicView(ModelRefMixin, View):
     @contextmanager
     def parallel_sequence(self, continue_numbering: bool):
         r"""
-        Start a parallel sequence through a `with` block.
+        Start a context-managed parallel sequence.
 
         Args:
             continue_numbering: if `True` then when the with block completes, the main
