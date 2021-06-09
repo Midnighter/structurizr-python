@@ -141,7 +141,7 @@ class DynamicView(ModelRefMixin, View):
         which in turn calls both C then D to process the request before returning the
         results back to A.  This can be shown using:
 
-            dynamic_view.add(a, b, "Sends service request to)
+            dynamic_view.add(a, b, "Sends service request to")
             with dynamic_view.subsequence():
                 dynamic_view.add(b, c, "Makes subcall to")
                 dynamic_view.add(b, d, "Makes second subcall to")
