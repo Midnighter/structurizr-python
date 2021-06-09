@@ -117,7 +117,7 @@ class DynamicView(ModelRefMixin, View):
                 raise ValueError(
                     f"A relationship between {source.name} and "
                     f"{destination.name} does not exist in "
-                    "model."
+                    "the model."
                 )
         self._add_element(source, False)
         self._add_element(destination, False)
