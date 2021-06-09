@@ -308,10 +308,10 @@ def test_parallel_sequencing(empty_view: DynamicView):
     e.uses(f)
 
     r1 = empty_view.add(a, b)
-    with empty_view.parallel_sequence(False):
+    with empty_view.parallel_sequence():
         r2 = empty_view.add(b, c)
         r3 = empty_view.add(c, e)
-    with empty_view.parallel_sequence(True):
+    with empty_view.parallel_sequence(continue_numbering=True):
         r4 = empty_view.add(b, d)
         r5 = empty_view.add(d, e)
     r6 = empty_view.add(e, f)
