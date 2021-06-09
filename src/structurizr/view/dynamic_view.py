@@ -94,9 +94,12 @@ class DynamicView(ModelRefMixin, View):
         provided then this will be used in the view in preference to the description
         on the relationship.
 
-        Example of request/response, assuming a single relationship in the model:
-            dynamic_view.add(container1, container2, "Requests data from")
-            dynamic_view.add(container2, container1, "Sends response back to")
+        Examples:
+            Example of a request/response, assuming a single relationship in the model:
+            
+                dynamic_view.add(container1, container2, "Requests data from")
+                dynamic_view.add(container2, container1, "Sends response back to")
+
         """
         self.check_element_can_be_added(source)
         self.check_element_can_be_added(destination)
