@@ -131,7 +131,7 @@ class DynamicView(ModelRefMixin, View):
     @contextmanager
     def subsequence(self):
         """
-        Start a subsueqnce through a `with` block.
+        Start a context-managed subsequence.
 
         Subsequences allow nested interaction sequences, showing "child" calls through
         numbering 1.1, 1.2 etc.  Subsequences can themselves be nested.
