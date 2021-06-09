@@ -16,6 +16,7 @@
 """Ensure the expected behaviour of View."""
 
 from structurizr.model import Model
+from structurizr.view.paper_size import PaperSize
 from structurizr.view.view import View, ViewIO
 
 
@@ -23,6 +24,56 @@ class DerivedView(View):
     """Mock class for testing."""
 
     pass
+
+
+def test_find_element_view():
+    """Test behaviour of find_element_view."""
+    model = Model()
+    sys1 = model.add_software_system(name="System 1")
+    sys2 = model.add_software_system(name="System 2")
+
+    view = DerivedView(software_system=sys1, description="")
+    view._add_element(sys1, False)
+
+    assert view.find_element_view(element=sys1).element is sys1
+    assert view.find_element_view(element=sys2) is None
+
+
+def test_find_relationship_view():
+    """Test behaviour of find_element_view."""
+    model = Model()
+    sys1 = model.add_software_system(name="System 1")
+    sys2 = model.add_software_system(name="System 2")
+    rel1 = sys1.uses(sys2, "Uses")
+    rel2 = sys2.uses(sys1, "Also uses")
+    rel3 = sys2.uses(sys1, "Returns")
+
+    view = DerivedView(software_system=sys1, description="")
+    view._add_element(sys1, False)
+    view._add_element(sys2, False)
+    view._add_relationship(rel1).description = "Override"
+    view._add_relationship(rel3).response = True
+
+    assert view.find_relationship_view(relationship=rel1).relationship is rel1
+    assert view.find_relationship_view(relationship=rel2) is None
+    assert view.find_relationship_view(description="Override").relationship is rel1
+    assert view.find_relationship_view(description="Uses") is None
+    assert view.find_relationship_view(description="Returns").relationship is rel3
+    assert view.find_relationship_view(response=True).relationship is rel3
+    assert view.find_relationship_view(response=False).relationship is rel1
+
+
+def test_is_element_in_view():
+    """Test check for an element being in the view."""
+    model = Model()
+    sys1 = model.add_software_system(name="System 1")
+    sys2 = model.add_software_system(name="System 2")
+
+    view = DerivedView(software_system=sys1, description="")
+    view._add_element(sys1, False)
+
+    assert view.is_element_in_view(sys1)
+    assert not view.is_element_in_view(sys2)
 
 
 def test_add_relationship_doesnt_duplicate():
@@ -97,3 +148,28 @@ def test_missing_json_description_allowed():
     """
     io = ViewIO.parse_raw(json)
     assert io is not None
+
+
+def test_copy_layout():
+    """Ensure that layout is copied over, including sub-views."""
+    model = Model()
+    sys1 = model.add_software_system(name="System 1")
+    sys2 = model.add_software_system(name="System 2")
+    rel1 = sys1.uses(sys2)
+
+    view1 = DerivedView(software_system=sys1, description="")
+    view1._add_element(sys1, False).paper_size = PaperSize.A1_Portrait
+    view1._add_element(sys2, False).paper_size = PaperSize.A2_Portrait
+    view1._add_relationship(rel1).paper_size = PaperSize.A3_Portrait
+    view1.paper_size = PaperSize.A4_Portrait
+
+    view2 = DerivedView(software_system=sys1, description="")
+    view2._add_element(sys1, False).paper_size = PaperSize.A1_Portrait
+    view2._add_element(sys2, False).paper_size = PaperSize.A2_Portrait
+    view2._add_relationship(rel1).paper_size = PaperSize.A3_Portrait
+    view2.copy_layout_information_from(view1)
+
+    assert view2.paper_size == PaperSize.A4_Portrait
+    assert view2.find_element_view(element=sys1).paper_size == PaperSize.A1_Portrait
+    rv = view2.find_relationship_view(description="Uses")
+    assert rv.paper_size == PaperSize.A3_Portrait
