@@ -111,7 +111,7 @@ class DynamicView(ModelRefMixin, View):
                 raise ValueError(
                     f"A relationship between {source.name} and "
                     f"{destination.name} with technology "
-                    f"'{technology}' does not exist in model."
+                    f"'{technology}' does not exist in the model."
                 )
             else:
                 raise ValueError(
