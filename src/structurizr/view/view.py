@@ -128,7 +128,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
     @property
     def relationship_views(self) -> Iterable[RelationshipView]:
         """Return the relationship views contained by this view."""
-        return self._relationship_views
+        return set(self._relationship_views)
 
     def _add_element(self, element: Element, add_relationships: bool) -> None:
         """
