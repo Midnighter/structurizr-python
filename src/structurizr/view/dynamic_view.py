@@ -145,7 +145,7 @@ class DynamicView(ModelRefMixin, View):
             with dynamic_view.subsequence():
                 dynamic_view.add(b, c, "Makes subcall to")
                 dynamic_view.add(b, d, "Makes second subcall to")
-            dynamic_view.add(b, a, "Sends results back to)
+            dynamic_view.add(b, a, "Sends results back to")
 
         This would result in four interactions shown, with orders "1", "1.1", "1.2"
         and "2" respectively.
