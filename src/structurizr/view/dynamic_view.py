@@ -96,7 +96,7 @@ class DynamicView(ModelRefMixin, View):
 
         Examples:
             Example of a request/response, assuming a single relationship in the model:
-            
+
                 dynamic_view.add(container1, container2, "Requests data from")
                 dynamic_view.add(container2, container1, "Sends response back to")
 
@@ -157,7 +157,7 @@ class DynamicView(ModelRefMixin, View):
             self.sequence_number.end_subsequence()
 
     @contextmanager
-    def parallel_sequence(self, continue_numbering: bool):
+    def parallel_sequence(self, *, continue_numbering: bool = False):
         r"""
         Start a context-managed parallel sequence.
 
@@ -181,10 +181,10 @@ class DynamicView(ModelRefMixin, View):
         you would do:
 
             dynamic_view.add(a, b)      # Will be order "1"
-            with dynamic_view.parallel_sequence(False):
+            with dynamic_view.parallel_sequence():
                 dynamic_view.add(b, c)  # "2"
                 dynamic_view.add(c, e)  # "3"
-            with dynamic_view.parallel_sequence(True):
+            with dynamic_view.parallel_sequence(continue_numbering=True):
                 dynamic_view.add(b, d)  # "2" again
                 dynamic_view.add(d, e)  # "3"
             dynamiic_view.add(e, f)     # "4"
@@ -250,6 +250,8 @@ class DynamicView(ModelRefMixin, View):
         destination: Element,
         technology: Optional[str],
     ) -> Tuple[Optional[Relationship], bool]:
+        """Return the best matching relationship and whether it is a response."""
+
         # First preference is exactly matching description
         rel = next(
             (
