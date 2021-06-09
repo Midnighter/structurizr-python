@@ -168,11 +168,14 @@ class DynamicView(ModelRefMixin, View):
                 (`False`). The latter is usually done so that you can start a
                 new parallel sequence.
 
+        Examples:
         Parallel sequences allow for multiple parallel flows to share the same
-        sequence numbers, so e.g.
+        sequence numbers, for example,
+
                    /-> C -\
           A -> B -{        }-> E -> F
                    \-> D -/
+
         could happen concurrently but you want both B->C and B->D to get order
         number 2, and C->E and D->E to get order number 3.  To achieve this,
         you would do:
@@ -194,7 +197,7 @@ class DynamicView(ModelRefMixin, View):
 
     @property
     def relationship_views(self) -> Iterable[RelationshipView]:
-        """Return the relationship views, sorted in order.
+        """Return the relationship views in order of their sequence number.
 
         Sorting uses "version number" style ordering, so 1 < 1.1 < 2 < 10.
         """
