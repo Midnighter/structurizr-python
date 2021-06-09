@@ -130,7 +130,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         """Return the relationship views contained by this view."""
         return set(self._relationship_views)
 
-    def _add_element(self, element: Element, add_relationships: bool) -> None:
+    def _add_element(self, element: Element, add_relationships: bool) -> ElementView:
         """
         Add the given element to this view.
 
@@ -145,10 +145,13 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 f"The element {element} does not exist in the model associated with "
                 f"this view."
             )
-        if element not in [view.element for view in self.element_views]:
-            self.element_views.add(ElementView(element=element))
+        view = self.find_element_view(element=element)
+        if view is None:
+            view = ElementView(element=element)
+            self.element_views.add(view)
         if add_relationships:
             self._add_relationships(element)
+        return view
 
     def _remove_element(self, element: Element) -> None:
         """
@@ -192,15 +195,8 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
         if self.is_element_in_view(relationship.source) and self.is_element_in_view(
             relationship.destination
         ):
-            view = next(
-                (
-                    rv
-                    for rv in self._relationship_views
-                    if rv.relationship is relationship
-                    and rv.description == description
-                    and rv.response == response
-                ),
-                None,
+            view = self.find_relationship_view(
+                relationship=relationship, description=description, response=response
             )
             if not view:
                 view = RelationshipView(
@@ -211,7 +207,6 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
                 )
                 self._relationship_views.add(view)
             return view
-        return None
 
     def _add_relationships(self, element: Element) -> None:
         """
@@ -241,7 +236,9 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
             self.paper_size = source.paper_size
 
         for source_element_view in source.element_views:
-            destination_element_view = self.find_element_view(source_element_view)
+            destination_element_view = self.find_element_view(
+                element=source_element_view.element
+            )
             if destination_element_view:
                 destination_element_view.copy_layout_information_from(
                     source_element_view
@@ -249,7 +246,7 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
 
         for source_relationship_view in source.relationship_views:
             destintion_relationship_view = self.find_relationship_view(
-                source_relationship_view
+                relationship=source_relationship_view.relationship
             )
             if destintion_relationship_view:
                 destintion_relationship_view.copy_layout_information_from(
@@ -258,28 +255,47 @@ class View(ViewSetRefMixin, AbstractBase, ABC):
 
     def is_element_in_view(self, element: Element) -> bool:
         """Return True if the given element is in this view."""
-        return any([e.element.id == element.id for e in self.element_views])
+        return self.find_element_view(element=element) is not None
 
     def find_element_view(
-        self, source_element_view: ElementView
+        self,
+        *,
+        element: Optional[Element] = None,
     ) -> Optional[ElementView]:
-        """Find a child element view corresponding to the given source view."""
-        for element_view in self.element_views:
-            if element_view.element.id == source_element_view.element.id:
-                return element_view
-        return None
+        """Find a child element view matching a given element."""
+        return next(
+            (view for view in self.element_views if view.element.id == element.id), None
+        )
 
     def find_relationship_view(
-        self, source_relationship_view: RelationshipView
+        self,
+        *,
+        relationship: Optional[Relationship] = None,
+        description: Optional[str] = None,
+        response: Optional[bool] = None,
     ) -> Optional[RelationshipView]:
-        """Find a child element view corresponding to the given relationship view."""
-        for relationship_view in self._relationship_views:
+        """
+        Find a child relationship view matching the supplied non-None arguments.
+
+        Args:
+            relationship: find a child view with matching relationship ID
+            description:  find a child view with matching view description.  Note that
+                          the view description is not always the same as that of the
+                          relationship
+            response:     find a child view with matching response indicator.
+        """
+        for view in self._relationship_views:
+            rel = view.relationship
             if (
-                relationship_view.relationship.id
-                == source_relationship_view.relationship.id
+                (relationship is None or rel.id == relationship.id)
+                and (
+                    description is None
+                    or view.description == description
+                    or (view.description is None and rel.description == description)
+                )
+                and (response is None or view.response == response)
             ):
-                return relationship_view
-        return None
+                return view
 
     def check_parent_and_children_not_in_view(self, element: Element) -> None:
         """Ensure that an element can't be added if parent or children are in view."""
