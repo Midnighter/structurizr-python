@@ -89,7 +89,7 @@ class DynamicView(ModelRefMixin, View):
 
         This will search for a relationship in the model from the source to the
         destination with matching technology (if specified).  It will also look for
-        situations where this interaction is a "response" in that it it goes in the
+        situations where this interaction is a "response" in that it goes in the
         opposite direction to the relationship in the model.  If a description is
         provided then this will be used in the view in preference to the description
         on the relationship.
