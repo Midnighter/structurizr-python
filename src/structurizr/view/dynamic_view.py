@@ -134,7 +134,7 @@ class DynamicView(ModelRefMixin, View):
         Start a context-managed subsequence.
 
         Subsequences allow nested interaction sequences, showing "child" calls through
-        numbering 1.1, 1.2 etc.  Subsequences can themselves be nested.
+        numbering 1.1, 1.2, etc.  Subsequences can themselves be nested.
 
         As an example, assume four Components, A-D.  A makes a service request to B,
         which in turn calls both C then D to process the request before returning the
