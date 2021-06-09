@@ -162,11 +162,11 @@ class DynamicView(ModelRefMixin, View):
         Start a context-managed parallel sequence.
 
         Args:
-            continue_numbering: if `True` then when the with block completes, the main
-                                sequence number will continue from after the last
-                                number from the parallel sequence.  If `False` then it
-                                will reset back to the start (usually so you can start
-                                a new parallel sequence).
+            continue_numbering: Whether to continue the main sequence number
+                from where the parallel sequence ended when its context is
+                ended (`True`) or to reset the main sequence to where it began
+                (`False`). The latter is usually done so that you can start a
+                new parallel sequence.
 
         Parallel sequences allow for multiple parallel flows to share the same
         sequence numbers, so e.g.
