@@ -17,7 +17,7 @@
 
 
 from itertools import chain
-from typing import TYPE_CHECKING, Iterable, List, Optional
+from typing import TYPE_CHECKING, Iterable, List, Optional, TypeVar
 
 from pydantic import Field
 
@@ -41,6 +41,8 @@ if TYPE_CHECKING:
 
 
 __all__ = ("ViewSet", "ViewSetIO")
+
+T = TypeVar("T")
 
 
 class ViewSetIO(BaseModel):
@@ -379,5 +381,5 @@ class ViewSet(ModelRefMixin, AbstractBase):
         if key in self._views:
             raise ValueError(f"View already exists in workspace with key '{key}'.")
 
-    def _get_typed_views(self, klass: "T") -> Iterable["T"]:
+    def _get_typed_views(self, klass: T) -> Iterable[T]:
         return (view for view in self._views.values() if isinstance(view, klass))
