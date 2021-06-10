@@ -47,3 +47,17 @@ def test_serialisation():
     assert view2.description == "test"
     assert view2.mode == FilterMode.Exclude
     assert view2.tags == {"v1"}
+
+
+def test_tags_are_serialised_as_an_array():
+    """Ensure that tags are serialised as an array, not comma-separated."""
+    container_view = ContainerView(key="static_key", description="container")
+    filtered_view = FilteredView(
+        key="filter1",
+        view=container_view,
+        description="test",
+        mode=FilterMode.Exclude,
+        tags=["v1", "test"],
+    )
+    io = FilteredViewIO.from_orm(filtered_view).json()
+    assert '"tags": ["v1", "test"]' in io
