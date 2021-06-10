@@ -125,7 +125,7 @@ def test_getting_view_by_key(empty_viewset):
     assert viewset.get_view("container1") is container_view
     assert viewset.get_view("bogus") is None
     assert viewset["container1"] is container_view
-    with pytest.raises(KeyError, match="No view with key"):
+    with pytest.raises(KeyError):
         viewset["bogus"]
 
 
