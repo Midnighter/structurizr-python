@@ -152,7 +152,9 @@ class ViewSet(ModelRefMixin, AbstractBase):
             cls._hydrate_view(view, model=model)
             dynamic_views.append(view)
 
-        filtered_views = [FilteredView.hydrate(view_io) for view_io in views.filtered_views]
+        filtered_views = [
+            FilteredView.hydrate(view_io) for view_io in views.filtered_views
+        ]
 
         result = cls(
             model=model,

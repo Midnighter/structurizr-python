@@ -14,9 +14,10 @@
 """Provide a filtered view."""
 
 from enum import Enum
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Union
 
-from pydantic import Field
+from ordered_set import OrderedSet
+from pydantic import Field, validator
 
 from .abstract_view import AbstractView, AbstractViewIO
 from .static_view import StaticView
@@ -42,11 +43,21 @@ class FilteredViewIO(AbstractViewIO):
               upon the set of tag
         tags: The set of tags to include/exclude elements/relationships when rendering
               this filtered view.
+
+    Note that unlike Model Items, when filtered view tags are serialised to JSON then
+    they are serialised as an array rather than comma-separated.
     """
 
     base_view_key: str = Field(alias="baseViewKey")
     mode: FilterMode
     tags: List[str]
+
+    @validator("tags", pre=True)
+    def split_tags(cls, tags: Union[str, Iterable[str]]) -> List[str]:
+        """Convert comma-separated tag list into list if needed."""
+        if isinstance(tags, str):
+            return tags.split(",")
+        return list(tags)
 
 
 class FilteredView(AbstractView):
@@ -78,7 +89,7 @@ class FilteredView(AbstractView):
         self._base_view_key = base_view_key
         self.view = view
         self.mode = mode
-        self.tags = set(tags)
+        self.tags = OrderedSet(tags)
 
     @property
     def base_view_key(self) -> str:
