@@ -17,7 +17,7 @@
 
 
 from itertools import chain
-from typing import TYPE_CHECKING, Iterable, List, Optional, TypeVar
+from typing import TYPE_CHECKING, Iterable, List, Optional, TypeVar, Type
 
 from pydantic import Field
 
@@ -37,12 +37,22 @@ from .view import View
 
 
 if TYPE_CHECKING:
-    from ..model import Model  # pragma: no cover
+    from ..model import Model, Container  # pragma: no cover
+
+
+ConcreteView = TypeVar(
+    "ConcreteView",
+    ComponentView,
+    ContainerView,
+    DeploymentView,
+    DynamicView,
+    FilteredView,
+    SystemContextView,
+    SystemLandscapeView,
+)
 
 
 __all__ = ("ViewSet", "ViewSetIO")
-
-T = TypeVar("T")
 
 
 class ViewSetIO(BaseModel):
@@ -123,7 +133,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
     @property
     def component_views(self) -> Iterable[ComponentView]:
-        """Return the CompoentViews in this ViewSet."""
+        """Return the ComponentViews in this ViewSet."""
         return self._get_typed_views(ComponentView)
 
     @property
@@ -142,7 +152,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         return self._get_typed_views(FilteredView)
 
     @property
-    def views(self) -> Iterable[AbstractView]:
+    def views(self) -> Iterable[View]:
         """Return all the views in this ViewSet."""
         return self._views.values()
 
@@ -176,6 +186,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         component_views = []
         for view_io in views.component_views:
             container = model.get_element(view_io.container_id)
+            assert isinstance(container, Container)
             view = ComponentView.hydrate(view_io, container=container)
             cls._hydrate_view(view, model=model)
             component_views.append(view)
@@ -229,7 +240,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
                 relationship_view.id
             )
 
-    def _add_view(self, view: View) -> None:
+    def _add_view(self, view: AbstractView) -> None:
         self._views[view.key] = view
 
     def create_system_landscape_view(
@@ -332,7 +343,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         """
         Add a new DynamicView to the ViewSet.
 
-        Args:
+        Keyword Args:
             **kwagrs: Provide keyword arguments for instantiating a `DynamicView`.
         """
         dynamic_view = DynamicView(**kwargs)
@@ -381,5 +392,5 @@ class ViewSet(ModelRefMixin, AbstractBase):
         if key in self._views:
             raise ValueError(f"View already exists in workspace with key '{key}'.")
 
-    def _get_typed_views(self, klass: T) -> Iterable[T]:
-        return (view for view in self._views.values() if isinstance(view, klass))
+    def _get_typed_views(self, view_type: Type[ConcreteView]) -> Iterable[ConcreteView]:
+        return (view for view in self._views.values() if isinstance(view, view_type))
