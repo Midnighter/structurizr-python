@@ -12,6 +12,8 @@
 
 """Ensure the correct behaviour of ViewSet."""
 
+from typing import Iterable
+
 import pytest
 
 from structurizr.model.model import Model
@@ -37,7 +39,7 @@ def test_view_set_construction(empty_model):
     """Test constructing a new view set."""
     viewset = ViewSet(model=empty_model)
     assert viewset.model is empty_model
-    assert viewset.dynamic_views == set()
+    assert count(viewset.dynamic_views) == 0
 
 
 def test_adding_dynamic_view(empty_model):
@@ -58,7 +60,7 @@ def test_dynamic_view_hydrated(empty_viewset):
     io = ViewSetIO.from_orm(viewset)
 
     new_viewset = ViewSet.hydrate(io, viewset.model)
-    assert len(new_viewset.dynamic_views) == 1
+    assert count(new_viewset.dynamic_views) == 1
     view = list(new_viewset.dynamic_views)[0]
     assert view.description == "dynamic"
     assert view.element is system1
@@ -105,7 +107,7 @@ def test_filtered_view_hydrated(empty_viewset):
     io = ViewSetIO.from_orm(viewset)
 
     new_viewset = ViewSet.hydrate(io, viewset.model)
-    assert len(new_viewset.filtered_views) == 1
+    assert count(new_viewset.filtered_views) == 1
     view = list(new_viewset.filtered_views)[0]
     assert view.description == "filtered"
     assert isinstance(view.view, ContainerView)
@@ -159,3 +161,8 @@ def test_duplicate_key_raises_error(empty_viewset):
         viewset.create_container_view(
             key="container1", description="container", software_system=system1
         )
+
+
+def count(iterable: Iterable) -> int:
+    """Count items in an iterable, as len doesn't work on generators."""
+    return sum(1 for x in iterable)
