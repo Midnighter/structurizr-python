@@ -107,49 +107,37 @@ class ViewSet(ModelRefMixin, AbstractBase):
     @property
     def system_landscape_views(self) -> Iterable[SystemLandscapeView]:
         """Return the SystemLandscapeViews in this ViewSet."""
-        return (
-            view
-            for view in self._views.values()
-            if isinstance(view, SystemLandscapeView)
-        )
-
+        return self._get_typed_views(SystemLandscapeView)
+        
     @property
     def system_context_views(self) -> Iterable[SystemContextView]:
         """Return the SystemContextViews in this ViewSet."""
-        return (
-            view for view in self._views.values() if isinstance(view, SystemContextView)
-        )
+        return self._get_typed_views(SystemContextView)
 
     @property
     def container_views(self) -> Iterable[ContainerView]:
         """Return the ContainerViews in this ViewSet."""
-        return (
-            view for view in self._views.values() if isinstance(view, ContainerView)
-        )
+        return self._get_typed_views(ContainerView)
 
     @property
     def component_views(self) -> Iterable[ComponentView]:
         """Return the CompoentViews in this ViewSet."""
-        return (
-            view for view in self._views.values() if isinstance(view, ComponentView)
-        )
+        return self._get_typed_views(ComponentView)
 
     @property
     def deployment_views(self) -> Iterable[DeploymentView]:
         """Return the DeploymentViews in this ViewSet."""
-        return (
-            view for view in self._views.values() if isinstance(view, DeploymentView)
-        )
+        return self._get_typed_views(DeploymentView)
 
     @property
     def dynamic_views(self) -> Iterable[DynamicView]:
         """Return the DynamicViews in this ViewSet."""
-        return (view for view in self._views.values() if isinstance(view, DynamicView))
+        return self._get_typed_views(DynamicView)
 
     @property
     def filtered_views(self) -> Iterable[FilteredView]:
         """Return the FilteredViews in this ViewSet."""
-        return (view for view in self._views.values() if isinstance(view, FilteredView))
+        return self._get_typed_views(FilteredView)
 
     @property
     def views(self) -> Iterable[AbstractView]:
@@ -390,3 +378,10 @@ class ViewSet(ModelRefMixin, AbstractBase):
             raise ValueError("A key must be specified.")
         if key in self._views:
             raise ValueError(f"View already exists in workspace with key '{key}'.")
+
+    def _get_typed_views(self, klass: "T") -> Iterable["T"]:
+        return (
+            view
+            for view in self._views.values()
+            if isinstance(view, klass)
+        )
