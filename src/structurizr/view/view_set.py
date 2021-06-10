@@ -391,5 +391,5 @@ class ViewSet(ModelRefMixin, AbstractBase):
     def _ensure_key_is_specific_and_unique(self, key: str) -> None:
         if key is None or key == "":
             raise ValueError("A key must be specified.")
-        if self.get_view(key) is not None:
+        if key in self._views:
             raise ValueError(f"View already exists in workspace with key '{key}'.")
