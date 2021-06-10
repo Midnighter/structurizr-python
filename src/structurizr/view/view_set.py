@@ -17,7 +17,7 @@
 
 
 from itertools import chain
-from typing import TYPE_CHECKING, Iterable, List, Optional, TypeVar, Type
+from typing import TYPE_CHECKING, Iterable, List, Optional, Type, TypeVar
 
 from pydantic import Field
 
@@ -37,7 +37,7 @@ from .view import View
 
 
 if TYPE_CHECKING:
-    from ..model import Model, Container  # pragma: no cover
+    from ..model import Model  # pragma: no cover
 
 
 ConcreteView = TypeVar(
@@ -186,7 +186,6 @@ class ViewSet(ModelRefMixin, AbstractBase):
         component_views = []
         for view_io in views.component_views:
             container = model.get_element(view_io.container_id)
-            assert isinstance(container, Container)
             view = ComponentView.hydrate(view_io, container=container)
             cls._hydrate_view(view, model=model)
             component_views.append(view)
