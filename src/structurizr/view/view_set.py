@@ -172,8 +172,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
         # Patch up filtered views
         for filtered_view in result.filtered_views:
-            base_view = result[filtered_view.base_view_key]
-            filtered_view.view = base_view
+            filtered_view.view = result[filtered_view.base_view_key]
 
         return result
 
