@@ -371,10 +371,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
     def __getitem__(self, key: str) -> AbstractView:
         """Return the view with the given key or raise a KeyError."""
-        result = self._views.get(key)
-        if not result:
-            raise KeyError(f"No view with key '{key}' in ViewSet")
-        return result
+        return self._views[key]
 
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""
