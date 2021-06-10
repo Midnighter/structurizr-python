@@ -17,7 +17,7 @@
 
 
 from itertools import chain
-from typing import TYPE_CHECKING, Iterable, List, Optional, Set
+from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from pydantic import Field
 
@@ -91,18 +91,70 @@ class ViewSet(ModelRefMixin, AbstractBase):
     ) -> None:
         """Initialize a view set."""
         super().__init__(**kwargs)
-        # self.enterprise_context_views = set(enterprise_context_views)
-        self.system_landscape_views: Set[SystemLandscapeView] = set(
-            system_landscape_views
+        all_views = chain(
+            system_landscape_views,
+            system_context_views,
+            container_views,
+            component_views,
+            deployment_views,
+            dynamic_views,
+            filtered_views,
         )
-        self.system_context_views: Set[SystemContextView] = set(system_context_views)
-        self.container_views: Set[ContainerView] = set(container_views)
-        self.component_views: Set[ComponentView] = set(component_views)
-        self.deployment_views: Set[DeploymentView] = set(deployment_views)
-        self.dynamic_views: Set[DynamicView] = set(dynamic_views)
-        self.filtered_views: Set[FilteredView] = set(filtered_views)
+        self._views = {view.key: view for view in all_views}
         self.configuration = Configuration() if configuration is None else configuration
         self.set_model(model)
+
+    @property
+    def system_landscape_views(self) -> Iterable[SystemLandscapeView]:
+        """Return the SystemLandscapeViews in this ViewSet."""
+        return (
+            view
+            for view in self._views.values()
+            if isinstance(view, SystemLandscapeView)
+        )
+
+    @property
+    def system_context_views(self) -> Iterable[SystemContextView]:
+        """Return the SystemContextViews in this ViewSet."""
+        return (
+            view for view in self._views.values() if isinstance(view, SystemContextView)
+        )
+
+    @property
+    def container_views(self) -> Iterable[ContainerView]:
+        """Return the ContainerViews in this ViewSet."""
+        return (
+            view for view in self._views.values() if isinstance(view, ContainerView)
+        )
+
+    @property
+    def component_views(self) -> Iterable[ComponentView]:
+        """Return the CompoentViews in this ViewSet."""
+        return (
+            view for view in self._views.values() if isinstance(view, ComponentView)
+        )
+
+    @property
+    def deployment_views(self) -> Iterable[DeploymentView]:
+        """Return the DeploymentViews in this ViewSet."""
+        return (
+            view for view in self._views.values() if isinstance(view, DeploymentView)
+        )
+
+    @property
+    def dynamic_views(self) -> Iterable[DynamicView]:
+        """Return the DynamicViews in this ViewSet."""
+        return (view for view in self._views.values() if isinstance(view, DynamicView))
+
+    @property
+    def filtered_views(self) -> Iterable[FilteredView]:
+        """Return the FilteredViews in this ViewSet."""
+        return (view for view in self._views.values() if isinstance(view, FilteredView))
+
+    @property
+    def all_views(self) -> Iterable[AbstractView]:
+        """Return all the views in this ViewSet."""
+        return self._views.values()
 
     @classmethod
     def hydrate(cls, views: ViewSetIO, model: "Model") -> "ViewSet":
@@ -187,6 +239,9 @@ class ViewSet(ModelRefMixin, AbstractBase):
                 relationship_view.id
             )
 
+    def _add_view(self, view: View) -> None:
+        self._views[view.key] = view
+
     def create_system_landscape_view(
         self, system_landscape_view: Optional[SystemLandscapeView] = None, **kwargs
     ) -> SystemLandscapeView:
@@ -205,7 +260,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
             )
         self._ensure_key_is_specific_and_unique(system_landscape_view.key)
         system_landscape_view.set_viewset(self)
-        self.system_landscape_views.add(system_landscape_view)
+        self._add_view(system_landscape_view)
         return system_landscape_view
 
     def create_system_context_view(
@@ -226,7 +281,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
             system_context_view = SystemContextView(**kwargs)
         self._ensure_key_is_specific_and_unique(system_context_view.key)
         system_context_view.set_viewset(self)
-        self.system_context_views.add(system_context_view)
+        self._add_view(system_context_view)
         return system_context_view
 
     def create_container_view(
@@ -247,7 +302,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
             container_view = ContainerView(**kwargs)
         self._ensure_key_is_specific_and_unique(container_view.key)
         container_view.set_viewset(self)
-        self.container_views.add(container_view)
+        self._add_view(container_view)
         return container_view
 
     def create_component_view(
@@ -266,7 +321,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
             component_view = ComponentView(**kwargs)
         self._ensure_key_is_specific_and_unique(component_view.key)
         component_view.set_viewset(self)
-        self.component_views.add(component_view)
+        self._add_view(component_view)
         return component_view
 
     def create_deployment_view(self, **kwargs) -> DeploymentView:
@@ -280,7 +335,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self._ensure_key_is_specific_and_unique(deployment_view.key)
         deployment_view.set_viewset(self)
         deployment_view.set_model(self.model)
-        self.deployment_views.add(deployment_view)
+        self._add_view(deployment_view)
         return deployment_view
 
     def create_dynamic_view(self, **kwargs) -> DynamicView:
@@ -294,7 +349,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         self._ensure_key_is_specific_and_unique(dynamic_view.key)
         dynamic_view.set_viewset(self)
         dynamic_view.set_model(self.model)
-        self.dynamic_views.add(dynamic_view)
+        self._add_view(dynamic_view)
         return dynamic_view
 
     def create_filtered_view(self, **kwargs) -> FilteredView:
@@ -307,25 +362,16 @@ class ViewSet(ModelRefMixin, AbstractBase):
         filtered_view = FilteredView(**kwargs)
         self._ensure_key_is_specific_and_unique(filtered_view.key)
         filtered_view.set_viewset(self)
-        self.filtered_views.add(filtered_view)
+        self._add_view(filtered_view)
         return filtered_view
 
     def get_view(self, key: str) -> Optional[AbstractView]:
         """Return the view with the given key, or None."""
-        all_views = chain(
-            self.system_landscape_views,
-            self.system_context_views,
-            self.container_views,
-            self.component_views,
-            self.deployment_views,
-            self.dynamic_views,
-            self.filtered_views,
-        )
-        return next((view for view in all_views if view.key == key), None)
+        return self._views.get(key)
 
     def __getitem__(self, key: str) -> AbstractView:
         """Return the view with the given key or raise a KeyError."""
-        result = self.get_view(key)
+        result = self._views.get(key)
         if not result:
             raise KeyError(f"No view with key '{key}' in ViewSet")
         return result
@@ -333,35 +379,13 @@ class ViewSet(ModelRefMixin, AbstractBase):
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""
 
-        # Note that filtered views don't have any layout information to copy.
-        for source_view in source.system_landscape_views:
-            destination_view = self._find_system_landscape_view(source_view)
-            if destination_view:
-                destination_view.copy_layout_information_from(source_view)
-
-        for source_view in source.system_context_views:
-            destination_view = self._find_system_context_view(source_view)
-            if destination_view:
-                destination_view.copy_layout_information_from(source_view)
-
-        for source_view in source.container_views:
-            destination_view = self._find_container_view(source_view)
-            if destination_view:
-                destination_view.copy_layout_information_from(source_view)
-
-        for source_view in source.component_views:
-            destination_view = self._find_component_view(source_view)
-            if destination_view:
-                destination_view.copy_layout_information_from(source_view)
-
-        for source_view in source.dynamic_views:
-            destination_view = self._find_dynamic_view(source_view)
-            if destination_view:
-                destination_view.copy_layout_information_from(source_view)
-
-        for source_view in source.deployment_views:
-            destination_view = self._find_deployment_view(source_view)
-            if destination_view:
+        for source_view in source.all_views:
+            destination_view = self.get_view(source_view.key)
+            if (
+                destination_view
+                and isinstance(destination_view, View)
+                and type(destination_view) is type(source_view)
+            ):
                 destination_view.copy_layout_information_from(source_view)
 
     def _ensure_key_is_specific_and_unique(self, key: str) -> None:
@@ -369,38 +393,3 @@ class ViewSet(ModelRefMixin, AbstractBase):
             raise ValueError("A key must be specified.")
         if self.get_view(key) is not None:
             raise ValueError(f"View already exists in workspace with key '{key}'.")
-
-    def _find_system_landscape_view(
-        self, view: SystemLandscapeView
-    ) -> Optional[SystemLandscapeView]:
-        for current_view in self.system_landscape_views:
-            if view.key == current_view.key:
-                return current_view
-
-    def _find_system_context_view(
-        self,
-        view: SystemContextView,
-    ) -> Optional[SystemContextView]:
-        for current_view in self.system_context_views:
-            if view.key == current_view.key:
-                return current_view
-
-    def _find_container_view(self, view: ContainerView) -> Optional[ContainerView]:
-        for current_view in self.container_views:
-            if view.key == current_view.key:
-                return current_view
-
-    def _find_component_view(self, view: ComponentView) -> Optional[ComponentView]:
-        for current_view in self.component_views:
-            if view.key == current_view.key:
-                return current_view
-
-    def _find_dynamic_view(self, view: DynamicView) -> Optional[DynamicView]:
-        for current_view in self.dynamic_views:
-            if view.key == current_view.key:
-                return current_view
-
-    def _find_deployment_view(self, view: DeploymentView) -> DeploymentView:
-        for current_view in self.deployment_views:
-            if view.key == current_view.key:
-                return current_view
