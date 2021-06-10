@@ -127,22 +127,31 @@ def test_getting_view_by_key(empty_viewset):
         viewset["bogus"]
 
 
-def test_key_constraints(empty_viewset):
-    """Test the common constraints on view keys when creating views."""
+def test_no_key_raises_error(empty_viewset):
+    """Test that key must be specified."""
     viewset = empty_viewset
     system1 = viewset.model.add_software_system(name="sys1")
 
-    # No key
     with pytest.raises(ValueError, match="A key must be specified"):
         viewset.create_container_view(description="container", software_system=system1)
 
-    # Empty key
+
+def test_empty_key_raises_error(empty_viewset):
+    """Test that key must not be empty."""
+    viewset = empty_viewset
+    system1 = viewset.model.add_software_system(name="sys1")
+
     with pytest.raises(ValueError, match="A key must be specified"):
         viewset.create_container_view(
             key="", description="container", software_system=system1
         )
 
-    # Duplicate key
+
+def test_duplicate_key_raises_error(empty_viewset):
+    """Test that key cannot be a duplicate of another view."""
+    viewset = empty_viewset
+    system1 = viewset.model.add_software_system(name="sys1")
+
     viewset.create_container_view(
         key="container1", description="container", software_system=system1
     )
