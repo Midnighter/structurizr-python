@@ -16,6 +16,7 @@
 """Provide a set of views onto a software architecture model."""
 
 
+from itertools import chain
 from typing import TYPE_CHECKING, Iterable, List, Optional, Set
 
 from pydantic import Field
@@ -311,14 +312,14 @@ class ViewSet(ModelRefMixin, AbstractBase):
 
     def get_view(self, key: str) -> Optional[AbstractView]:
         """Return the view with the given key, or None."""
-        all_views = (
-            self.system_landscape_views
-            | self.system_context_views
-            | self.container_views
-            | self.component_views
-            | self.deployment_views
-            | self.dynamic_views
-            | self.filtered_views
+        all_views = chain(
+            self.system_landscape_views,
+            self.system_context_views,
+            self.container_views,
+            self.component_views,
+            self.deployment_views,
+            self.dynamic_views,
+            self.filtered_views,
         )
         return next((view for view in all_views if view.key == key), None)
 
