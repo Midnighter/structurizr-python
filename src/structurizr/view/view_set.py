@@ -108,7 +108,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
     def system_landscape_views(self) -> Iterable[SystemLandscapeView]:
         """Return the SystemLandscapeViews in this ViewSet."""
         return self._get_typed_views(SystemLandscapeView)
-        
+
     @property
     def system_context_views(self) -> Iterable[SystemContextView]:
         """Return the SystemContextViews in this ViewSet."""
@@ -380,8 +380,4 @@ class ViewSet(ModelRefMixin, AbstractBase):
             raise ValueError(f"View already exists in workspace with key '{key}'.")
 
     def _get_typed_views(self, klass: "T") -> Iterable["T"]:
-        return (
-            view
-            for view in self._views.values()
-            if isinstance(view, klass)
-        )
+        return (view for view in self._views.values() if isinstance(view, klass))
