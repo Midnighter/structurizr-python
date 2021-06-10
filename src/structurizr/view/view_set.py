@@ -152,7 +152,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
         return (view for view in self._views.values() if isinstance(view, FilteredView))
 
     @property
-    def all_views(self) -> Iterable[AbstractView]:
+    def views(self) -> Iterable[AbstractView]:
         """Return all the views in this ViewSet."""
         return self._views.values()
 
@@ -379,7 +379,7 @@ class ViewSet(ModelRefMixin, AbstractBase):
     def copy_layout_information_from(self, source: "ViewSet") -> None:
         """Copy all the layout information from a source ViewSet."""
 
-        for source_view in source.all_views:
+        for source_view in source.views:
             destination_view = self.get_view(source_view.key)
             if (
                 destination_view
