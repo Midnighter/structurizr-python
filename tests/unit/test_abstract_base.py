@@ -37,4 +37,4 @@ def test_hash_int():
 
 def test_set_collection():
     """Expect that a concrete class can be collected in a set."""
-    {ConcreteBase(), ConcreteBase(), ConcreteBase()}
+    {ConcreteBase(), ConcreteBase(), ConcreteBase()}  # noqa: B018
