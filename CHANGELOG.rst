@@ -4,7 +4,7 @@ History
 
 Next Release
 ------------
-
+* Feat: Add resizePaper and Margin to ``AutomaticLayout`` (#87)
 
 0.6.0 (2021-06-10)
 ------------------

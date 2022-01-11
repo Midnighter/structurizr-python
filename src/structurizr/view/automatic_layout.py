@@ -33,7 +33,9 @@ class AutomaticLayoutIO(BaseModel):
     rank_separation: int = Field(..., alias="rankSeparation")
     node_separation: int = Field(..., alias="nodeSeparation")
     edge_separation: int = Field(..., alias="edgeSeparation")
+    resize_paper: bool = Field(..., alias="resizePaper")
     vertices: bool
+    margin: int
 
 
 class AutomaticLayout(AbstractBase):
@@ -46,7 +48,9 @@ class AutomaticLayout(AbstractBase):
         rank_separation: int,
         node_separation: int,
         edge_separation: int,
+        resize_paper: bool,
         vertices: bool,
+        margin: int,
         **kwargs
     ) -> None:
         """Initialize an automatic layout."""
@@ -55,7 +59,9 @@ class AutomaticLayout(AbstractBase):
         self.rank_separation = rank_separation
         self.node_separation = node_separation
         self.edge_separation = edge_separation
+        self.resize_paper = resize_paper
         self.vertices = vertices
+        self.margin = margin
 
     @classmethod
     def hydrate(cls, automatic_layout_io: AutomaticLayoutIO) -> "AutomaticLayout":
@@ -65,5 +71,7 @@ class AutomaticLayout(AbstractBase):
             rank_separation=automatic_layout_io.rank_separation,
             node_separation=automatic_layout_io.node_separation,
             edge_separation=automatic_layout_io.edge_separation,
+            resize_paper=automatic_layout_io.resize_paper,
             vertices=automatic_layout_io.vertices,
+            margin=automatic_layout_io.margin
         )
