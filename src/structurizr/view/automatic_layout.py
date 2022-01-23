@@ -73,5 +73,5 @@ class AutomaticLayout(AbstractBase):
             edge_separation=automatic_layout_io.edge_separation,
             resize_paper=automatic_layout_io.resize_paper,
             vertices=automatic_layout_io.vertices,
-            margin=automatic_layout_io.margin
+            margin=automatic_layout_io.margin,
         )
