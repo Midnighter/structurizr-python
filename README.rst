@@ -38,6 +38,19 @@ Structurizr for Python
 
 A Python client package for the Structurizr cloud service and on-premises installation.
 
+Archive Mode
+============
+
+**Take Note:** I realized that I rely more and more on the `Structurizr DSL
+<https://structurizr.com/help/dsl>`_ and less on this Python client. Since this
+is a hobby project and my time is limited, I decided that I will stop supporting
+this package for now and put it into archive mode. If you depend on this
+project, you can always install the last version from PyPI; and if you want to
+pick up maintenance & development, please contact me by email or on the
+`Structurizr Slack #python <https://structurizr.slack.com/archives/CCH85LD2Q>`_
+channel. I will be happy to introduce you to the codebase and assist in any way
+I can.
+
 Warning
 =======
 
