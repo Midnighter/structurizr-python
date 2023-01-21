@@ -22,7 +22,7 @@ from abc import ABC
 __all__ = ("AbstractBase",)
 
 
-class AbstractBase(ABC):
+class AbstractBase(ABC):  # noqa: B024
     """Define common business logic through an abstract base class."""
 
     def __init__(self, **kwargs):
