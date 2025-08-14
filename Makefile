@@ -13,6 +13,27 @@ qa:
 release:
 	sphinx-apidoc -f -o docs/source/autogen src/structurizr
 
+## Generate validation models from OpenAPI specification.
+model: model.py
+
+model.py:
+	datamodel-codegen  \
+		--output $@ \
+		--output-model-type pydantic_v2.BaseModel \
+		--url https://raw.githubusercontent.com/structurizr/json/master/structurizr.yaml \
+		--set-default-enum-member \
+		--use-annotated \
+		--use-standard-collections \
+		--use-union-operator \
+		--use-unique-items-as-set \
+		--snake-case-field \
+		--allow-population-by-field-name \
+		--enable-faux-immutability \
+		--enable-version-header \
+		--target-python-version 3.11 \
+		--use-schema-description \
+		--strict-nullable
+
 ################################################################################
 # Self Documenting Commands                                                    #
 ################################################################################
